@@ -1,6 +1,15 @@
 # This configuration is intended for development purpose, it's **your** responsibility to harden it for production
 name: artworksharingplatformjhipter
 services:
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      - PMA_HOST=1
+      - PMA_HOST=172.17.0.1
+      - PMA_PORT=3306
   mysql:
     image: mysql:8.2.0
     volumes:
@@ -12,7 +21,7 @@ services:
     # If you want to expose these ports outside your dev PC,
     # remove the "127.0.0.1:" prefix
     ports:
-      - 127.0.0.1:3306:3306
+      - 3306:3306
     command: mysqld --lower_case_table_names=1 --skip-ssl --character_set_server=utf8mb4 --explicit_defaults_for_timestamp
     healthcheck:
       test: ['CMD', 'mysql', '-e', 'SHOW DATABASES;']
