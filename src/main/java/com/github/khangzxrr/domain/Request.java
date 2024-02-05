@@ -37,6 +37,10 @@ public class Request implements Serializable {
     @JsonIgnoreProperties(value = { "transaction", "request" }, allowSetters = true)
     private Set<RequestProgress> requestProgresses = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "request", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties(value = { "media", "request" }, allowSetters = true)
+    private Set<RequestAttachment> attachments = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
@@ -140,6 +144,37 @@ public class Request implements Serializable {
     public Request removeRequestProgresses(RequestProgress requestProgress) {
         this.requestProgresses.remove(requestProgress);
         requestProgress.setRequest(null);
+        return this;
+    }
+
+    public Set<RequestAttachment> getAttachments() {
+        return this.attachments;
+    }
+
+    public void setAttachments(Set<RequestAttachment> requestAttachments) {
+        if (this.attachments != null) {
+            this.attachments.forEach(i -> i.setRequest(null));
+        }
+        if (requestAttachments != null) {
+            requestAttachments.forEach(i -> i.setRequest(this));
+        }
+        this.attachments = requestAttachments;
+    }
+
+    public Request attachments(Set<RequestAttachment> requestAttachments) {
+        this.setAttachments(requestAttachments);
+        return this;
+    }
+
+    public Request addAttachments(RequestAttachment requestAttachment) {
+        this.attachments.add(requestAttachment);
+        requestAttachment.setRequest(this);
+        return this;
+    }
+
+    public Request removeAttachments(RequestAttachment requestAttachment) {
+        this.attachments.remove(requestAttachment);
+        requestAttachment.setRequest(null);
         return this;
     }
 

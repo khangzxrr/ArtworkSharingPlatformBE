@@ -1,7 +1,9 @@
 package com.github.khangzxrr.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -16,7 +18,10 @@ public class RequestDTO implements Serializable {
 
     private RequestStatus status;
 
+    @JsonIgnore
     private UserDTO user;
+
+    private List<RequestAttachmentDTO> attachments;
 
     public Long getId() {
         return id;
@@ -80,5 +85,13 @@ public class RequestDTO implements Serializable {
             ", status='" + getStatus() + "'" +
             ", user=" + getUser() +
             "}";
+    }
+
+    public List<RequestAttachmentDTO> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<RequestAttachmentDTO> attachments) {
+        this.attachments = attachments;
     }
 }

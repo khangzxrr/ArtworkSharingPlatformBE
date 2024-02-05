@@ -1,6 +1,8 @@
 package com.github.khangzxrr.service.dto;
 
 import com.github.khangzxrr.domain.User;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import java.io.Serializable;
 
 /**
@@ -10,8 +12,10 @@ public class UserDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @Schema(accessMode = AccessMode.READ_ONLY)
     private Long id;
 
+    @Schema(accessMode = AccessMode.READ_ONLY)
     private String login;
 
     public UserDTO() {
