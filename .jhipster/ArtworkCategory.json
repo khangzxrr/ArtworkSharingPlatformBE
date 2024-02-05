@@ -1,0 +1,31 @@
+{
+  "angularJSSuffix": "mySuffix",
+  "annotations": {
+    "changelogDate": "20240126154929"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "entityTableName": "artwork_category",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    }
+  ],
+  "name": "ArtworkCategory",
+  "relationships": [
+    {
+      "otherEntityName": "artwork",
+      "otherEntityRelationshipName": "category",
+      "relationshipName": "artworks",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

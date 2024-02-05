@@ -1,0 +1,11 @@
+id;date;description;type;status;transaction_id
+1;2024-01-26;how until;SECOND_PAYMENT;SUCCEED;1
+2;2024-01-25;thirsty arrogantly;SECOND_PAYMENT;FAILED;2
+3;2024-01-26;opposite chaplain firm;FIRST_PAYMENT;FAILED;3
+4;2024-01-25;why with upright;FIRST_PAYMENT;SUCCEED;4
+5;2024-01-25;volumize;SECOND_PAYMENT;SUCCEED;5
+6;2024-01-26;phew unless mechanically;FIRST_PAYMENT;SUCCEED;6
+7;2024-01-25;oh incidentally enlightened;FIRST_PAYMENT;SUCCEED;7
+8;2024-01-25;um weird oh;REPORT;FAILED;8
+9;2024-01-26;however aw;SECOND_PAYMENT;FAILED;9
+10;2024-01-26;composed yuck;FIRST_PAYMENT;SUCCEED;10

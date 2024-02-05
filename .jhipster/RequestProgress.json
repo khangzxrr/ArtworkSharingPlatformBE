@@ -1,0 +1,45 @@
+{
+  "angularJSSuffix": "mySuffix",
+  "annotations": {
+    "changelogDate": "20240126154629"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "entityTableName": "request_progress",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "date",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "RequestProgressType",
+      "fieldValues": "FIRST_PAYMENT,SECOND_PAYMENT,REPORT"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "RequestProgressStatus",
+      "fieldValues": "SUCCEED,FAILED"
+    }
+  ],
+  "name": "RequestProgress",
+  "relationships": [
+    {
+      "otherEntityName": "walletTransaction",
+      "relationshipName": "transaction",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

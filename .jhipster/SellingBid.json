@@ -1,0 +1,40 @@
+{
+  "angularJSSuffix": "mySuffix",
+  "annotations": {
+    "changelogDate": "20240126155229"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "entityTableName": "selling_bid",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "bidPrice",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "createAt",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "SellingBidStatus",
+      "fieldValues": "BIDED,SOLD"
+    }
+  ],
+  "name": "SellingBid",
+  "relationships": [
+    {
+      "otherEntityName": "walletTransaction",
+      "relationshipName": "transaction",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

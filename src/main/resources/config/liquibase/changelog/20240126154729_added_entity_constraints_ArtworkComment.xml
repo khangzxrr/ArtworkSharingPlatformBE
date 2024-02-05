@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <!--
+        Added the constraints for entity ArtworkComment.
+    -->
+    <changeSet id="20240126154729-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="owner_id"
+                                 baseTableName="artwork_comment"
+                                 constraintName="fk_artwork_comment__owner_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="jhi_user"
+                                 />
+
+        <addForeignKeyConstraint baseColumnNames="artwork_id"
+                                 baseTableName="artwork_comment"
+                                 constraintName="fk_artwork_comment__artwork_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="artwork"
+                                 />
+    </changeSet>
+</databaseChangeLog>

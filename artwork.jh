@@ -147,7 +147,7 @@ status ArtworkSellingStatus,
 expectedSellingPrice Long,
 }
 
-entity Complain {
+entity ArtworkComplain {
 id Long,
 content String,
 status ComplainStatus
@@ -161,29 +161,29 @@ createAt LocalDate,
 status SellingBidStatus,
 }
 
+relationship ManyToOne {
+    Request to User{requests} with builtInEntity
+    RequestBid to User{requestBids} with builtInEntity
+    
+    Certificate to User{certificates} with builtInEntity
+    ArtworkComplain to User{complains} with builtInEntity
+
+    Artwork{owner} to User{artworks} with builtInEntity
+
+    ArtworkLike{owner} to User with builtInEntity
+    ArtworkComment{owner} to User with builtInEntity
+}
 
 relationship OneToMany {    
-    User{requests} to Request
     
     Request{requestBids} to RequestBid
-    User{bids} to RequestBid
     Request{requestProgresses} to RequestProgress
-    
-    
-    
-    User{certificates} to Certificate
-    User{complains} to Complain
-    
-    User{artworks} to Artwork{owner} 
     
     Artwork{artworkAssets} to ArtworkAsset
     
-    User to ArtworkLike{user}
-    User to ArtworkComment{user}
-    
-    Artwork{comments} to Comment
-    Artwork{complains} to Complain
-    Artwork{likes} to Like
+    Artwork{comments} to ArtworkComment
+    Artwork{complains} to ArtworkComplain
+    Artwork{likes} to ArtworkLike
     
     ArtworkSelling{bids} to SellingBid
     
@@ -202,7 +202,7 @@ relationship OneToOne {
     RequestProgress{transaction required} to WalletTransaction
   	SellingBid{transaction required} to WalletTransaction
     
-    User{wallet} to Wallet with builtInEntity
+    Wallet to User with builtInEntity
     
     
 }

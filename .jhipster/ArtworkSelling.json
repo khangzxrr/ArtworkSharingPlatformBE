@@ -1,0 +1,44 @@
+{
+  "angularJSSuffix": "mySuffix",
+  "annotations": {
+    "changelogDate": "20240126155029"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "entityTableName": "artwork_selling",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "createAt",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "ArtworkSellingType",
+      "fieldValues": "DIRECT,AUCTION"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "ArtworkSellingStatus",
+      "fieldValues": "ON_GOING,FINISHED,FAILED"
+    },
+    {
+      "fieldName": "expectedSellingPrice",
+      "fieldType": "Long"
+    }
+  ],
+  "name": "ArtworkSelling",
+  "relationships": [
+    {
+      "otherEntityName": "sellingBid",
+      "relationshipName": "bids",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

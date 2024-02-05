@@ -1,0 +1,82 @@
+{
+  "angularJSSuffix": "mySuffix",
+  "annotations": {
+    "changelogDate": "20240126154029"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "entityTableName": "artwork",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "createAt",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "ArtworkStatus",
+      "fieldValues": "ENABLE,DISABLE"
+    }
+  ],
+  "name": "Artwork",
+  "relationships": [
+    {
+      "otherEntityName": "artworkSelling",
+      "relationshipName": "artworkSelling",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "artworkAsset",
+      "relationshipName": "artworkAssets",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "artworkComment",
+      "relationshipName": "comments",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "artworkComplain",
+      "relationshipName": "complains",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "artworkLike",
+      "relationshipName": "likes",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "user",
+      "otherEntityRelationshipName": "artworks",
+      "relationshipName": "owner",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    },
+    {
+      "otherEntityName": "artworkCategory",
+      "otherEntityRelationshipName": "artworks",
+      "relationshipName": "category",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

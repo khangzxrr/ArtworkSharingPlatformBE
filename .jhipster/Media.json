@@ -1,0 +1,23 @@
+{
+  "angularJSSuffix": "mySuffix",
+  "annotations": {
+    "changelogDate": "20240126154329"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "entityTableName": "media",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "url",
+      "fieldType": "String"
+    }
+  ],
+  "name": "Media",
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

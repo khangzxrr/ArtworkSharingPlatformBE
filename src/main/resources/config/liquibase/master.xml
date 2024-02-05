@@ -11,7 +11,34 @@
     <property name="datetimeType" value="datetime(6)" dbms="mysql"/>
 
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126153829_added_entity_Wallet.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126153929_added_entity_WalletTransaction.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154029_added_entity_Artwork.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154129_added_entity_ArtworkAsset.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154229_added_entity_Certificate.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154329_added_entity_Media.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154429_added_entity_Request.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154529_added_entity_RequestBid.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154629_added_entity_RequestProgress.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154729_added_entity_ArtworkComment.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154829_added_entity_ArtworkLike.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154929_added_entity_ArtworkCategory.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126155029_added_entity_ArtworkSelling.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126155129_added_entity_ArtworkComplain.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126155229_added_entity_SellingBid.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
+    <include file="config/liquibase/changelog/20240126153829_added_entity_constraints_Wallet.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126153929_added_entity_constraints_WalletTransaction.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154029_added_entity_constraints_Artwork.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154129_added_entity_constraints_ArtworkAsset.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154229_added_entity_constraints_Certificate.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154429_added_entity_constraints_Request.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154529_added_entity_constraints_RequestBid.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154629_added_entity_constraints_RequestProgress.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154729_added_entity_constraints_ArtworkComment.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126154829_added_entity_constraints_ArtworkLike.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126155129_added_entity_constraints_ArtworkComplain.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20240126155229_added_entity_constraints_SellingBid.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>
