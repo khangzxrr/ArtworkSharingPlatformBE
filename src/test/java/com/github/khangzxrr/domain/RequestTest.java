@@ -1,5 +1,6 @@
 package com.github.khangzxrr.domain;
 
+import static com.github.khangzxrr.domain.RequestAttachmentTestSamples.*;
 import static com.github.khangzxrr.domain.RequestBidTestSamples.*;
 import static com.github.khangzxrr.domain.RequestProgressTestSamples.*;
 import static com.github.khangzxrr.domain.RequestTestSamples.*;
@@ -68,5 +69,27 @@ class RequestTest {
         request.setRequestProgresses(new HashSet<>());
         assertThat(request.getRequestProgresses()).doesNotContain(requestProgressBack);
         assertThat(requestProgressBack.getRequest()).isNull();
+    }
+
+    @Test
+    void attachmentsTest() throws Exception {
+        Request request = getRequestRandomSampleGenerator();
+        RequestAttachment requestAttachmentBack = getRequestAttachmentRandomSampleGenerator();
+
+        request.addAttachments(requestAttachmentBack);
+        assertThat(request.getAttachments()).containsOnly(requestAttachmentBack);
+        assertThat(requestAttachmentBack.getRequest()).isEqualTo(request);
+
+        request.removeAttachments(requestAttachmentBack);
+        assertThat(request.getAttachments()).doesNotContain(requestAttachmentBack);
+        assertThat(requestAttachmentBack.getRequest()).isNull();
+
+        request.attachments(new HashSet<>(Set.of(requestAttachmentBack)));
+        assertThat(request.getAttachments()).containsOnly(requestAttachmentBack);
+        assertThat(requestAttachmentBack.getRequest()).isEqualTo(request);
+
+        request.setAttachments(new HashSet<>());
+        assertThat(request.getAttachments()).doesNotContain(requestAttachmentBack);
+        assertThat(requestAttachmentBack.getRequest()).isNull();
     }
 }

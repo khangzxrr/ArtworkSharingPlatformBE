@@ -19,6 +19,7 @@
     "enableSwaggerCodegen": true,
     "enableTranslation": false,
     "entities": [
+      "RequestAttachment",
       "Wallet",
       "WalletTransaction",
       "Artwork",

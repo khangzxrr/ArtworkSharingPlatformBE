@@ -3,6 +3,7 @@ package com.github.khangzxrr.domain;
 import static com.github.khangzxrr.domain.ArtworkAssetTestSamples.*;
 import static com.github.khangzxrr.domain.CertificateTestSamples.*;
 import static com.github.khangzxrr.domain.MediaTestSamples.*;
+import static com.github.khangzxrr.domain.RequestAttachmentTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.github.khangzxrr.web.rest.TestUtil;
@@ -22,6 +23,20 @@ class MediaTest {
 
         media2 = getMediaSample2();
         assertThat(media1).isNotEqualTo(media2);
+    }
+
+    @Test
+    void requestAttachmentTest() throws Exception {
+        Media media = getMediaRandomSampleGenerator();
+        RequestAttachment requestAttachmentBack = getRequestAttachmentRandomSampleGenerator();
+
+        media.setRequestAttachment(requestAttachmentBack);
+        assertThat(media.getRequestAttachment()).isEqualTo(requestAttachmentBack);
+        assertThat(requestAttachmentBack.getMedia()).isEqualTo(media);
+
+        media.requestAttachment(null);
+        assertThat(media.getRequestAttachment()).isNull();
+        assertThat(requestAttachmentBack.getMedia()).isNull();
     }
 
     @Test

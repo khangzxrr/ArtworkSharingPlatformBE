@@ -106,6 +106,10 @@ entity Request{
     status RequestStatus
 }
 
+entity RequestAttachment {
+	id Long
+}
+
 entity RequestBid{
 	id Long,
     description String,
@@ -178,7 +182,7 @@ relationship OneToMany {
     
     Request{requestBids} to RequestBid
     Request{requestProgresses} to RequestProgress
-    
+    Request{attachments} to RequestAttachment 
     Artwork{artworkAssets} to ArtworkAsset
     
     Artwork{comments} to ArtworkComment
@@ -196,6 +200,8 @@ relationship OneToOne {
 	ArtworkAsset{media} to Media
     
     Certificate{media} to Media
+    
+    RequestAttachment{media} to Media
     
     Artwork{artworkSelling} to ArtworkSelling
     

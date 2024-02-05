@@ -51,6 +51,9 @@ const EntitiesMenu = () => {
       <MenuItem icon="asterisk" to="/selling-bid-my-suffix">
         Selling Bid
       </MenuItem>
+      <MenuItem icon="asterisk" to="/request-attachment-my-suffix">
+        Request Attachment
+      </MenuItem>
       {/* jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here */}
     </>
   );

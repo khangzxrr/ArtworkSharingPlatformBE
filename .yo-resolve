@@ -1,0 +1,16 @@
+src\main\java\com\github\khangzxrr\web\rest\WalletTransactionResource.java skip
+src\main\java\com\github\khangzxrr\web\rest\ArtworkResource.java skip
+src\main\java\com\github\khangzxrr\web\rest\ArtworkAssetResource.java skip
+src\main\java\com\github\khangzxrr\web\rest\CertificateResource.java skip
+src\main\java\com\github\khangzxrr\web\rest\MediaResource.java skip
+src\main\java\com\github\khangzxrr\service\MediaService.java skip
+src\main\java\com\github\khangzxrr\service\impl\MediaServiceImpl.java skip
+src\main\java\com\github\khangzxrr\web\rest\RequestResource.java skip
+src\main\java\com\github\khangzxrr\web\rest\RequestBidResource.java skip
+src\main\java\com\github\khangzxrr\web\rest\RequestProgressResource.java skip
+src\main\java\com\github\khangzxrr\web\rest\ArtworkCommentResource.java skip
+src\main\java\com\github\khangzxrr\web\rest\ArtworkLikeResource.java skip
+src\main\java\com\github\khangzxrr\web\rest\ArtworkSellingResource.java skip
+src\main\java\com\github\khangzxrr\web\rest\ArtworkComplainResource.java skip
+src\main\java\com\github\khangzxrr\web\rest\SellingBidResource.java skip
+src\main\java\com\github\khangzxrr\domain\ArtworkAsset.java skip

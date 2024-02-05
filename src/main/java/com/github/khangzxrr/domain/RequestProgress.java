@@ -44,7 +44,7 @@ public class RequestProgress implements Serializable {
     private WalletTransaction transaction;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "requestBids", "requestProgresses", "user" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "requestBids", "requestProgresses", "attachments", "user" }, allowSetters = true)
     private Request request;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

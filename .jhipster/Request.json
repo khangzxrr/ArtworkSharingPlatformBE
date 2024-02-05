@@ -37,6 +37,12 @@
       "relationshipType": "one-to-many"
     },
     {
+      "otherEntityName": "requestAttachment",
+      "relationshipName": "attachments",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
       "otherEntityName": "user",
       "otherEntityRelationshipName": "requests",
       "relationshipName": "user",

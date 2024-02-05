@@ -22,6 +22,10 @@ public class Media implements Serializable {
     @Column(name = "url")
     private String url;
 
+    @JsonIgnoreProperties(value = { "media", "request" }, allowSetters = true)
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "media")
+    private RequestAttachment requestAttachment;
+
     @JsonIgnoreProperties(value = { "media", "artwork" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "media")
     private ArtworkAsset artworkAsset;
@@ -56,6 +60,25 @@ public class Media implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public RequestAttachment getRequestAttachment() {
+        return this.requestAttachment;
+    }
+
+    public void setRequestAttachment(RequestAttachment requestAttachment) {
+        if (this.requestAttachment != null) {
+            this.requestAttachment.setMedia(null);
+        }
+        if (requestAttachment != null) {
+            requestAttachment.setMedia(this);
+        }
+        this.requestAttachment = requestAttachment;
+    }
+
+    public Media requestAttachment(RequestAttachment requestAttachment) {
+        this.setRequestAttachment(requestAttachment);
+        return this;
     }
 
     public ArtworkAsset getArtworkAsset() {

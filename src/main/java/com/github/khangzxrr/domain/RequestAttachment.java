@@ -5,12 +5,12 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 
 /**
- * A Certificate.
+ * A RequestAttachment.
  */
 @Entity
-@Table(name = "certificate")
+@Table(name = "request_attachment")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class Certificate implements Serializable {
+public class RequestAttachment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -19,16 +19,14 @@ public class Certificate implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "description")
-    private String description;
-
     @JsonIgnoreProperties(value = { "requestAttachment", "artworkAsset", "certificate" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(unique = true)
     private Media media;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    @JsonIgnoreProperties(value = { "requestBids", "requestProgresses", "attachments", "user" }, allowSetters = true)
+    private Request request;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -36,26 +34,13 @@ public class Certificate implements Serializable {
         return this.id;
     }
 
-    public Certificate id(Long id) {
+    public RequestAttachment id(Long id) {
         this.setId(id);
         return this;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public Certificate description(String description) {
-        this.setDescription(description);
-        return this;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Media getMedia() {
@@ -66,21 +51,21 @@ public class Certificate implements Serializable {
         this.media = media;
     }
 
-    public Certificate media(Media media) {
+    public RequestAttachment media(Media media) {
         this.setMedia(media);
         return this;
     }
 
-    public User getUser() {
-        return this.user;
+    public Request getRequest() {
+        return this.request;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setRequest(Request request) {
+        this.request = request;
     }
 
-    public Certificate user(User user) {
-        this.setUser(user);
+    public RequestAttachment request(Request request) {
+        this.setRequest(request);
         return this;
     }
 
@@ -91,10 +76,10 @@ public class Certificate implements Serializable {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Certificate)) {
+        if (!(o instanceof RequestAttachment)) {
             return false;
         }
-        return getId() != null && getId().equals(((Certificate) o).getId());
+        return getId() != null && getId().equals(((RequestAttachment) o).getId());
     }
 
     @Override
@@ -106,9 +91,8 @@ public class Certificate implements Serializable {
     // prettier-ignore
     @Override
     public String toString() {
-        return "Certificate{" +
+        return "RequestAttachment{" +
             "id=" + getId() +
-            ", description='" + getDescription() + "'" +
             "}";
     }
 }

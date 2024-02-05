@@ -18,6 +18,7 @@ import ArtworkCategoryMySuffix from './artwork-category-my-suffix';
 import ArtworkSellingMySuffix from './artwork-selling-my-suffix';
 import ArtworkComplainMySuffix from './artwork-complain-my-suffix';
 import SellingBidMySuffix from './selling-bid-my-suffix';
+import RequestAttachmentMySuffix from './request-attachment-my-suffix';
 /* jhipster-needle-add-route-import - JHipster will add routes here */
 
 export default () => {
@@ -40,6 +41,7 @@ export default () => {
         <Route path="artwork-selling-my-suffix/*" element={<ArtworkSellingMySuffix />} />
         <Route path="artwork-complain-my-suffix/*" element={<ArtworkComplainMySuffix />} />
         <Route path="selling-bid-my-suffix/*" element={<SellingBidMySuffix />} />
+        <Route path="request-attachment-my-suffix/*" element={<RequestAttachmentMySuffix />} />
         {/* jhipster-needle-add-route-path - JHipster will add routes here */}
       </ErrorBoundaryRoutes>
     </div>

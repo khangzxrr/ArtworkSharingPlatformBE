@@ -8,6 +8,8 @@ import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateT
 import { mapIdList } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
+import { IRequestAttachmentMySuffix } from 'app/shared/model/request-attachment-my-suffix.model';
+import { getEntities as getRequestAttachments } from 'app/entities/request-attachment-my-suffix/request-attachment-my-suffix.reducer';
 import { IArtworkAssetMySuffix } from 'app/shared/model/artwork-asset-my-suffix.model';
 import { getEntities as getArtworkAssets } from 'app/entities/artwork-asset-my-suffix/artwork-asset-my-suffix.reducer';
 import { ICertificateMySuffix } from 'app/shared/model/certificate-my-suffix.model';
@@ -23,6 +25,7 @@ export const MediaMySuffixUpdate = () => {
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
 
+  const requestAttachments = useAppSelector(state => state.requestAttachment.entities);
   const artworkAssets = useAppSelector(state => state.artworkAsset.entities);
   const certificates = useAppSelector(state => state.certificate.entities);
   const mediaEntity = useAppSelector(state => state.media.entity);
@@ -41,6 +44,7 @@ export const MediaMySuffixUpdate = () => {
       dispatch(getEntity(id));
     }
 
+    dispatch(getRequestAttachments({}));
     dispatch(getArtworkAssets({}));
     dispatch(getCertificates({}));
   }, []);
