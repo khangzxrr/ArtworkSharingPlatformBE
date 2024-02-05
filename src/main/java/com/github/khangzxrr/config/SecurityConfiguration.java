@@ -64,14 +64,24 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/i18n/**")).permitAll()
                     .requestMatchers(mvc.pattern("/content/**")).permitAll()
                     .requestMatchers(mvc.pattern("/swagger-ui/**")).permitAll()
+
+                    //Authorize for Audience
+                    //.requestMatchers(mvc.pattern("/api/audience/**")).hasAuthority(AuthoritiesConstants.USER)
+
                     .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/authenticate")).permitAll()
                     .requestMatchers(mvc.pattern(HttpMethod.GET, "/api/authenticate")).permitAll()
                     .requestMatchers(mvc.pattern("/api/register")).permitAll()
                     .requestMatchers(mvc.pattern("/api/activate")).permitAll()
+
+                    .requestMatchers(mvc.pattern("/api/account/**")).authenticated()
+
                     .requestMatchers(mvc.pattern("/api/account/reset-password/init")).permitAll()
                     .requestMatchers(mvc.pattern("/api/account/reset-password/finish")).permitAll()
+
+                    .requestMatchers(mvc.pattern("/api/authorities")).authenticated()
+
                     .requestMatchers(mvc.pattern("/api/admin/**")).hasAuthority(AuthoritiesConstants.ADMIN)
-                    .requestMatchers(mvc.pattern("/api/**")).authenticated()
+                    //.requestMatchers(mvc.pattern("/api/**")).authenticated()
                     .requestMatchers(mvc.pattern("/websocket/**")).authenticated()
                     .requestMatchers(mvc.pattern("/v3/api-docs/**")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(mvc.pattern("/management/health")).permitAll()
@@ -79,6 +89,8 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/management/info")).permitAll()
                     .requestMatchers(mvc.pattern("/management/prometheus")).permitAll()
                     .requestMatchers(mvc.pattern("/management/**")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    
+                    .requestMatchers(mvc.pattern("/api/audience/**")).hasAuthority(AuthoritiesConstants.USER)
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(exceptions ->

@@ -20,8 +20,8 @@ import tech.jhipster.web.util.ResponseUtil;
 /**
  * REST controller for managing {@link com.github.khangzxrr.domain.Certificate}.
  */
-@RestController
-@RequestMapping("/api/certificates")
+//@RestController
+//@RequestMapping("/api/certificates")
 public class CertificateResource {
 
     private final Logger log = LoggerFactory.getLogger(CertificateResource.class);

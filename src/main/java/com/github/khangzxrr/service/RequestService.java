@@ -1,8 +1,9 @@
 package com.github.khangzxrr.service;
 
 import com.github.khangzxrr.service.dto.RequestDTO;
-import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service Interface for managing {@link com.github.khangzxrr.domain.Request}.
@@ -35,9 +36,10 @@ public interface RequestService {
     /**
      * Get all the requests.
      *
+     * @param pageable the pagination information.
      * @return the list of entities.
      */
-    List<RequestDTO> findAll();
+    Page<RequestDTO> findAll(Pageable pageable);
 
     /**
      * Get the "id" request.

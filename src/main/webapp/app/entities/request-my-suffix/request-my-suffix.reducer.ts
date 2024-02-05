@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createAsyncThunk, isFulfilled, isPending } from '@reduxjs/toolkit';
-import { ASC } from 'app/shared/util/pagination.constants';
+import { loadMoreDataWhenScrolled, parseHeaderForLinks } from 'react-jhipster';
 import { cleanEntity } from 'app/shared/util/entity-utils';
 import { IQueryParams, createEntitySlice, EntityState, serializeAxiosError } from 'app/shared/reducers/reducer.utils';
 import { IRequestMySuffix, defaultValue } from 'app/shared/model/request-my-suffix.model';
@@ -10,7 +10,9 @@ const initialState: EntityState<IRequestMySuffix> = {
   errorMessage: null,
   entities: [],
   entity: defaultValue,
+  links: { next: 0 },
   updating: false,
+  totalItems: 0,
   updateSuccess: false,
 };
 
@@ -18,8 +20,8 @@ const apiUrl = 'api/requests';
 
 // Actions
 
-export const getEntities = createAsyncThunk('request/fetch_entity_list', async ({ sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}?${sort ? `sort=${sort}&` : ''}cacheBuster=${new Date().getTime()}`;
+export const getEntities = createAsyncThunk('request/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
+  const requestUrl = `${apiUrl}?${sort ? `page=${page}&size=${size}&sort=${sort}&` : ''}cacheBuster=${new Date().getTime()}`;
   return axios.get<IRequestMySuffix[]>(requestUrl);
 });
 
@@ -35,9 +37,7 @@ export const getEntity = createAsyncThunk(
 export const createEntity = createAsyncThunk(
   'request/create_entity',
   async (entity: IRequestMySuffix, thunkAPI) => {
-    const result = await axios.post<IRequestMySuffix>(apiUrl, cleanEntity(entity));
-    thunkAPI.dispatch(getEntities({}));
-    return result;
+    return axios.post<IRequestMySuffix>(apiUrl, cleanEntity(entity));
   },
   { serializeError: serializeAxiosError },
 );
@@ -45,9 +45,7 @@ export const createEntity = createAsyncThunk(
 export const updateEntity = createAsyncThunk(
   'request/update_entity',
   async (entity: IRequestMySuffix, thunkAPI) => {
-    const result = await axios.put<IRequestMySuffix>(`${apiUrl}/${entity.id}`, cleanEntity(entity));
-    thunkAPI.dispatch(getEntities({}));
-    return result;
+    return axios.put<IRequestMySuffix>(`${apiUrl}/${entity.id}`, cleanEntity(entity));
   },
   { serializeError: serializeAxiosError },
 );
@@ -55,9 +53,7 @@ export const updateEntity = createAsyncThunk(
 export const partialUpdateEntity = createAsyncThunk(
   'request/partial_update_entity',
   async (entity: IRequestMySuffix, thunkAPI) => {
-    const result = await axios.patch<IRequestMySuffix>(`${apiUrl}/${entity.id}`, cleanEntity(entity));
-    thunkAPI.dispatch(getEntities({}));
-    return result;
+    return axios.patch<IRequestMySuffix>(`${apiUrl}/${entity.id}`, cleanEntity(entity));
   },
   { serializeError: serializeAxiosError },
 );
@@ -66,9 +62,7 @@ export const deleteEntity = createAsyncThunk(
   'request/delete_entity',
   async (id: string | number, thunkAPI) => {
     const requestUrl = `${apiUrl}/${id}`;
-    const result = await axios.delete<IRequestMySuffix>(requestUrl);
-    thunkAPI.dispatch(getEntities({}));
-    return result;
+    return await axios.delete<IRequestMySuffix>(requestUrl);
   },
   { serializeError: serializeAxiosError },
 );
@@ -90,19 +84,15 @@ export const RequestMySuffixSlice = createEntitySlice({
         state.entity = {};
       })
       .addMatcher(isFulfilled(getEntities), (state, action) => {
-        const { data } = action.payload;
+        const { data, headers } = action.payload;
+        const links = parseHeaderForLinks(headers.link);
 
         return {
           ...state,
           loading: false,
-          entities: data.sort((a, b) => {
-            if (!action.meta?.arg?.sort) {
-              return 1;
-            }
-            const order = action.meta.arg.sort.split(',')[1];
-            const predicate = action.meta.arg.sort.split(',')[0];
-            return order === ASC ? (a[predicate] < b[predicate] ? -1 : 1) : b[predicate] < a[predicate] ? -1 : 1;
-          }),
+          links,
+          entities: loadMoreDataWhenScrolled(state.entities, data, links),
+          totalItems: parseInt(headers['x-total-count'], 10),
         };
       })
       .addMatcher(isFulfilled(createEntity, updateEntity, partialUpdateEntity), (state, action) => {

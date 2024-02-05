@@ -22,8 +22,8 @@ import tech.jhipster.web.util.ResponseUtil;
 /**
  * REST controller for managing {@link com.github.khangzxrr.domain.SellingBid}.
  */
-@RestController
-@RequestMapping("/api/selling-bids")
+//@RestController
+//@RequestMapping("/api/selling-bids")
 public class SellingBidResource {
 
     private final Logger log = LoggerFactory.getLogger(SellingBidResource.class);

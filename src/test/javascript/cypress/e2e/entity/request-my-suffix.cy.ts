@@ -91,6 +91,9 @@ describe('Request e2e test', () => {
             },
             {
               statusCode: 200,
+              headers: {
+                link: '<http://localhost/api/requests?page=0&size=20>; rel="last",<http://localhost/api/requests?page=0&size=20>; rel="first"',
+              },
               body: [request],
             },
           ).as('entitiesRequestInternal');

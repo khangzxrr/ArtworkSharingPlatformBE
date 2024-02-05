@@ -34,9 +34,7 @@ export const RequestMySuffixUpdate = () => {
   };
 
   useEffect(() => {
-    if (isNew) {
-      dispatch(reset());
-    } else {
+    if (!isNew) {
       dispatch(getEntity(id));
     }
 

@@ -22,8 +22,8 @@ import tech.jhipster.web.util.ResponseUtil;
 /**
  * REST controller for managing {@link com.github.khangzxrr.domain.RequestProgress}.
  */
-@RestController
-@RequestMapping("/api/request-progresses")
+//@RestController
+//@RequestMapping("/api/request-progresses")
 public class RequestProgressResource {
 
     private final Logger log = LoggerFactory.getLogger(RequestProgressResource.class);

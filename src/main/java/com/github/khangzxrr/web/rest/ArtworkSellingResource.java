@@ -20,8 +20,8 @@ import tech.jhipster.web.util.ResponseUtil;
 /**
  * REST controller for managing {@link com.github.khangzxrr.domain.ArtworkSelling}.
  */
-@RestController
-@RequestMapping("/api/artwork-sellings")
+//@RestController
+//@RequestMapping("/api/artwork-sellings")
 public class ArtworkSellingResource {
 
     private final Logger log = LoggerFactory.getLogger(ArtworkSellingResource.class);

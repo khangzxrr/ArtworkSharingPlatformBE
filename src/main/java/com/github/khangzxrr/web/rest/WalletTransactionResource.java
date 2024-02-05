@@ -20,8 +20,8 @@ import tech.jhipster.web.util.ResponseUtil;
 /**
  * REST controller for managing {@link com.github.khangzxrr.domain.WalletTransaction}.
  */
-@RestController
-@RequestMapping("/api/wallet-transactions")
+//@RestController
+//@RequestMapping("/api/wallet-transactions")
 public class WalletTransactionResource {
 
     private final Logger log = LoggerFactory.getLogger(WalletTransactionResource.class);

@@ -1,6 +1,7 @@
 package com.github.khangzxrr.web.rest;
 
 import com.github.khangzxrr.repository.RequestRepository;
+import com.github.khangzxrr.security.AuthoritiesConstants;
 import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.dto.RequestDTO;
 import com.github.khangzxrr.web.rest.errors.BadRequestAlertException;
@@ -12,16 +13,22 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link com.github.khangzxrr.domain.Request}.
  */
 @RestController
-@RequestMapping("/api/requests")
+@RequestMapping("/api/audience/requests")
 public class RequestResource {
 
     private final Logger log = LoggerFactory.getLogger(RequestResource.class);
@@ -133,12 +140,15 @@ public class RequestResource {
     /**
      * {@code GET  /requests} : get all the requests.
      *
+     * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of requests in body.
      */
     @GetMapping("")
-    public List<RequestDTO> getAllRequests() {
-        log.debug("REST request to get all Requests");
-        return requestService.findAll();
+    public ResponseEntity<List<RequestDTO>> getAllRequests(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+        log.debug("REST request to get a page of Requests");
+        Page<RequestDTO> page = requestService.findAll(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     /**
