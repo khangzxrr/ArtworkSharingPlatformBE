@@ -174,7 +174,7 @@ relationship OneToMany {
     User{certificates} to Certificate
     User{complains} to Complain
     
-    User{artworks} to Artwork{owner}
+    User{artworks} to Artwork{owner} 
     
     Artwork{artworkAssets} to ArtworkAsset
     
@@ -202,7 +202,7 @@ relationship OneToOne {
     RequestProgress{transaction required} to WalletTransaction
   	SellingBid{transaction required} to WalletTransaction
     
-    User{wallet} to Wallet
+    User{wallet} to Wallet with builtInEntity
     
     
 }
