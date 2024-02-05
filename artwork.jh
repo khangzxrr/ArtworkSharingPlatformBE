@@ -1,0 +1,221 @@
+enum ArtworkStatus {
+  ENABLE,
+  DISABLE
+}
+
+enum RequestStatus {
+	ON_GOING,
+    ON_BIDING,
+    ENDED,
+    FAILED
+}
+
+enum RequestBidStatus {
+	BIDED,
+    SELECTED_BID
+}
+
+enum RequestProgressType {
+	FIRST_PAYMENT,
+    SECOND_PAYMENT,
+    REPORT
+}
+
+
+enum RequestProgressStatus {
+	SUCCEED,
+    FAILED
+}
+
+enum ArtworkSellingType {
+	DIRECT,
+    AUCTION
+}
+
+enum ArtworkSellingStatus {
+	ON_GOING,
+    FINISHED,
+    FAILED
+}
+
+enum ComplainStatus {
+	POSTED,
+    HIDED
+}
+
+enum WalletTransactionType {
+	DEPOSIT,
+    WITHDRAWAL,
+    BUY
+}
+
+enum WalletTransactionStatus {
+	SUCCEED,
+    FAILED,
+    VERIFING
+}
+
+enum SellingBidStatus {
+	BIDED,
+    SOLD
+}
+
+
+entity Wallet {
+	id Long,
+    amount Long
+}
+
+entity WalletTransaction {
+	id Long,
+    amount Long,
+    type WalletTransactionType,
+    status WalletTransactionStatus,
+    createAt LocalDate,
+}
+
+
+
+entity Artwork {
+    id Long,
+    name String,
+    description String,
+    createAt String,
+    status ArtworkStatus
+    
+}
+
+entity ArtworkAsset {
+	id Long
+}
+
+entity Certificate{
+	id Long,
+    description String
+    }
+    
+entity Media{
+	id Long,
+    url String
+
+}
+
+entity Request{
+	id Long, 
+	description String,  
+    status RequestStatus
+}
+
+entity RequestBid{
+	id Long,
+    description String,
+    price Double,
+    deadline Integer
+    status RequestBidStatus
+}
+
+entity RequestProgress{
+	id Long,
+    date LocalDate,
+    description String,
+    type RequestProgressType,
+    status RequestProgressStatus,
+}
+
+entity Comment{
+id Long,
+content String,
+createAt LocalDate
+}
+
+entity Like {
+id Long,
+createAt LocalDate
+}
+
+entity ArtworkCategory{
+id Long,
+name String
+}
+
+
+entity ArtworkSelling{
+id Long,
+createAt LocalDate,
+type ArtworkSellingType,
+status ArtworkSellingStatus,
+expectedSellingPrice Long,
+}
+
+entity Complain {
+id Long,
+content String,
+status ComplainStatus
+}
+
+
+entity SellingBid {
+id Long,
+bidPrice Long,
+createAt LocalDate,
+status SellingBidStatus,
+}
+
+
+relationship OneToMany {    
+    User{requests} to Request
+    
+    Request{requestBids} to RequestBid
+    User{bids} to RequestBid
+    Request{requestProgresses} to RequestProgress
+    
+    
+    
+    User{certificates} to Certificate
+    User{complains} to Complain
+    
+    User{artworks} to Artwork{owner}
+    
+    Artwork{artworkAssets} to ArtworkAsset
+    
+    User to Like{user}
+    User to Comment{user}
+    
+    Artwork{comments} to Comment
+    Artwork{complains} to Complain
+    Artwork{likes} to Like
+    
+    ArtworkSelling{bids} to SellingBid
+    
+    ArtworkCategory{artworks} to Artwork{category}
+    
+    Wallet{transactions} to WalletTransaction
+}
+
+relationship OneToOne {
+	ArtworkAsset{media} to Media
+    
+    Certificate{media} to Media
+    
+    Artwork{artworkSelling} to ArtworkSelling
+    
+    RequestProgress{transaction required} to WalletTransaction
+  	SellingBid{transaction required} to WalletTransaction
+    
+    User{wallet} to Wallet
+    
+    
+}
+
+
+
+
+// Sử dụng Data Transfer Objects (DTO)
+dto * with mapstruct
+
+
+// Cấu hình dịch vụ
+service all with serviceImpl
+
+// Cấu hình hậu tố cho React
+angularSuffix * with mySuffix
