@@ -1,6 +1,9 @@
 package com.github.khangzxrr.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -18,10 +21,13 @@ public class RequestBidDTO implements Serializable {
 
     private Long duration;
 
+    @Schema(accessMode = AccessMode.READ_ONLY)
     private RequestBidStatus status;
 
+    @Schema(accessMode = AccessMode.READ_ONLY)
     private UserDTO user;
 
+    @JsonIgnore
     private RequestDTO request;
 
     public Long getId() {
