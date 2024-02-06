@@ -113,8 +113,8 @@ entity RequestAttachment {
 entity RequestBid{
 	id Long,
     description String,
-    price Double,
-    deadline Integer
+    price Long,
+    duration Long,
     status RequestBidStatus
 }
 
