@@ -36,9 +36,9 @@ export const RequestBidMySuffixDetail = () => {
           </dt>
           <dd>{requestBidEntity.price}</dd>
           <dt>
-            <span id="deadline">Deadline</span>
+            <span id="duration">Duration</span>
           </dt>
-          <dd>{requestBidEntity.deadline}</dd>
+          <dd>{requestBidEntity.duration}</dd>
           <dt>
             <span id="status">Status</span>
           </dt>

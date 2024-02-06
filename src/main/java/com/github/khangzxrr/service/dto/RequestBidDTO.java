@@ -14,9 +14,9 @@ public class RequestBidDTO implements Serializable {
 
     private String description;
 
-    private Double price;
+    private Long price;
 
-    private Integer deadline;
+    private Long duration;
 
     private RequestBidStatus status;
 
@@ -40,20 +40,20 @@ public class RequestBidDTO implements Serializable {
         this.description = description;
     }
 
-    public Double getPrice() {
+    public Long getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(Long price) {
         this.price = price;
     }
 
-    public Integer getDeadline() {
-        return deadline;
+    public Long getDuration() {
+        return duration;
     }
 
-    public void setDeadline(Integer deadline) {
-        this.deadline = deadline;
+    public void setDuration(Long duration) {
+        this.duration = duration;
     }
 
     public RequestBidStatus getStatus() {
@@ -108,7 +108,7 @@ public class RequestBidDTO implements Serializable {
             "id=" + getId() +
             ", description='" + getDescription() + "'" +
             ", price=" + getPrice() +
-            ", deadline=" + getDeadline() +
+            ", duration=" + getDuration() +
             ", status='" + getStatus() + "'" +
             ", user=" + getUser() +
             ", request=" + getRequest() +

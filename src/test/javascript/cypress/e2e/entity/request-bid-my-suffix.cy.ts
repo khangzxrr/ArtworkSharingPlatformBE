@@ -162,11 +162,11 @@ describe('RequestBid e2e test', () => {
       cy.get(`[data-cy="description"]`).type('ick');
       cy.get(`[data-cy="description"]`).should('have.value', 'ick');
 
-      cy.get(`[data-cy="price"]`).type('4275.1');
-      cy.get(`[data-cy="price"]`).should('have.value', '4275.1');
+      cy.get(`[data-cy="price"]`).type('4275');
+      cy.get(`[data-cy="price"]`).should('have.value', '4275');
 
-      cy.get(`[data-cy="deadline"]`).type('9663');
-      cy.get(`[data-cy="deadline"]`).should('have.value', '9663');
+      cy.get(`[data-cy="duration"]`).type('9663');
+      cy.get(`[data-cy="duration"]`).should('have.value', '9663');
 
       cy.get(`[data-cy="status"]`).select('SELECTED_BID');
 

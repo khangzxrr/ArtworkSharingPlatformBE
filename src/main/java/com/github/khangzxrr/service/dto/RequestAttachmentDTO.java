@@ -29,6 +29,14 @@ public class RequestAttachmentDTO implements Serializable {
         this.media = media;
     }
 
+    public RequestDTO getRequest() {
+        return request;
+    }
+
+    public void setRequest(RequestDTO request) {
+        this.request = request;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -56,6 +64,7 @@ public class RequestAttachmentDTO implements Serializable {
         return "RequestAttachmentDTO{" +
             "id=" + getId() +
             ", media=" + getMedia() +
+            ", request=" + getRequest() +
             "}";
     }
 }

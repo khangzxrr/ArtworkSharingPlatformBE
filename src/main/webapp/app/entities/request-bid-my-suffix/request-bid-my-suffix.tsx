@@ -96,8 +96,8 @@ export const RequestBidMySuffix = () => {
                 <th className="hand" onClick={sort('price')}>
                   Price <FontAwesomeIcon icon={getSortIconByFieldName('price')} />
                 </th>
-                <th className="hand" onClick={sort('deadline')}>
-                  Deadline <FontAwesomeIcon icon={getSortIconByFieldName('deadline')} />
+                <th className="hand" onClick={sort('duration')}>
+                  Duration <FontAwesomeIcon icon={getSortIconByFieldName('duration')} />
                 </th>
                 <th className="hand" onClick={sort('status')}>
                   Status <FontAwesomeIcon icon={getSortIconByFieldName('status')} />
@@ -121,7 +121,7 @@ export const RequestBidMySuffix = () => {
                   </td>
                   <td>{requestBid.description}</td>
                   <td>{requestBid.price}</td>
-                  <td>{requestBid.deadline}</td>
+                  <td>{requestBid.duration}</td>
                   <td>{requestBid.status}</td>
                   <td>{requestBid.user ? requestBid.user.id : ''}</td>
                   <td>

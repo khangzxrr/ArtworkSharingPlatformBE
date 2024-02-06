@@ -17,11 +17,11 @@
     },
     {
       "fieldName": "price",
-      "fieldType": "Double"
+      "fieldType": "Long"
     },
     {
-      "fieldName": "deadline",
-      "fieldType": "Integer"
+      "fieldName": "duration",
+      "fieldType": "Long"
     },
     {
       "fieldName": "status",

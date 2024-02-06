@@ -61,8 +61,8 @@ export const RequestBidMySuffixUpdate = () => {
     if (values.price !== undefined && typeof values.price !== 'number') {
       values.price = Number(values.price);
     }
-    if (values.deadline !== undefined && typeof values.deadline !== 'number') {
-      values.deadline = Number(values.deadline);
+    if (values.duration !== undefined && typeof values.duration !== 'number') {
+      values.duration = Number(values.duration);
     }
 
     const entity = {
@@ -115,7 +115,7 @@ export const RequestBidMySuffixUpdate = () => {
                 type="text"
               />
               <ValidatedField label="Price" id="request-bid-my-suffix-price" name="price" data-cy="price" type="text" />
-              <ValidatedField label="Deadline" id="request-bid-my-suffix-deadline" name="deadline" data-cy="deadline" type="text" />
+              <ValidatedField label="Duration" id="request-bid-my-suffix-duration" name="duration" data-cy="duration" type="text" />
               <ValidatedField label="Status" id="request-bid-my-suffix-status" name="status" data-cy="status" type="select">
                 {requestBidStatusValues.map(requestBidStatus => (
                   <option value={requestBidStatus} key={requestBidStatus}>

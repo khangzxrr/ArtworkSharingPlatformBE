@@ -6,7 +6,7 @@ export interface IRequestBidMySuffix {
   id?: number;
   description?: string | null;
   price?: number | null;
-  deadline?: number | null;
+  duration?: number | null;
   status?: keyof typeof RequestBidStatus | null;
   user?: IUser | null;
   request?: IRequestMySuffix | null;

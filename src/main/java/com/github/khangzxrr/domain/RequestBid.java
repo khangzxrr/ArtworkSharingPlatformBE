@@ -24,10 +24,10 @@ public class RequestBid implements Serializable {
     private String description;
 
     @Column(name = "price")
-    private Double price;
+    private Long price;
 
-    @Column(name = "deadline")
-    private Integer deadline;
+    @Column(name = "duration")
+    private Long duration;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -68,30 +68,30 @@ public class RequestBid implements Serializable {
         this.description = description;
     }
 
-    public Double getPrice() {
+    public Long getPrice() {
         return this.price;
     }
 
-    public RequestBid price(Double price) {
+    public RequestBid price(Long price) {
         this.setPrice(price);
         return this;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(Long price) {
         this.price = price;
     }
 
-    public Integer getDeadline() {
-        return this.deadline;
+    public Long getDuration() {
+        return this.duration;
     }
 
-    public RequestBid deadline(Integer deadline) {
-        this.setDeadline(deadline);
+    public RequestBid duration(Long duration) {
+        this.setDuration(duration);
         return this;
     }
 
-    public void setDeadline(Integer deadline) {
-        this.deadline = deadline;
+    public void setDuration(Long duration) {
+        this.duration = duration;
     }
 
     public RequestBidStatus getStatus() {
@@ -159,7 +159,7 @@ public class RequestBid implements Serializable {
             "id=" + getId() +
             ", description='" + getDescription() + "'" +
             ", price=" + getPrice() +
-            ", deadline=" + getDeadline() +
+            ", duration=" + getDuration() +
             ", status='" + getStatus() + "'" +
             "}";
     }
