@@ -22,7 +22,6 @@ public interface RequestMapper extends EntityMapper<RequestDTO, Request> {
     @Mapping(target = "id", source = "id")
     UserDTO toDtoUserId(User user);
 
-    @Mapping(target = "description", source = "description")
     RequestDTO toDto(CreateRequestDTO createRequestDTO);
 
     default RequestAttachmentDTO fromStringToAttachmentDTO(String attachmentUrl) {
