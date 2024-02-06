@@ -1,6 +1,7 @@
 package com.github.khangzxrr.repository;
 
 import com.github.khangzxrr.domain.Request;
+import com.github.khangzxrr.domain.RequestBid;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -18,5 +19,5 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     Page<Request> findByUserIsCurrentUser(Pageable pageable);
 
     @Query("select request from Request request where request.id = ?1 and request.user.login = ?#{authentication.name}")
-    Optional<Request> findByIdAndUserIsCurrentUser(long id);
+    Optional<Request> findByIdAndUserIsCurrentUser(Long id);
 }
