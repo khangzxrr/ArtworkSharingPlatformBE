@@ -1,9 +1,10 @@
 package com.github.khangzxrr.service.dto;
 
 import jakarta.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.List;
 
-public class CreateRequestDTO {
+public class CreateRequestDTO implements Serializable {
 
     @NotNull
     private String description;

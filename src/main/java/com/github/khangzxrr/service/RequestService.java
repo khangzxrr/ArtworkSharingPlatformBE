@@ -1,6 +1,11 @@
 package com.github.khangzxrr.service;
 
+import com.github.khangzxrr.domain.Request;
+import com.github.khangzxrr.service.dto.CreateRequestBidDTO;
+import com.github.khangzxrr.service.dto.CreateRequestDTO;
+import com.github.khangzxrr.service.dto.RequestBidDTO;
 import com.github.khangzxrr.service.dto.RequestDTO;
+import com.github.khangzxrr.service.dto.UpdateRequestDTO;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,50 +14,15 @@ import org.springframework.data.domain.Pageable;
  * Service Interface for managing {@link com.github.khangzxrr.domain.Request}.
  */
 public interface RequestService {
-    /**
-     * Save a request.
-     *
-     * @param requestDTO the entity to save.
-     * @return the persisted entity.
-     */
-    RequestDTO save(RequestDTO requestDTO);
-
-    /**
-     * Updates a request.
-     *
-     * @param requestDTO the entity to update.
-     * @return the persisted entity.
-     */
-    RequestDTO update(RequestDTO requestDTO);
-
-    /**
-     * Partially updates a request.
-     *
-     * @param requestDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<RequestDTO> partialUpdate(RequestDTO requestDTO);
-
-    /**
-     * Get all the requests.
-     *
-     * @param pageable the pagination information.
-     * @return the list of entities.
-     */
     Page<RequestDTO> findAll(Pageable pageable);
-
-    /**
-     * Get the "id" request.
-     *
-     * @param id the id of the entity.
-     * @return the entity.
-     */
-    Optional<RequestDTO> findOne(Long id);
-
-    /**
-     * Delete the "id" request.
-     *
-     * @param id the id of the entity.
-     */
+    RequestDTO create(CreateRequestDTO createRequestDTO);
+    RequestDTO update(Long requestId, UpdateRequestDTO updateRequestDTO);
     void delete(Long id);
+    Optional<Request> getRequestByIdAndBelongToCurrentUser(long id);
+
+    RequestBidDTO placeBidOnRequest(Long requestId, CreateRequestBidDTO createRequestBidDTO);
+    RequestBidDTO updateRequestBid(RequestBidDTO requestBidDTO);
+    Optional<RequestBidDTO> findOneRequestBid(Long requestId, Long requestIdId);
+    Page<RequestBidDTO> findAllRequestBid(Long requestId, Pageable pageable);
+    void deleteRequestBid(Long requestId, Long requestBidId);
 }

@@ -7,7 +7,6 @@ import com.github.khangzxrr.service.dto.MediaDTO;
 import com.github.khangzxrr.service.dto.RequestAttachmentDTO;
 import com.github.khangzxrr.service.dto.RequestDTO;
 import com.github.khangzxrr.service.dto.UserDTO;
-import java.util.List;
 import org.mapstruct.*;
 
 /**

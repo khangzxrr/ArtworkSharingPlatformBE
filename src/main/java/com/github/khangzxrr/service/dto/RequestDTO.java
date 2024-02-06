@@ -1,6 +1,5 @@
 package com.github.khangzxrr.service.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import java.io.Serializable;
 import java.util.List;
@@ -18,7 +17,6 @@ public class RequestDTO implements Serializable {
 
     private RequestStatus status;
 
-    @JsonIgnore
     private UserDTO user;
 
     private List<RequestAttachmentDTO> attachments;

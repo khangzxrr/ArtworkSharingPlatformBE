@@ -29,7 +29,7 @@ public class Request implements Serializable {
     @Column(name = "status")
     private RequestStatus status;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "request")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "request", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "user", "request" }, allowSetters = true)
     private Set<RequestBid> requestBids = new HashSet<>();
 
