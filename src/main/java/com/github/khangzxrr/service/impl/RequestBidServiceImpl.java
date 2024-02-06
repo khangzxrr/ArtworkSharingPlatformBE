@@ -136,6 +136,11 @@ public class RequestBidServiceImpl implements RequestBidService {
     public void deleteRequestBid(Long requestId, Long requestBidId) {
         RequestBid requestBid = validateRequestBidBelongToUserAndRequest(requestId, requestBidId).get();
 
+        //only able to delete bid ưhen on_biding state
+        if (requestBid.getRequest().getStatus() != RequestStatus.ON_BIDING) {
+            throw new RequestIsNotOnCorrectState();
+        }
+
         requestBidRepository.delete(requestBid);
     }
 }
