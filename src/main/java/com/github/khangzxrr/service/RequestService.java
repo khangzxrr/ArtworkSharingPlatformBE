@@ -17,4 +17,6 @@ public interface RequestService {
     RequestDTO update(Long requestId, UpdateRequestDTO updateRequestDTO);
     void delete(Long id);
     Optional<Request> getRequestByIdAndBelongToCurrentUser(long id);
+
+    void chooseRequestBid(Long requestId, Long requestBidId);
 }

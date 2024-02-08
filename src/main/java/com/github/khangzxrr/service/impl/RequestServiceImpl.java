@@ -1,7 +1,9 @@
 package com.github.khangzxrr.service.impl;
 
 import com.github.khangzxrr.domain.Request;
+import com.github.khangzxrr.domain.RequestBid;
 import com.github.khangzxrr.domain.User;
+import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.repository.RequestRepository;
 import com.github.khangzxrr.service.RequestService;
@@ -12,6 +14,7 @@ import com.github.khangzxrr.service.dto.UpdateRequestDTO;
 import com.github.khangzxrr.service.mapper.RequestBidMapper;
 import com.github.khangzxrr.service.mapper.RequestMapper;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
+import com.github.khangzxrr.web.rest.errors.RequestBidNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestIsNotOnCorrectState;
 import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
 import java.util.Optional;
@@ -130,5 +133,34 @@ public class RequestServiceImpl implements RequestService {
         getRequestByIdAndBelongToCurrentUser(id);
 
         requestRepository.deleteById(id);
+    }
+
+    @Override
+    public void chooseRequestBid(Long requestId, Long requestBidId) {
+        Optional<Request> requestOptional = getRequestByIdAndBelongToCurrentUser(requestId);
+
+        if (!requestOptional.isPresent()) {
+            throw new RequestNotFoundException();
+        }
+
+        Request request = requestOptional.get();
+
+        if (request.getStatus() != RequestStatus.ON_BIDING) {
+            throw new RequestIsNotOnCorrectState();
+        }
+
+        RequestBid selectedBid = request.getRequestBids().stream().filter(b -> b.getId() == requestBidId).findFirst().orElse(null);
+
+        if (selectedBid == null) {
+            throw new RequestBidNotFoundException();
+        }
+
+        //select this bid
+        selectedBid.setStatus(RequestBidStatus.SELECTED_BID);
+
+        //set continue state is ON_GOING
+        request.setStatus(RequestStatus.ON_GOING);
+
+        requestRepository.save(request);
     }
 }

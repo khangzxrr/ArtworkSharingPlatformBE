@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -135,6 +134,17 @@ public class RequestResource {
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+            .build();
+    }
+
+    @PostMapping("{requestId}/request-bids/{requestBidId}/choose")
+    public ResponseEntity<Void> chooseRequestBid(
+        @PathVariable("requestId") Long requestId,
+        @PathVariable("requestBidId") Long requestBidId
+    ) {
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, requestBidId.toString()))
             .build();
     }
 }
