@@ -26,9 +26,9 @@ import tech.jhipster.web.util.ResponseUtil;
  */
 @RestController
 @RequestMapping("/api/creator/request")
-public class RequestBidResource {
+public class RequestBidResourceOfCreator {
 
-    private final Logger log = LoggerFactory.getLogger(RequestBidResource.class);
+    private final Logger log = LoggerFactory.getLogger(RequestBidResourceOfCreator.class);
 
     private static final String ENTITY_NAME = "requestBid";
 
@@ -37,7 +37,7 @@ public class RequestBidResource {
 
     private final RequestBidService requestBidService;
 
-    public RequestBidResource(RequestBidService requestBidService) {
+    public RequestBidResourceOfCreator(RequestBidService requestBidService) {
         this.requestBidService = requestBidService;
     }
 
