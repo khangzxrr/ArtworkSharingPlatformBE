@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api/audience/requests")
-public class RequestProgressPaymentResource {
+public class RequestProgressPaymentResourceOfAudience {
 
-    private final Logger log = LoggerFactory.getLogger(RequestProgressPaymentResource.class);
+    private final Logger log = LoggerFactory.getLogger(RequestProgressPaymentResourceOfAudience.class);
 
     private static final String ENTITY_NAME = "requestProgress";
 
@@ -27,7 +27,10 @@ public class RequestProgressPaymentResource {
 
     private final RequestPaymentService requestPaymentService;
 
-    public RequestProgressPaymentResource(RequestProgressService requestProgressService, RequestPaymentService requestPaymentService) {
+    public RequestProgressPaymentResourceOfAudience(
+        RequestProgressService requestProgressService,
+        RequestPaymentService requestPaymentService
+    ) {
         this.requestProgressService = requestProgressService;
         this.requestPaymentService = requestPaymentService;
     }
