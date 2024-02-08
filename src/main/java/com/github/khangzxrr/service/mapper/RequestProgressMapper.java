@@ -6,6 +6,7 @@ import com.github.khangzxrr.domain.WalletTransaction;
 import com.github.khangzxrr.service.dto.RequestDTO;
 import com.github.khangzxrr.service.dto.RequestProgressDTO;
 import com.github.khangzxrr.service.dto.WalletTransactionDTO;
+import com.github.khangzxrr.service.dto.requestProgressDto.RequestProgressPaymentDTO;
 import org.mapstruct.*;
 
 /**
@@ -13,6 +14,9 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface RequestProgressMapper extends EntityMapper<RequestProgressDTO, RequestProgress> {
+    @Mapping(target = "amount", source = "transaction.amount")
+    RequestProgressPaymentDTO toPaymentDTO(RequestProgress rp);
+
     @Mapping(target = "transaction", source = "transaction", qualifiedByName = "walletTransactionId")
     @Mapping(target = "request", source = "request", qualifiedByName = "requestId")
     RequestProgressDTO toDto(RequestProgress s);

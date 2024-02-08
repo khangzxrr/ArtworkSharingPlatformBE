@@ -11,5 +11,7 @@ public final class Constants {
     public static final String SYSTEM = "system";
     public static final String DEFAULT_LANGUAGE = "en";
 
+    public static final double FIRST_PAYMENT_PERCENT = 80;
+
     private Constants() {}
 }
