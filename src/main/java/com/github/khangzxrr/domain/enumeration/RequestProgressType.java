@@ -10,4 +10,5 @@ public enum RequestProgressType {
     REPORT_3,
     REPORT_4,
     SECOND_PAYMENT,
+    NO_ACTION_LEFT,
 }
