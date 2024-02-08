@@ -5,6 +5,7 @@ import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.dto.CreateRequestDTO;
 import com.github.khangzxrr.service.dto.RequestDTO;
 import com.github.khangzxrr.service.dto.UpdateRequestDTO;
+import com.github.khangzxrr.service.dto.requestProgressDto.RequestStepGuideDTO;
 import com.github.khangzxrr.service.mapper.RequestMapper;
 import jakarta.validation.Valid;
 import java.net.URISyntaxException;
@@ -137,11 +138,18 @@ public class RequestResource {
             .build();
     }
 
+    @GetMapping("{requestId}/current-step")
+    public ResponseEntity<RequestStepGuideDTO> getCurrentStep(@PathVariable("requestId") Long requestId) {
+        return ResponseEntity.ok().body(requestService.getCurrentStep(requestId));
+    }
+
     @PostMapping("{requestId}/request-bids/{requestBidId}/choose")
     public ResponseEntity<Void> chooseRequestBid(
         @PathVariable("requestId") Long requestId,
         @PathVariable("requestBidId") Long requestBidId
     ) {
+        requestService.chooseRequestBid(requestId, requestBidId);
+
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, requestBidId.toString()))

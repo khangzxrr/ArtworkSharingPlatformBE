@@ -4,6 +4,7 @@ import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.domain.RequestBid;
 import com.github.khangzxrr.domain.User;
 import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
+import com.github.khangzxrr.domain.enumeration.RequestProgressType;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.repository.RequestRepository;
 import com.github.khangzxrr.service.RequestService;
@@ -11,11 +12,12 @@ import com.github.khangzxrr.service.UserService;
 import com.github.khangzxrr.service.dto.CreateRequestDTO;
 import com.github.khangzxrr.service.dto.RequestDTO;
 import com.github.khangzxrr.service.dto.UpdateRequestDTO;
+import com.github.khangzxrr.service.dto.requestProgressDto.RequestStepGuideDTO;
 import com.github.khangzxrr.service.mapper.RequestBidMapper;
 import com.github.khangzxrr.service.mapper.RequestMapper;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
 import com.github.khangzxrr.web.rest.errors.RequestBidNotFoundException;
-import com.github.khangzxrr.web.rest.errors.RequestIsNotOnCorrectState;
+import com.github.khangzxrr.web.rest.errors.RequestIsNotInCorrectState;
 import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -111,7 +113,7 @@ public class RequestServiceImpl implements RequestService {
         }
 
         if (requestOptional.get().getStatus() != RequestStatus.ON_BIDING) {
-            throw new RequestIsNotOnCorrectState();
+            throw new RequestIsNotInCorrectState();
         }
 
         //workaround for coverting request-children (attachments,...)
@@ -136,7 +138,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public void chooseRequestBid(Long requestId, Long requestBidId) {
+    public void chooseRequestBid(long requestId, long requestBidId) {
         Optional<Request> requestOptional = getRequestByIdAndBelongToCurrentUser(requestId);
 
         if (!requestOptional.isPresent()) {
@@ -146,21 +148,61 @@ public class RequestServiceImpl implements RequestService {
         Request request = requestOptional.get();
 
         if (request.getStatus() != RequestStatus.ON_BIDING) {
-            throw new RequestIsNotOnCorrectState();
+            throw new RequestIsNotInCorrectState();
         }
 
-        RequestBid selectedBid = request.getRequestBids().stream().filter(b -> b.getId() == requestBidId).findFirst().orElse(null);
+        Optional<RequestBid> selectedBidOptional = request
+            .getRequestBids()
+            .stream()
+            .peek(b -> log.info("Bid id: {}", b.getId()))
+            .filter(b -> b.getId() == requestBidId)
+            .findFirst();
 
-        if (selectedBid == null) {
+        if (!selectedBidOptional.isPresent()) {
             throw new RequestBidNotFoundException();
         }
 
         //select this bid
-        selectedBid.setStatus(RequestBidStatus.SELECTED_BID);
+        selectedBidOptional.get().setStatus(RequestBidStatus.SELECTED_BID);
 
         //set continue state is ON_GOING
         request.setStatus(RequestStatus.ON_GOING);
 
         requestRepository.save(request);
+    }
+
+    @Override
+    public RequestStepGuideDTO getCurrentStep(Long requestId) {
+        Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
+
+        //not allow to get step when request is not found OR request is not belong to audience
+        if (!requestOptional.isPresent()) {
+            throw new RequestNotFoundException();
+        }
+
+        if (requestOptional.get().getStatus() != RequestStatus.ON_GOING) {
+            throw new RequestIsNotInCorrectState();
+        }
+
+        RequestProgressType currentRequestProgressType = RequestProgressType.NO_ACTION_LEFT;
+
+        RequestProgressType[] requestProgressTypes = RequestProgressType.values();
+
+        for (RequestProgressType requestProgressType : requestProgressTypes) {
+            boolean isMatchedType = requestOptional
+                .get()
+                .getRequestProgresses()
+                .parallelStream()
+                .anyMatch(rp -> rp.getType() == requestProgressType);
+
+            if (isMatchedType) continue;
+
+            //if not match with type => this type is not exist yet => this is the NEXT STEP, break the loop
+            currentRequestProgressType = requestProgressType;
+            break;
+        }
+
+        //return next request type
+        return new RequestStepGuideDTO(currentRequestProgressType, requestProgressTypes);
     }
 }

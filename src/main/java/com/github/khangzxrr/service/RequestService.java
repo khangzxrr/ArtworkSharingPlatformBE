@@ -4,6 +4,7 @@ import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.service.dto.CreateRequestDTO;
 import com.github.khangzxrr.service.dto.RequestDTO;
 import com.github.khangzxrr.service.dto.UpdateRequestDTO;
+import com.github.khangzxrr.service.dto.requestProgressDto.RequestStepGuideDTO;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,5 +19,7 @@ public interface RequestService {
     void delete(Long id);
     Optional<Request> getRequestByIdAndBelongToCurrentUser(long id);
 
-    void chooseRequestBid(Long requestId, Long requestBidId);
+    void chooseRequestBid(long requestId, long requestBidId);
+
+    RequestStepGuideDTO getCurrentStep(Long requestId);
 }
