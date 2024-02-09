@@ -1,11 +1,9 @@
 package com.github.khangzxrr.service.mapper;
 
 import com.github.khangzxrr.domain.Media;
-import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.domain.RequestAttachment;
 import com.github.khangzxrr.service.dto.MediaDTO;
 import com.github.khangzxrr.service.dto.RequestAttachmentDTO;
-import com.github.khangzxrr.service.dto.RequestDTO;
 import org.mapstruct.*;
 
 /**
