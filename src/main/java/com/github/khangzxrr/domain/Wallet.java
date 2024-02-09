@@ -1,6 +1,7 @@
 package com.github.khangzxrr.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.github.khangzxrr.web.rest.errors.WalletAmountIsNotEnoughException;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -28,7 +29,7 @@ public class Wallet implements Serializable {
     @JoinColumn(unique = true)
     private User user;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "wallet")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "wallet", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "wallet", "requestProgress", "sellingBid" }, allowSetters = true)
     private Set<WalletTransaction> transactions = new HashSet<>();
 
@@ -49,15 +50,6 @@ public class Wallet implements Serializable {
 
     public Long getAmount() {
         return this.amount;
-    }
-
-    public Wallet amount(Long amount) {
-        this.setAmount(amount);
-        return this;
-    }
-
-    public void setAmount(Long amount) {
-        this.amount = amount;
     }
 
     public User getUser() {
@@ -95,6 +87,33 @@ public class Wallet implements Serializable {
     public Wallet addTransactions(WalletTransaction walletTransaction) {
         this.transactions.add(walletTransaction);
         walletTransaction.setWallet(this);
+
+        Long currentAmount = getAmount();
+
+        switch (walletTransaction.getType()) {
+            case BUY:
+                if (currentAmount < walletTransaction.getAmount()) {
+                    throw new WalletAmountIsNotEnoughException();
+                }
+
+                currentAmount -= walletTransaction.getAmount();
+                break;
+            case DEPOSIT:
+                currentAmount += walletTransaction.getAmount();
+                break;
+            case WITHDRAWAL:
+                if (currentAmount < walletTransaction.getAmount()) {
+                    throw new WalletAmountIsNotEnoughException();
+                }
+
+                currentAmount -= walletTransaction.getAmount();
+                break;
+            default:
+                break;
+        }
+
+        setAmount(currentAmount);
+
         return this;
     }
 
@@ -130,5 +149,9 @@ public class Wallet implements Serializable {
             "id=" + getId() +
             ", amount=" + getAmount() +
             "}";
+    }
+
+    public void setAmount(Long amount) {
+        this.amount = amount;
     }
 }
