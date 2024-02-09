@@ -20,7 +20,7 @@ public class RequestProgressAttachment implements Serializable {
     private Long id;
 
     @JsonIgnoreProperties(value = { "requestProgressAttachment", "requestAttachment", "artworkAsset", "certificate" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(unique = true)
     private Media media;
 
