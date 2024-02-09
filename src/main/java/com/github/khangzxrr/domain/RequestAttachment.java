@@ -1,5 +1,6 @@
 package com.github.khangzxrr.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -25,7 +26,7 @@ public class RequestAttachment implements Serializable {
     private Media media;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "requestBids", "requestProgresses", "attachments", "user" }, allowSetters = true)
+    @JsonIgnore
     private Request request;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
