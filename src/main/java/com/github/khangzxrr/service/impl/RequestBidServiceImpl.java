@@ -17,13 +17,13 @@ import com.github.khangzxrr.web.rest.errors.NotLoggedException;
 import com.github.khangzxrr.web.rest.errors.RequestBidIsNotInValidStateException;
 import com.github.khangzxrr.web.rest.errors.RequestBidNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestIsBelongToCurrentUser;
-import com.github.khangzxrr.web.rest.errors.RequestIsNotOnCorrectState;
+import com.github.khangzxrr.web.rest.errors.RequestIsNotInCorrectState;
 import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
-import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -72,7 +72,7 @@ public class RequestBidServiceImpl implements RequestBidService {
 
         //throw exception when request is not on biding state
         if (request.getStatus() != RequestStatus.ON_BIDING) {
-            throw new RequestIsNotOnCorrectState();
+            throw new RequestIsNotInCorrectState();
         }
 
         RequestBid requestBid = requestBidMapper.toEntity(requestBidMapper.toDto(createRequestBidDTO));
@@ -138,7 +138,7 @@ public class RequestBidServiceImpl implements RequestBidService {
 
         //only able to delete bid ưhen on_biding state
         if (requestBid.getRequest().getStatus() != RequestStatus.ON_BIDING) {
-            throw new RequestIsNotOnCorrectState();
+            throw new RequestIsNotInCorrectState();
         }
 
         requestBidRepository.delete(requestBid);

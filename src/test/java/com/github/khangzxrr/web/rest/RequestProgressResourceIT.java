@@ -29,7 +29,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Integration tests for the {@link RequestProgressResource} REST controller.
+ * Integration tests for the {@link RequestProgressPaymentResourceOfAudience} REST controller.
  */
 @IntegrationTest
 @AutoConfigureMockMvc
