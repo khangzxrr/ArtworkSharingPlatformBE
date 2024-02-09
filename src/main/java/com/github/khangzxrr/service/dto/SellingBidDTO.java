@@ -1,7 +1,6 @@
 package com.github.khangzxrr.service.dto;
 
 import com.github.khangzxrr.domain.enumeration.SellingBidStatus;
-import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
