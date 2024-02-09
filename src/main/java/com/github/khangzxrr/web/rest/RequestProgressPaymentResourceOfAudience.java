@@ -1,7 +1,6 @@
 package com.github.khangzxrr.web.rest;
 
 import com.github.khangzxrr.service.RequestPaymentService;
-import com.github.khangzxrr.service.RequestProgressService;
 import com.github.khangzxrr.service.dto.requestProgressDto.RequestProgressPaymentDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,21 +17,31 @@ public class RequestProgressPaymentResourceOfAudience {
 
     private final Logger log = LoggerFactory.getLogger(RequestProgressPaymentResourceOfAudience.class);
 
-    private static final String ENTITY_NAME = "requestProgress";
-
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final RequestProgressService requestProgressService;
-
     private final RequestPaymentService requestPaymentService;
 
-    public RequestProgressPaymentResourceOfAudience(
-        RequestProgressService requestProgressService,
-        RequestPaymentService requestPaymentService
-    ) {
-        this.requestProgressService = requestProgressService;
+    public RequestProgressPaymentResourceOfAudience(RequestPaymentService requestPaymentService) {
         this.requestPaymentService = requestPaymentService;
+    }
+
+    @PostMapping("{requestId}/request-progress/first-payment")
+    public ResponseEntity<RequestProgressPaymentDTO> payFirstPayment(@PathVariable(name = "requestId") long requestId) {
+        log.debug("post first-payment of request id {}", requestId);
+
+        RequestProgressPaymentDTO requestProgressPaymentDTO = requestPaymentService.payFirstPayment(requestId);
+
+        return ResponseEntity.ok().body(requestProgressPaymentDTO);
+    }
+
+    @PostMapping("{requestId}/request-progress/second-payment")
+    public ResponseEntity<RequestProgressPaymentDTO> paySecondPayment(@PathVariable(name = "requestId") long requestId) {
+        log.debug("post second-payment of request id {}", requestId);
+
+        RequestProgressPaymentDTO requestProgressPaymentDTO = requestPaymentService.paySecondPayment(requestId);
+
+        return ResponseEntity.ok().body(requestProgressPaymentDTO);
     }
 
     @GetMapping("{requestId}/request-progresses/first-payment")

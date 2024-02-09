@@ -33,7 +33,7 @@ public class Request implements Serializable {
     @JsonIgnoreProperties(value = { "user", "request" }, allowSetters = true)
     private Set<RequestBid> requestBids = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "request")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "request", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "transaction", "request" }, allowSetters = true)
     private Set<RequestProgress> requestProgresses = new HashSet<>();
 

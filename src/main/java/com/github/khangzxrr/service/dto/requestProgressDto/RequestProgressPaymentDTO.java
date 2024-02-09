@@ -7,6 +7,7 @@ import java.io.Serializable;
 public class RequestProgressPaymentDTO implements Serializable {
 
     private long amount;
+    private String description;
     private RequestProgressType type;
     private RequestProgressStatus status;
 
@@ -38,5 +39,13 @@ public class RequestProgressPaymentDTO implements Serializable {
 
     public void setStatus(RequestProgressStatus status) {
         this.status = status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

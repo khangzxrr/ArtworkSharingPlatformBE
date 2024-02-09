@@ -14,6 +14,8 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface RequestProgressMapper extends EntityMapper<RequestProgressDTO, RequestProgress> {
+    RequestProgress toEntity(RequestProgressPaymentDTO paymentDTO);
+
     @Mapping(target = "amount", source = "transaction.amount")
     RequestProgressPaymentDTO toPaymentDTO(RequestProgress rp);
 
