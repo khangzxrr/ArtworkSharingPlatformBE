@@ -96,6 +96,8 @@ public class WalletServiceImpl implements WalletService {
             throw new NotLoggedException();
         }
 
+        log.debug("get wallet of user {} - id {}", userOptional.get().getLogin(), userOptional.get().getId());
+
         Optional<Wallet> walletOptional = walletRepository.findByUserIsCurrentUser();
 
         if (walletOptional.isPresent()) {
@@ -108,7 +110,8 @@ public class WalletServiceImpl implements WalletService {
         wallet.setAmount(0l);
         wallet.setUser(userOptional.get());
 
-        wallet = walletRepository.save(wallet);
+        //push to database immedietly, even when badRequest of other service..
+        wallet = walletRepository.saveAndFlush(wallet);
 
         return wallet;
     }
