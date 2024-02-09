@@ -48,6 +48,11 @@ describe('RequestProgress e2e test', () => {
       body: [walletTransaction],
     });
 
+    cy.intercept('GET', '/api/request-progress-attachments', {
+      statusCode: 200,
+      body: [],
+    });
+
     cy.intercept('GET', '/api/requests', {
       statusCode: 200,
       body: [],

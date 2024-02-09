@@ -7,6 +7,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A RequestProgress.
@@ -42,6 +44,10 @@ public class RequestProgress implements Serializable {
     @NotNull
     @JoinColumn(unique = true)
     private WalletTransaction transaction;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "requestProgress", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties(value = { "media", "requestProgress" }, allowSetters = true)
+    private Set<RequestProgressAttachment> attachments = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "requestBids", "requestProgresses", "attachments", "user" }, allowSetters = true)
@@ -124,6 +130,37 @@ public class RequestProgress implements Serializable {
 
     public RequestProgress transaction(WalletTransaction walletTransaction) {
         this.setTransaction(walletTransaction);
+        return this;
+    }
+
+    public Set<RequestProgressAttachment> getAttachments() {
+        return this.attachments;
+    }
+
+    public void setAttachments(Set<RequestProgressAttachment> requestProgressAttachments) {
+        if (this.attachments != null) {
+            this.attachments.forEach(i -> i.setRequestProgress(null));
+        }
+        if (requestProgressAttachments != null) {
+            requestProgressAttachments.forEach(i -> i.setRequestProgress(this));
+        }
+        this.attachments = requestProgressAttachments;
+    }
+
+    public RequestProgress attachments(Set<RequestProgressAttachment> requestProgressAttachments) {
+        this.setAttachments(requestProgressAttachments);
+        return this;
+    }
+
+    public RequestProgress addAttachments(RequestProgressAttachment requestProgressAttachment) {
+        this.attachments.add(requestProgressAttachment);
+        requestProgressAttachment.setRequestProgress(this);
+        return this;
+    }
+
+    public RequestProgress removeAttachments(RequestProgressAttachment requestProgressAttachment) {
+        this.attachments.remove(requestProgressAttachment);
+        requestProgressAttachment.setRequestProgress(null);
         return this;
     }
 

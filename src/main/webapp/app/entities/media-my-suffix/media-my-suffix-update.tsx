@@ -8,6 +8,8 @@ import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateT
 import { mapIdList } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
+import { IRequestProgressAttachmentMySuffix } from 'app/shared/model/request-progress-attachment-my-suffix.model';
+import { getEntities as getRequestProgressAttachments } from 'app/entities/request-progress-attachment-my-suffix/request-progress-attachment-my-suffix.reducer';
 import { IRequestAttachmentMySuffix } from 'app/shared/model/request-attachment-my-suffix.model';
 import { getEntities as getRequestAttachments } from 'app/entities/request-attachment-my-suffix/request-attachment-my-suffix.reducer';
 import { IArtworkAssetMySuffix } from 'app/shared/model/artwork-asset-my-suffix.model';
@@ -25,6 +27,7 @@ export const MediaMySuffixUpdate = () => {
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
 
+  const requestProgressAttachments = useAppSelector(state => state.requestProgressAttachment.entities);
   const requestAttachments = useAppSelector(state => state.requestAttachment.entities);
   const artworkAssets = useAppSelector(state => state.artworkAsset.entities);
   const certificates = useAppSelector(state => state.certificate.entities);
@@ -44,6 +47,7 @@ export const MediaMySuffixUpdate = () => {
       dispatch(getEntity(id));
     }
 
+    dispatch(getRequestProgressAttachments({}));
     dispatch(getRequestAttachments({}));
     dispatch(getArtworkAssets({}));
     dispatch(getCertificates({}));

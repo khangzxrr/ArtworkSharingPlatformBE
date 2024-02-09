@@ -16,15 +16,20 @@ enum RequestBidStatus {
 }
 
 enum RequestProgressType {
-	FIRST_PAYMENT,
+    FIRST_PAYMENT,
+    REPORT_1,
+    REPORT_2,
+    REPORT_3,
+    REPORT_4,
     SECOND_PAYMENT,
-    REPORT
+    NO_ACTION_LEFT,
 }
 
 
 enum RequestProgressStatus {
-	SUCCEED,
-    FAILED
+    PENDING,
+    SUCCEED,
+    FAILED,
 }
 
 enum ArtworkSellingType {
@@ -110,6 +115,10 @@ entity RequestAttachment {
 	id Long
 }
 
+entity RequestProgressAttachment {
+    id Long
+}
+
 entity RequestBid{
 	id Long,
     description String,
@@ -183,8 +192,10 @@ relationship OneToMany {
     Request{requestBids} to RequestBid
     Request{requestProgresses} to RequestProgress
     Request{attachments} to RequestAttachment 
-    Artwork{artworkAssets} to ArtworkAsset
     
+    RequestProgress{attachments} to RequestProgressAttachment
+
+    Artwork{artworkAssets} to ArtworkAsset
     Artwork{comments} to ArtworkComment
     Artwork{complains} to ArtworkComplain
     Artwork{likes} to ArtworkLike
@@ -202,6 +213,8 @@ relationship OneToOne {
     Certificate{media} to Media
     
     RequestAttachment{media} to Media
+
+    RequestProgressAttachment{media} to Media
     
     Artwork{artworkSelling} to ArtworkSelling
     

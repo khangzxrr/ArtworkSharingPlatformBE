@@ -14,6 +14,7 @@ import artworkSelling from 'app/entities/artwork-selling-my-suffix/artwork-selli
 import artworkComplain from 'app/entities/artwork-complain-my-suffix/artwork-complain-my-suffix.reducer';
 import sellingBid from 'app/entities/selling-bid-my-suffix/selling-bid-my-suffix.reducer';
 import requestAttachment from 'app/entities/request-attachment-my-suffix/request-attachment-my-suffix.reducer';
+import requestProgressAttachment from 'app/entities/request-progress-attachment-my-suffix/request-progress-attachment-my-suffix.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
 
 const entitiesReducers = {
@@ -33,6 +34,7 @@ const entitiesReducers = {
   artworkComplain,
   sellingBid,
   requestAttachment,
+  requestProgressAttachment,
   /* jhipster-needle-add-reducer-combine - JHipster will add reducer here */
 };
 

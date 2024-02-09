@@ -1,0 +1,26 @@
+{
+  "angularJSSuffix": "mySuffix",
+  "annotations": {
+    "changelogDate": "20240126153829"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "entityTableName": "request_progress_attachment",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "Long"
+    }
+  ],
+  "name": "RequestProgressAttachment",
+  "relationships": [
+    {
+      "otherEntityName": "media",
+      "relationshipName": "media",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

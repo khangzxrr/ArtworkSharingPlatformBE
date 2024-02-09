@@ -54,6 +54,9 @@ const EntitiesMenu = () => {
       <MenuItem icon="asterisk" to="/request-attachment-my-suffix">
         Request Attachment
       </MenuItem>
+      <MenuItem icon="asterisk" to="/request-progress-attachment-my-suffix">
+        Request Progress Attachment
+      </MenuItem>
       {/* jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here */}
     </>
   );
