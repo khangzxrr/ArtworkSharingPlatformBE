@@ -1,14 +1,26 @@
 package com.github.khangzxrr.service.impl;
 
+import com.github.khangzxrr.domain.Request;
+import com.github.khangzxrr.domain.RequestBid;
 import com.github.khangzxrr.domain.RequestProgress;
+import com.github.khangzxrr.domain.User;
+import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
+import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
 import com.github.khangzxrr.repository.RequestProgressRepository;
-import com.github.khangzxrr.service.RequestProgressService;
+import com.github.khangzxrr.repository.RequestRepository;
+import com.github.khangzxrr.service.RequestProgressReportService;
+import com.github.khangzxrr.service.UserService;
 import com.github.khangzxrr.service.dto.RequestProgressDTO;
+import com.github.khangzxrr.service.dto.requestProgressDto.CreateRequestProgressReportDTO;
 import com.github.khangzxrr.service.mapper.RequestProgressMapper;
-import java.util.LinkedList;
-import java.util.List;
+import com.github.khangzxrr.web.rest.errors.CreatorIsNotSelectedInRequest;
+import com.github.khangzxrr.web.rest.errors.NotLoggedException;
+import com.github.khangzxrr.web.rest.errors.RequestIsOwnedByUserException;
+import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
+import com.github.khangzxrr.web.rest.errors.RequestProgressReportIsExistException;
+import com.github.khangzxrr.web.rest.errors.RequestProgressTypeIsNotAReportException;
+import java.time.LocalDate;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,71 +31,88 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class RequestProgressServiceImpl implements RequestProgressService {
+public class RequestProgressServiceImpl implements RequestProgressReportService {
 
     private final Logger log = LoggerFactory.getLogger(RequestProgressServiceImpl.class);
 
-    private final RequestProgressRepository requestProgressRepository;
-
     private final RequestProgressMapper requestProgressMapper;
 
-    public RequestProgressServiceImpl(RequestProgressRepository requestProgressRepository, RequestProgressMapper requestProgressMapper) {
-        this.requestProgressRepository = requestProgressRepository;
+    private final RequestRepository requestRepository;
+
+    private final UserService userService;
+
+    public RequestProgressServiceImpl(
+        RequestProgressMapper requestProgressMapper,
+        RequestRepository requestRepository,
+        UserService userService
+    ) {
         this.requestProgressMapper = requestProgressMapper;
+        this.requestRepository = requestRepository;
+        this.userService = userService;
     }
 
-    @Override
-    public RequestProgressDTO save(RequestProgressDTO requestProgressDTO) {
-        log.debug("Request to save RequestProgress : {}", requestProgressDTO);
-        RequestProgress requestProgress = requestProgressMapper.toEntity(requestProgressDTO);
-        requestProgress = requestProgressRepository.save(requestProgress);
-        return requestProgressMapper.toDto(requestProgress);
-    }
+    private Request getRequestByIdAndCreatorBid(long requestId) {
+        Optional<User> userOptional = userService.getUserWithAuthorities();
+        if (!userOptional.isPresent()) {
+            throw new NotLoggedException();
+        }
+        User user = userOptional.get();
 
-    @Override
-    public RequestProgressDTO update(RequestProgressDTO requestProgressDTO) {
-        log.debug("Request to update RequestProgress : {}", requestProgressDTO);
-        RequestProgress requestProgress = requestProgressMapper.toEntity(requestProgressDTO);
-        requestProgress = requestProgressRepository.save(requestProgress);
-        return requestProgressMapper.toDto(requestProgress);
-    }
+        Optional<Request> requestOptional = requestRepository.findById(requestId);
 
-    @Override
-    public Optional<RequestProgressDTO> partialUpdate(RequestProgressDTO requestProgressDTO) {
-        log.debug("Request to partially update RequestProgress : {}", requestProgressDTO);
+        if (!requestOptional.isPresent()) {
+            throw new RequestNotFoundException();
+        }
 
-        return requestProgressRepository
-            .findById(requestProgressDTO.getId())
-            .map(existingRequestProgress -> {
-                requestProgressMapper.partialUpdate(existingRequestProgress, requestProgressDTO);
+        Request request = requestOptional.get();
 
-                return existingRequestProgress;
-            })
-            .map(requestProgressRepository::save)
-            .map(requestProgressMapper::toDto);
-    }
+        //validate request is MUST NOT belong to creator - audience
+        if (request.getUser().equals(user)) {
+            throw new RequestIsOwnedByUserException();
+        }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<RequestProgressDTO> findAll() {
-        log.debug("Request to get all RequestProgresses");
-        return requestProgressRepository
-            .findAll()
+        //validate creator must be selected in bid
+        Optional<RequestBid> requestBidOptional = requestOptional
+            .get()
+            .getRequestBids()
             .stream()
-            .map(requestProgressMapper::toDto)
-            .collect(Collectors.toCollection(LinkedList::new));
+            .filter(rb -> rb.getStatus() == RequestBidStatus.SELECTED_BID && rb.getUser().equals(user))
+            .findFirst();
+
+        if (!requestBidOptional.isPresent()) {
+            throw new CreatorIsNotSelectedInRequest();
+        }
+
+        return request;
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Optional<RequestProgressDTO> findOne(Long id) {
-        log.debug("Request to get RequestProgress : {}", id);
-        return requestProgressRepository.findById(id).map(requestProgressMapper::toDto);
-    }
+    public RequestProgressDTO create(long requestId, CreateRequestProgressReportDTO createRequestProgressReportDTO) {
+        //validate if this is not a report type
+        if (!createRequestProgressReportDTO.getType().toString().contains("REPORT")) {
+            throw new RequestProgressTypeIsNotAReportException();
+        }
 
-    @Override
-    public void delete(Long id) {
-        log.debug("Request to delete RequestProgress : {}", id);
-        requestProgressRepository.deleteById(id);
+        Request request = getRequestByIdAndCreatorBid(requestId);
+
+        Optional<RequestProgress> requestProgressOptional = request
+            .getRequestProgresses()
+            .stream()
+            .filter(rp -> rp.getType() == createRequestProgressReportDTO.getType())
+            .findAny();
+
+        if (requestProgressOptional.isPresent()) {
+            throw new RequestProgressReportIsExistException();
+        }
+
+        RequestProgress requestProgress = requestProgressMapper.toEntity(createRequestProgressReportDTO);
+        requestProgress.setStatus(RequestProgressStatus.PENDING);
+        requestProgress.setDate(LocalDate.now());
+
+        request.addRequestProgresses(requestProgress);
+
+        requestRepository.save(request);
+
+        return requestProgressMapper.toDto(requestProgress);
     }
 }

@@ -1,11 +1,14 @@
 package com.github.khangzxrr.service.mapper;
 
+import com.github.khangzxrr.domain.Media;
 import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.domain.RequestProgress;
+import com.github.khangzxrr.domain.RequestProgressAttachment;
 import com.github.khangzxrr.domain.WalletTransaction;
 import com.github.khangzxrr.service.dto.RequestDTO;
 import com.github.khangzxrr.service.dto.RequestProgressDTO;
 import com.github.khangzxrr.service.dto.WalletTransactionDTO;
+import com.github.khangzxrr.service.dto.requestProgressDto.CreateRequestProgressReportDTO;
 import com.github.khangzxrr.service.dto.requestProgressDto.RequestProgressPaymentDTO;
 import org.mapstruct.*;
 
@@ -15,6 +18,8 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface RequestProgressMapper extends EntityMapper<RequestProgressDTO, RequestProgress> {
     RequestProgress toEntity(RequestProgressPaymentDTO paymentDTO);
+
+    RequestProgress toEntity(CreateRequestProgressReportDTO createRequestProgressReportDTO);
 
     @Mapping(target = "amount", source = "transaction.amount")
     RequestProgressPaymentDTO toPaymentDTO(RequestProgress rp);
@@ -32,4 +37,19 @@ public interface RequestProgressMapper extends EntityMapper<RequestProgressDTO, 
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     RequestDTO toDtoRequestId(Request request);
+
+    // default String fromRequestProgressAttachment(RequestProgressAttachment requestProgressAttachment) {
+    //     return requestProgressAttachment.getMedia().getUrl();
+    // }
+
+    default RequestProgressAttachment fromStringToRequestProgressAttachment(String attachmentUrl) {
+        RequestProgressAttachment requestProgressAttachment = new RequestProgressAttachment();
+
+        Media media = new Media();
+        media.setUrl(attachmentUrl);
+
+        requestProgressAttachment.setMedia(media);
+
+        return requestProgressAttachment;
+    }
 }

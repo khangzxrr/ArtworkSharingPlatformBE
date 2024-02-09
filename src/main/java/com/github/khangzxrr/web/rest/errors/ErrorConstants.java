@@ -22,6 +22,9 @@ public final class ErrorConstants {
     public static final URI REQUEST_PROGRESS_TYPE_IS_NOT_VALID = URI.create(PROBLEM_BASE_URL + "/request-progress-type-is-not-valid");
     public static final URI REQUEST_PAYMENT_IS_ALREADY_SUCCESSED = URI.create(PROBLEM_BASE_URL + "/request-payment-is-already-successed");
     public static final URI WALLET_AMOUNT_IS_NOT_ENOUGH = URI.create(PROBLEM_BASE_URL + "/wallet-amount-is-not-enough");
+    public static final URI REQUEST_IS_OWNED_BY_USER = URI.create(PROBLEM_BASE_URL + "/request-is-owned-by-user");
+    public static final URI CREATOR_IS_NOT_SELECTED_IN_REQUEST = URI.create(PROBLEM_BASE_URL + "/creator-is-not-selected-in-request");
+    public static final URI REQUEST_PROGRESS_TYPE_NOT_A_REPORT = URI.create(PROBLEM_BASE_URL + "/request-progress-type-is-not-a-report");
 
     private ErrorConstants() {}
 }
