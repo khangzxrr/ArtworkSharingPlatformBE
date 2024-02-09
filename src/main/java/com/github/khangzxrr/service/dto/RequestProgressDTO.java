@@ -1,8 +1,8 @@
 package com.github.khangzxrr.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
 import com.github.khangzxrr.domain.enumeration.RequestProgressType;
-import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -23,8 +23,10 @@ public class RequestProgressDTO implements Serializable {
 
     private RequestProgressStatus status;
 
+    @JsonIgnore
     private WalletTransactionDTO transaction;
 
+    @JsonIgnore
     private RequestDTO request;
 
     public Long getId() {
