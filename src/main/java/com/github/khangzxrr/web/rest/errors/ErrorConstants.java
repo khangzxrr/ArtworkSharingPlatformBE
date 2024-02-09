@@ -20,6 +20,8 @@ public final class ErrorConstants {
     public static final URI REQUEST_BID_IS_NOT_FOUND = URI.create(PROBLEM_BASE_URL + "/request-bid-is-not-found");
     public static final URI REQUEST_BID_IS_NOT_IN_CORRECT_STATE = URI.create(PROBLEM_BASE_URL + "/request-bid-is-not-in-correct-state");
     public static final URI REQUEST_PROGRESS_TYPE_IS_NOT_VALID = URI.create(PROBLEM_BASE_URL + "/request-progress-type-is-not-valid");
+    public static final URI REQUEST_PAYMENT_IS_ALREADY_SUCCESSED = URI.create(PROBLEM_BASE_URL + "/request-payment-is-already-successed");
+    public static final URI WALLET_AMOUNT_IS_NOT_ENOUGH = URI.create(PROBLEM_BASE_URL + "/wallet-amount-is-not-enough");
 
     private ErrorConstants() {}
 }

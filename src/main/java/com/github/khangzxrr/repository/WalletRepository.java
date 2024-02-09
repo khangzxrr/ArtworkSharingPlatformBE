@@ -1,6 +1,7 @@
 package com.github.khangzxrr.repository;
 
 import com.github.khangzxrr.domain.Wallet;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,7 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface WalletRepository extends JpaRepository<Wallet, Long> {}
+public interface WalletRepository extends JpaRepository<Wallet, Long> {
+    @Query("select wallet from Wallet wallet where wallet.user.login = ?#{authentication.name}")
+    Optional<Wallet> findByUserIsCurrentUser();
+}

@@ -1,10 +1,13 @@
 package com.github.khangzxrr.service.impl;
 
+import com.github.khangzxrr.domain.User;
 import com.github.khangzxrr.domain.Wallet;
 import com.github.khangzxrr.repository.WalletRepository;
+import com.github.khangzxrr.service.UserService;
 import com.github.khangzxrr.service.WalletService;
 import com.github.khangzxrr.service.dto.WalletDTO;
 import com.github.khangzxrr.service.mapper.WalletMapper;
+import com.github.khangzxrr.web.rest.errors.NotLoggedException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -25,10 +28,13 @@ public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
 
+    private final UserService userService;
+
     private final WalletMapper walletMapper;
 
-    public WalletServiceImpl(WalletRepository walletRepository, WalletMapper walletMapper) {
+    public WalletServiceImpl(WalletRepository walletRepository, UserService userService, WalletMapper walletMapper) {
         this.walletRepository = walletRepository;
+        this.userService = userService;
         this.walletMapper = walletMapper;
     }
 
@@ -81,5 +87,29 @@ public class WalletServiceImpl implements WalletService {
     public void delete(Long id) {
         log.debug("Request to delete Wallet : {}", id);
         walletRepository.deleteById(id);
+    }
+
+    @Override
+    public Wallet getCurrentUserWallet() {
+        Optional<User> userOptional = userService.getUserWithAuthorities();
+        if (!userOptional.isPresent()) {
+            throw new NotLoggedException();
+        }
+
+        Optional<Wallet> walletOptional = walletRepository.findByUserIsCurrentUser();
+
+        if (walletOptional.isPresent()) {
+            return walletOptional.get();
+        }
+
+        //init new wallet if it doesnt exist
+
+        Wallet wallet = new Wallet();
+        wallet.setAmount(0l);
+        wallet.setUser(userOptional.get());
+
+        wallet = walletRepository.save(wallet);
+
+        return wallet;
     }
 }

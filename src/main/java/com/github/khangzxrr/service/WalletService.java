@@ -1,5 +1,6 @@
 package com.github.khangzxrr.service;
 
+import com.github.khangzxrr.domain.Wallet;
 import com.github.khangzxrr.service.dto.WalletDTO;
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +9,7 @@ import java.util.Optional;
  * Service Interface for managing {@link com.github.khangzxrr.domain.Wallet}.
  */
 public interface WalletService {
+    Wallet getCurrentUserWallet();
     /**
      * Save a wallet.
      *
