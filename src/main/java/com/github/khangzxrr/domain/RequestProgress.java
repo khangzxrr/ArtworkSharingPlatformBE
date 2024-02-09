@@ -40,8 +40,7 @@ public class RequestProgress implements Serializable {
     private RequestProgressStatus status;
 
     @JsonIgnoreProperties(value = { "wallet", "requestProgress", "sellingBid" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @NotNull
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(unique = true)
     private WalletTransaction transaction;
 
