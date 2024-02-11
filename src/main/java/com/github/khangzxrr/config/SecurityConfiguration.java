@@ -92,6 +92,8 @@ public class SecurityConfiguration {
                     
                     .requestMatchers(mvc.pattern("/api/audience/**")).hasAuthority(AuthoritiesConstants.USER)
                     .requestMatchers(mvc.pattern("/api/creator/**")).hasAuthority(AuthoritiesConstants.CREATOR)
+
+                    .requestMatchers(mvc.pattern("/api/guest/**")).permitAll()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(exceptions ->

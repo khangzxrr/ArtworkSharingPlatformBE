@@ -15,6 +15,9 @@ import org.springframework.data.domain.Pageable;
  * Service Interface for managing {@link com.github.khangzxrr.domain.Request}.
  */
 public interface RequestService {
+    Page<RequestDTO> getAll(Pageable pageable);
+    Optional<Request> getOne(long requestId);
+
     Page<RequestDTO> getAllOfUser(Pageable pageable);
     Optional<Request> getOneOfUser(long requestId);
 

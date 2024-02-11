@@ -272,4 +272,14 @@ public class RequestServiceImpl implements RequestService {
 
         return requestProgressDTO.getAttachments();
     }
+
+    @Override
+    public Page<RequestDTO> getAll(Pageable pageable) {
+        return requestRepository.findAll(pageable).map(requestMapper::toDto);
+    }
+
+    @Override
+    public Optional<Request> getOne(long requestId) {
+        return requestRepository.findById(requestId);
+    }
 }
