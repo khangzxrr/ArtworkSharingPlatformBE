@@ -102,7 +102,7 @@ public class RequestResource {
     public ResponseEntity<List<RequestDTO>> getAllRequests(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Requests belong to audience");
 
-        Page<RequestDTO> page = requestService.findAll(pageable);
+        Page<RequestDTO> page = requestService.getAllOfUser(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -118,7 +118,7 @@ public class RequestResource {
     @Transactional(readOnly = true)
     public ResponseEntity<RequestDTO> getRequest(@PathVariable("id") Long id) {
         log.debug("REST request to get Request : {}", id);
-        Optional<Request> request = requestService.getRequestByIdAndBelongToCurrentUser(id);
+        Optional<Request> request = requestService.getOneOfUser(id);
 
         return ResponseUtil.wrapOrNotFound(request.map(requestMapper::toDto));
     }

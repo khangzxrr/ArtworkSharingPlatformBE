@@ -67,7 +67,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Page<RequestDTO> findAll(Pageable pageable) {
+    public Page<RequestDTO> getAllOfUser(Pageable pageable) {
         log.debug("Request to get all requests of audience");
 
         return requestRepository.findByUserIsCurrentUser(pageable).map(requestMapper::toDto);
@@ -95,13 +95,13 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public Optional<Request> getRequestByIdAndBelongToCurrentUser(long id) {
+    public Optional<Request> getOneOfUser(long requestId) {
         Optional<User> user = userService.getUserWithAuthorities();
         if (!user.isPresent()) {
             return Optional.empty();
         }
 
-        Optional<Request> request = requestRepository.findById(id);
+        Optional<Request> request = requestRepository.findById(requestId);
         if (!request.isPresent()) {
             return Optional.empty();
         }
@@ -119,7 +119,7 @@ public class RequestServiceImpl implements RequestService {
     public RequestDTO update(Long requestId, UpdateRequestDTO updateRequestDTO) {
         log.debug("Request update Request: {}", updateRequestDTO);
 
-        Optional<Request> requestOptional = getRequestByIdAndBelongToCurrentUser(requestId);
+        Optional<Request> requestOptional = getOneOfUser(requestId);
 
         if (!requestOptional.isPresent()) {
             throw new RequestNotFoundException();
@@ -145,14 +145,14 @@ public class RequestServiceImpl implements RequestService {
     public void delete(Long id) {
         log.debug("Request to delete Request : {}", id);
 
-        getRequestByIdAndBelongToCurrentUser(id);
+        getOneOfUser(id);
 
         requestRepository.deleteById(id);
     }
 
     @Override
     public void chooseRequestBid(long requestId, long requestBidId) {
-        Optional<Request> requestOptional = getRequestByIdAndBelongToCurrentUser(requestId);
+        Optional<Request> requestOptional = getOneOfUser(requestId);
 
         if (!requestOptional.isPresent()) {
             throw new RequestNotFoundException();
@@ -232,7 +232,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<RequestProgressAttachmentDTO> getFinishedArtworkAttachments(long requestId) {
-        Optional<Request> requestOptional = getRequestByIdAndBelongToCurrentUser(requestId);
+        Optional<Request> requestOptional = getOneOfUser(requestId);
 
         if (!requestOptional.isPresent()) {
             throw new RequestNotFoundException();
