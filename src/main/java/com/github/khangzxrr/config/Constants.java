@@ -2,8 +2,7 @@ package com.github.khangzxrr.config;
 
 import com.github.khangzxrr.domain.enumeration.RequestProgressType;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Application constants.
@@ -18,13 +17,11 @@ public final class Constants {
 
     public static final double FIRST_PAYMENT_PERCENT = 80;
 
-    public static final Set<RequestProgressType> REQUEST_PROGRESS_REPORT_TYPES = new HashSet<>(
-        Arrays.asList(
-            RequestProgressType.REPORT_1,
-            RequestProgressType.REPORT_2,
-            RequestProgressType.REPORT_3,
-            RequestProgressType.REPORT_4
-        )
+    public static final List<RequestProgressType> REQUEST_PROGRESS_REPORT_TYPES = Arrays.asList(
+        RequestProgressType.REPORT_1,
+        RequestProgressType.REPORT_2,
+        RequestProgressType.REPORT_3,
+        RequestProgressType.REPORT_4
     );
 
     private Constants() {}
