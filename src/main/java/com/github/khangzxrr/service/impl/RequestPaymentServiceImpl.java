@@ -15,9 +15,11 @@ import com.github.khangzxrr.domain.enumeration.WalletTransactionType;
 import com.github.khangzxrr.repository.RequestRepository;
 import com.github.khangzxrr.repository.WalletRepository;
 import com.github.khangzxrr.service.RequestPaymentService;
+import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.WalletService;
 import com.github.khangzxrr.service.dto.requestProgressDto.RequestProgressPaymentDTO;
 import com.github.khangzxrr.service.mapper.RequestProgressMapper;
+import com.github.khangzxrr.web.rest.errors.NotAllRequestProgressReportFinishedException;
 import com.github.khangzxrr.web.rest.errors.PaymentIsAlreadySuccessed;
 import com.github.khangzxrr.web.rest.errors.RequestBidNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestIsNotInCorrectState;
@@ -40,16 +42,20 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
     private final WalletService walletService;
 
+    private final RequestService requestService;
+
     public RequestPaymentServiceImpl(
         RequestRepository requestRepository,
         RequestProgressMapper requestProgressMapper,
         WalletService walletService,
-        WalletRepository walletRepository
+        WalletRepository walletRepository,
+        RequestService requestService
     ) {
         this.requestRepository = requestRepository;
         this.requestProgressMapper = requestProgressMapper;
         this.walletService = walletService;
         this.walletRepository = walletRepository;
+        this.requestService = requestService;
     }
 
     private RequestProgressPaymentDTO getPaymentByType(long requestId, RequestProgressType type) {
@@ -124,10 +130,17 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         Wallet wallet = walletService.getCurrentUserWallet();
 
         RequestProgressPaymentDTO paymentDto;
+
+        //first payment doesnt need to validate report
         if (type == RequestProgressType.FIRST_PAYMENT) {
             paymentDto = getFirstPayment(requestId);
         } else if (type == RequestProgressType.SECOND_PAYMENT) {
             paymentDto = getSecondPayment(requestId);
+
+            //second payment must check all report finished first
+            if (!requestService.isAllRequestReportSuccessed(request)) {
+                throw new NotAllRequestProgressReportFinishedException();
+            }
         } else {
             throw new RequestProgressTypeIsNotValid();
         }
