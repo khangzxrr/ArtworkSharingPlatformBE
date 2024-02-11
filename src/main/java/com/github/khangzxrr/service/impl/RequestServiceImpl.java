@@ -193,9 +193,9 @@ public class RequestServiceImpl implements RequestService {
             throw new RequestNotFoundException();
         }
 
-        if (requestOptional.get().getStatus() != RequestStatus.ON_GOING) {
-            throw new RequestIsNotInCorrectState();
-        }
+        // if (requestOptional.get().getStatus() != RequestStatus.ON_GOING) {
+        //     throw new RequestIsNotInCorrectState();
+        // }
 
         RequestProgressType currentRequestProgressType = RequestProgressType.NO_ACTION_LEFT;
 
