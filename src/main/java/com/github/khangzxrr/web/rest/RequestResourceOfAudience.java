@@ -31,9 +31,9 @@ import tech.jhipster.web.util.ResponseUtil;
  */
 @RestController
 @RequestMapping("/api/audience/requests")
-public class RequestResource {
+public class RequestResourceOfAudience {
 
-    private final Logger log = LoggerFactory.getLogger(RequestResource.class);
+    private final Logger log = LoggerFactory.getLogger(RequestResourceOfAudience.class);
 
     private static final String ENTITY_NAME = "request";
 
@@ -43,7 +43,7 @@ public class RequestResource {
     private final RequestService requestService;
     private final RequestMapper requestMapper;
 
-    public RequestResource(RequestService requestService, RequestMapper requestMapper) {
+    public RequestResourceOfAudience(RequestService requestService, RequestMapper requestMapper) {
         this.requestService = requestService;
         this.requestMapper = requestMapper;
     }
