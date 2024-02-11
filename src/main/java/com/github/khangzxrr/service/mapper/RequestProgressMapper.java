@@ -26,6 +26,7 @@ public interface RequestProgressMapper extends EntityMapper<RequestProgressDTO, 
 
     @Mapping(target = "transaction", source = "transaction", qualifiedByName = "walletTransactionId")
     @Mapping(target = "request", source = "request", qualifiedByName = "requestId")
+    @Mapping(target = "attachments", source = "attachments")
     RequestProgressDTO toDto(RequestProgress s);
 
     @Named("walletTransactionId")

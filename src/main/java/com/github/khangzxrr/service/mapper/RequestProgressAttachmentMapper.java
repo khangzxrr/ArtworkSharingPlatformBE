@@ -14,7 +14,6 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface RequestProgressAttachmentMapper extends EntityMapper<RequestProgressAttachmentDTO, RequestProgressAttachment> {
     @Mapping(target = "media", source = "media", qualifiedByName = "mediaId")
-    @Mapping(target = "requestProgress", source = "requestProgress", qualifiedByName = "requestProgressId")
     RequestProgressAttachmentDTO toDto(RequestProgressAttachment s);
 
     @Named("mediaId")

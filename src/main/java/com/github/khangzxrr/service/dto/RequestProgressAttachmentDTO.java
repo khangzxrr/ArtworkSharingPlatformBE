@@ -13,8 +13,6 @@ public class RequestProgressAttachmentDTO implements Serializable {
 
     private MediaDTO media;
 
-    private RequestProgressDTO requestProgress;
-
     public Long getId() {
         return id;
     }
@@ -29,14 +27,6 @@ public class RequestProgressAttachmentDTO implements Serializable {
 
     public void setMedia(MediaDTO media) {
         this.media = media;
-    }
-
-    public RequestProgressDTO getRequestProgress() {
-        return requestProgress;
-    }
-
-    public void setRequestProgress(RequestProgressDTO requestProgress) {
-        this.requestProgress = requestProgress;
     }
 
     @Override
@@ -66,7 +56,6 @@ public class RequestProgressAttachmentDTO implements Serializable {
         return "RequestProgressAttachmentDTO{" +
             "id=" + getId() +
             ", media=" + getMedia() +
-            ", requestProgress=" + getRequestProgress() +
             "}";
     }
 }

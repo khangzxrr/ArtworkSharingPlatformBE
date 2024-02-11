@@ -4,6 +4,7 @@ import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.dto.CreateRequestDTO;
 import com.github.khangzxrr.service.dto.RequestDTO;
+import com.github.khangzxrr.service.dto.RequestProgressAttachmentDTO;
 import com.github.khangzxrr.service.dto.UpdateRequestDTO;
 import com.github.khangzxrr.service.dto.requestProgressDto.RequestStepGuideDTO;
 import com.github.khangzxrr.service.mapper.RequestMapper;
@@ -141,6 +142,11 @@ public class RequestResource {
     @GetMapping("{requestId}/current-step")
     public ResponseEntity<RequestStepGuideDTO> getCurrentStep(@PathVariable("requestId") Long requestId) {
         return ResponseEntity.ok().body(requestService.getCurrentStep(requestId));
+    }
+
+    @GetMapping("{requestId}/finished-artwork/download")
+    public ResponseEntity<List<RequestProgressAttachmentDTO>> downloadFinishedArtwork(@PathVariable("requestId") Long requestId) {
+        return ResponseEntity.ok().body(requestService.getFinishedArtworkAttachments(requestId));
     }
 
     @PostMapping("{requestId}/request-bids/{requestBidId}/choose")

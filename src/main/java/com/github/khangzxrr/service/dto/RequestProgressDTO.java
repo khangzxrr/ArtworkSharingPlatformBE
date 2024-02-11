@@ -5,6 +5,7 @@ import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
 import com.github.khangzxrr.domain.enumeration.RequestProgressType;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -28,6 +29,8 @@ public class RequestProgressDTO implements Serializable {
 
     @JsonIgnore
     private RequestDTO request;
+
+    private List<RequestProgressAttachmentDTO> attachments;
 
     public Long getId() {
         return id;
@@ -118,5 +121,13 @@ public class RequestProgressDTO implements Serializable {
             ", transaction=" + getTransaction() +
             ", request=" + getRequest() +
             "}";
+    }
+
+    public List<RequestProgressAttachmentDTO> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<RequestProgressAttachmentDTO> attachments) {
+        this.attachments = attachments;
     }
 }

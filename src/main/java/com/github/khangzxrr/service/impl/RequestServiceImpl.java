@@ -3,6 +3,7 @@ package com.github.khangzxrr.service.impl;
 import com.github.khangzxrr.config.Constants;
 import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.domain.RequestBid;
+import com.github.khangzxrr.domain.RequestProgress;
 import com.github.khangzxrr.domain.User;
 import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
 import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
@@ -13,14 +14,20 @@ import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.UserService;
 import com.github.khangzxrr.service.dto.CreateRequestDTO;
 import com.github.khangzxrr.service.dto.RequestDTO;
+import com.github.khangzxrr.service.dto.RequestProgressAttachmentDTO;
+import com.github.khangzxrr.service.dto.RequestProgressDTO;
 import com.github.khangzxrr.service.dto.UpdateRequestDTO;
 import com.github.khangzxrr.service.dto.requestProgressDto.RequestStepGuideDTO;
 import com.github.khangzxrr.service.mapper.RequestBidMapper;
 import com.github.khangzxrr.service.mapper.RequestMapper;
+import com.github.khangzxrr.service.mapper.RequestProgressMapper;
+import com.github.khangzxrr.web.rest.errors.NotAllRequestProgressReportFinishedException;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
+import com.github.khangzxrr.web.rest.errors.NotPaidSecondPaymentYetException;
 import com.github.khangzxrr.web.rest.errors.RequestBidNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestIsNotInCorrectState;
 import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,15 +51,19 @@ public class RequestServiceImpl implements RequestService {
 
     private final UserService userService;
 
+    private final RequestProgressMapper requestProgressMapper;
+
     public RequestServiceImpl(
         RequestRepository requestRepository,
         RequestMapper requestMapper,
         UserService userService,
-        RequestBidMapper requestBidMapper
+        RequestBidMapper requestBidMapper,
+        RequestProgressMapper requestProgressMapper
     ) {
         this.requestRepository = requestRepository;
         this.requestMapper = requestMapper;
         this.userService = userService;
+        this.requestProgressMapper = requestProgressMapper;
     }
 
     @Override
@@ -217,5 +228,48 @@ public class RequestServiceImpl implements RequestService {
             .count();
 
         return finishedRequestProgressReportCount == Constants.REQUEST_PROGRESS_REPORT_TYPES.size();
+    }
+
+    @Override
+    public List<RequestProgressAttachmentDTO> getFinishedArtworkAttachments(long requestId) {
+        Optional<Request> requestOptional = getRequestByIdAndBelongToCurrentUser(requestId);
+
+        if (!requestOptional.isPresent()) {
+            throw new RequestNotFoundException();
+        }
+
+        Request request = requestOptional.get();
+
+        boolean isAllReportSuccessed = isAllRequestReportSuccessed(request);
+
+        if (!isAllReportSuccessed) {
+            throw new NotAllRequestProgressReportFinishedException();
+        }
+
+        Optional<RequestProgress> secondPaymentRequestProgress = request
+            .getRequestProgresses()
+            .stream()
+            .filter(rp -> rp.getType() == RequestProgressType.SECOND_PAYMENT && rp.getStatus() == RequestProgressStatus.SUCCEED)
+            .findFirst();
+
+        if (!secondPaymentRequestProgress.isPresent()) {
+            throw new NotPaidSecondPaymentYetException();
+        }
+
+        //make sure list is not empty otherwise it will throw exception here
+        RequestProgressType lastProgressReportType = Constants.REQUEST_PROGRESS_REPORT_TYPES.get(
+            Constants.REQUEST_PROGRESS_REPORT_TYPES.size() - 1
+        );
+
+        RequestProgress lastRequestProgressReport = request
+            .getRequestProgresses()
+            .stream()
+            .filter(rp -> rp.getType() == lastProgressReportType)
+            .findFirst()
+            .get();
+
+        RequestProgressDTO requestProgressDTO = requestProgressMapper.toDto(lastRequestProgressReport);
+
+        return requestProgressDTO.getAttachments();
     }
 }
