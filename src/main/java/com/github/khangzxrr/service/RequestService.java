@@ -22,4 +22,6 @@ public interface RequestService {
     void chooseRequestBid(long requestId, long requestBidId);
 
     RequestStepGuideDTO getCurrentStep(Long requestId);
+
+    boolean isAllRequestReportSuccessed(Request request);
 }

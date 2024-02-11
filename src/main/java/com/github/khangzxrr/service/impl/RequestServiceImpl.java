@@ -1,9 +1,11 @@
 package com.github.khangzxrr.service.impl;
 
+import com.github.khangzxrr.config.Constants;
 import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.domain.RequestBid;
 import com.github.khangzxrr.domain.User;
 import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
+import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
 import com.github.khangzxrr.domain.enumeration.RequestProgressType;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.repository.RequestRepository;
@@ -204,5 +206,16 @@ public class RequestServiceImpl implements RequestService {
 
         //return next request type
         return new RequestStepGuideDTO(currentRequestProgressType, requestProgressTypes);
+    }
+
+    @Override
+    public boolean isAllRequestReportSuccessed(Request request) {
+        long finishedRequestProgressReportCount = request
+            .getRequestProgresses()
+            .stream()
+            .filter(rp -> Constants.REQUEST_PROGRESS_REPORT_TYPES.contains(rp.getType()) && rp.getStatus() == RequestProgressStatus.SUCCEED)
+            .count();
+
+        return finishedRequestProgressReportCount == Constants.REQUEST_PROGRESS_REPORT_TYPES.size();
     }
 }
