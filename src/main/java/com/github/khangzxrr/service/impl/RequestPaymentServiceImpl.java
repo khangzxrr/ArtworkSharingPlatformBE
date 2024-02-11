@@ -141,6 +141,8 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
             if (!requestService.isAllRequestReportSuccessed(request)) {
                 throw new NotAllRequestProgressReportFinishedException();
             }
+
+            request.setStatus(RequestStatus.ENDED); //end request if payment success
         } else {
             throw new RequestProgressTypeIsNotValid();
         }
