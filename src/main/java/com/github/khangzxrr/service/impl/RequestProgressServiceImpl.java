@@ -6,7 +6,7 @@ import com.github.khangzxrr.domain.RequestProgress;
 import com.github.khangzxrr.domain.User;
 import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
 import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
-import com.github.khangzxrr.repository.RequestProgressRepository;
+import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.repository.RequestRepository;
 import com.github.khangzxrr.service.RequestProgressReportService;
 import com.github.khangzxrr.service.UserService;
@@ -17,7 +17,9 @@ import com.github.khangzxrr.web.rest.errors.CreatorIsNotSelectedInRequest;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
 import com.github.khangzxrr.web.rest.errors.RequestIsOwnedByUserException;
 import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
+import com.github.khangzxrr.web.rest.errors.RequestProgressIsNotExistException;
 import com.github.khangzxrr.web.rest.errors.RequestProgressReportIsExistException;
+import com.github.khangzxrr.web.rest.errors.RequestProgressStatusNotInPendingException;
 import com.github.khangzxrr.web.rest.errors.RequestProgressTypeIsNotAReportException;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -99,7 +101,7 @@ public class RequestProgressServiceImpl implements RequestProgressReportService 
             .getRequestProgresses()
             .stream()
             .filter(rp -> rp.getType() == createRequestProgressReportDTO.getType())
-            .findAny();
+            .findFirst();
 
         if (requestProgressOptional.isPresent()) {
             throw new RequestProgressReportIsExistException();
@@ -114,5 +116,75 @@ public class RequestProgressServiceImpl implements RequestProgressReportService 
         requestRepository.save(request);
 
         return requestProgressMapper.toDto(requestProgress);
+    }
+
+    @Override
+    public void accept(long requestId, long requestProgressId) {
+        log.debug("accept state - of request id {} progress id {}", requestId, requestProgressId);
+
+        Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
+
+        if (!requestOptional.isPresent()) {
+            throw new RequestNotFoundException();
+        }
+
+        Request request = requestOptional.get();
+
+        //find by ID and MUST be REPORT type
+        Optional<RequestProgress> requestProgressOptional = request
+            .getRequestProgresses()
+            .stream()
+            .filter(rp -> rp.getId() == requestProgressId && rp.getType().toString().contains("REPORT"))
+            .findFirst();
+
+        if (!requestProgressOptional.isPresent()) {
+            throw new RequestProgressIsNotExistException();
+        }
+
+        RequestProgress requestProgress = requestProgressOptional.get();
+
+        if (requestProgress.getStatus() != RequestProgressStatus.PENDING) {
+            throw new RequestProgressStatusNotInPendingException();
+        }
+
+        requestProgress.setStatus(RequestProgressStatus.SUCCEED);
+
+        requestRepository.save(request);
+    }
+
+    @Override
+    public void reject(long requestId, long requestProgressId) {
+        log.debug("reject state - of request id {} progress id {}", requestId, requestProgressId);
+
+        Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
+
+        if (!requestOptional.isPresent()) {
+            throw new RequestNotFoundException();
+        }
+
+        Request request = requestOptional.get();
+
+        //find by ID and MUST be REPORT type
+        Optional<RequestProgress> requestProgressOptional = request
+            .getRequestProgresses()
+            .stream()
+            .filter(rp -> rp.getId() == requestProgressId && rp.getType().toString().contains("REPORT"))
+            .findFirst();
+
+        if (!requestProgressOptional.isPresent()) {
+            throw new RequestProgressIsNotExistException();
+        }
+
+        RequestProgress requestProgress = requestProgressOptional.get();
+
+        if (requestProgress.getStatus() != RequestProgressStatus.PENDING) {
+            throw new RequestProgressStatusNotInPendingException();
+        }
+
+        //failed request progress report = failed request
+        requestProgress.setStatus(RequestProgressStatus.FAILED);
+        request.setStatus(RequestStatus.FAILED);
+
+        requestRepository.save(request);
     }
 }

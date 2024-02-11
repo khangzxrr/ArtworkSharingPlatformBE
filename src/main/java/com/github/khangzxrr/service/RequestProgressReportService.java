@@ -7,5 +7,7 @@ import com.github.khangzxrr.service.dto.requestProgressDto.CreateRequestProgress
  * Service Interface for managing {@link com.github.khangzxrr.domain.RequestProgress}.
  */
 public interface RequestProgressReportService {
+    void accept(long requestId, long requestProgressId);
+    void reject(long requestId, long requestProgressId);
     RequestProgressDTO create(long requestId, CreateRequestProgressReportDTO createRequestProgressReportDTO);
 }
