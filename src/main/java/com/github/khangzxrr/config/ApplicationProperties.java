@@ -15,10 +15,38 @@ public class ApplicationProperties {
     // jhipster-needle-application-properties-property-getter
     // jhipster-needle-application-properties-property-class
 
+    private final PaypalConfiguration paypal = new PaypalConfiguration();
+
     private final ArtworkConfiguration artwork = new ArtworkConfiguration();
 
     public ArtworkConfiguration getArtworkConfiguration() {
         return artwork;
+    }
+
+    public PaypalConfiguration getPaypalConfiguration() {
+        return paypal;
+    }
+
+    public static class PaypalConfiguration {
+
+        private String clientId;
+        private String secretKey;
+
+        public String getClientId() {
+            return clientId;
+        }
+
+        public void setClientId(String clientId) {
+            this.clientId = clientId;
+        }
+
+        public String getSecretKey() {
+            return secretKey;
+        }
+
+        public void setSecretKey(String secretKey) {
+            this.secretKey = secretKey;
+        }
     }
 
     public static class ArtworkConfiguration {
