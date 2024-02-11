@@ -1,5 +1,6 @@
 package com.github.khangzxrr.service.impl;
 
+import com.github.khangzxrr.config.Constants;
 import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.domain.RequestBid;
 import com.github.khangzxrr.domain.RequestProgress;
@@ -91,7 +92,7 @@ public class RequestProgressServiceImpl implements RequestProgressReportService 
     @Override
     public RequestProgressDTO create(long requestId, CreateRequestProgressReportDTO createRequestProgressReportDTO) {
         //validate if this is not a report type
-        if (!createRequestProgressReportDTO.getType().toString().contains("REPORT")) {
+        if (!Constants.REQUEST_PROGRESS_REPORT_TYPES.contains(createRequestProgressReportDTO.getType())) {
             throw new RequestProgressTypeIsNotAReportException();
         }
 
@@ -134,7 +135,7 @@ public class RequestProgressServiceImpl implements RequestProgressReportService 
         Optional<RequestProgress> requestProgressOptional = request
             .getRequestProgresses()
             .stream()
-            .filter(rp -> rp.getId() == requestProgressId && rp.getType().toString().contains("REPORT"))
+            .filter(rp -> rp.getId() == requestProgressId && Constants.REQUEST_PROGRESS_REPORT_TYPES.contains(rp.getType()))
             .findFirst();
 
         if (!requestProgressOptional.isPresent()) {
@@ -168,7 +169,7 @@ public class RequestProgressServiceImpl implements RequestProgressReportService 
         Optional<RequestProgress> requestProgressOptional = request
             .getRequestProgresses()
             .stream()
-            .filter(rp -> rp.getId() == requestProgressId && rp.getType().toString().contains("REPORT"))
+            .filter(rp -> rp.getId() == requestProgressId && Constants.REQUEST_PROGRESS_REPORT_TYPES.contains(rp.getType()))
             .findFirst();
 
         if (!requestProgressOptional.isPresent()) {
