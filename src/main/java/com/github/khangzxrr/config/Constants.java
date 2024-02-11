@@ -15,8 +15,6 @@ public final class Constants {
     public static final String SYSTEM = "system";
     public static final String DEFAULT_LANGUAGE = "en";
 
-    public static final double FIRST_PAYMENT_PERCENT = 80;
-
     public static final List<RequestProgressType> REQUEST_PROGRESS_REPORT_TYPES = Arrays.asList(
         RequestProgressType.REPORT_1,
         RequestProgressType.REPORT_2,

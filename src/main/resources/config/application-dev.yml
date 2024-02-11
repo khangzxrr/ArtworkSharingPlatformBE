@@ -103,4 +103,12 @@ jhipster:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-# application:
+application:
+  artwork-configuration:
+    first-payment-percent: 80
+    second-payment-percent: 20
+#    gitlab:
+#        host: https://gitlab.com
+#        client-id: XXX
+#        client-secret: XXX
+#        redirect-uri: XXX
