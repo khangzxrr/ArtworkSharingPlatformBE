@@ -1,6 +1,6 @@
 package com.github.khangzxrr.service.impl;
 
-import com.github.khangzxrr.config.Constants;
+import com.github.khangzxrr.config.ApplicationProperties;
 import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.domain.RequestBid;
 import com.github.khangzxrr.domain.RequestProgress;
@@ -44,18 +44,22 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
     private final RequestService requestService;
 
+    private final ApplicationProperties applicationProperties;
+
     public RequestPaymentServiceImpl(
         RequestRepository requestRepository,
         RequestProgressMapper requestProgressMapper,
         WalletService walletService,
         WalletRepository walletRepository,
-        RequestService requestService
+        RequestService requestService,
+        ApplicationProperties applicationProperties
     ) {
         this.requestRepository = requestRepository;
         this.requestProgressMapper = requestProgressMapper;
         this.walletService = walletService;
         this.walletRepository = walletRepository;
         this.requestService = requestService;
+        this.applicationProperties = applicationProperties;
     }
 
     private RequestProgressPaymentDTO getPaymentByType(long requestId, RequestProgressType type) {
@@ -100,13 +104,16 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         switch (type) {
             case FIRST_PAYMENT:
                 long firstPaymentAmount = (long) Math.ceil(
-                    (requestBidOptional.get().getPrice() * Constants.FIRST_PAYMENT_PERCENT) / (double) 100
+                    (requestBidOptional.get().getPrice() * applicationProperties.getArtworkConfiguration().getFirstPaymentPercent()) /
+                    (double) 100
                 );
                 requestProgressPaymentDTO = new RequestProgressPaymentDTO(firstPaymentAmount, type, RequestProgressStatus.PENDING);
                 break;
             case SECOND_PAYMENT:
-                double remainPercent = 100 - Constants.FIRST_PAYMENT_PERCENT;
-                long secondPaymentAmount = (long) Math.ceil((requestBidOptional.get().getPrice() * remainPercent) / (double) 100);
+                long secondPaymentAmount = (long) Math.ceil(
+                    (requestBidOptional.get().getPrice() * applicationProperties.getArtworkConfiguration().getSecondPaymentPercent()) /
+                    (double) 100
+                );
 
                 requestProgressPaymentDTO = new RequestProgressPaymentDTO(secondPaymentAmount, type, RequestProgressStatus.PENDING);
                 break;
