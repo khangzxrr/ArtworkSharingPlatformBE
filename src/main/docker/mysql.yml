@@ -12,6 +12,7 @@ services:
       - PMA_PORT=3306
   mysql:
     image: mysql:8.2.0
+    restart: always
     volumes:
       - ./config/mysql:/etc/mysql/conf.d
     #   - ~/volumes/jhipster/artworkSharingPlatformJhipter/mysql/:/var/lib/mysql/

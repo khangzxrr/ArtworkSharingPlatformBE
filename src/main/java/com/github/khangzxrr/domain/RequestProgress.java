@@ -13,7 +13,7 @@ import java.util.Set;
  * A RequestProgress.
  */
 @Entity
-@Table(name = "request_progress")
+@Table(name = "request_progress", uniqueConstraints = @UniqueConstraint(columnNames = { "request_id", "type" }))
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class RequestProgress implements Serializable {
 

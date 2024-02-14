@@ -94,6 +94,10 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/api/creator/**")).hasAuthority(AuthoritiesConstants.CREATOR)
 
                     .requestMatchers(mvc.pattern("/api/guest/**")).permitAll()
+
+                    .requestMatchers(mvc.pattern("/api/wallets/**")).authenticated()
+                    
+                    .requestMatchers(mvc.pattern("/api/paypal/**")).permitAll()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(exceptions ->
