@@ -9,3 +9,7 @@ jhipster jdl artwork.jh
 # Generate changelog from entity
 
 ./gradlew liquibaseDiffChangelog -PrunList=diffLog
+
+# Ngrok test webhook
+
+ngrok http --host-header="localhost:9000" --domain=notably-cosmic-snake.ngrok-free.app 9000

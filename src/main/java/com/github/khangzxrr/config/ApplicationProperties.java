@@ -31,6 +31,7 @@ public class ApplicationProperties {
 
         private String clientId;
         private String secretKey;
+        private String verifyUrl;
 
         public String getClientId() {
             return clientId;
@@ -46,6 +47,14 @@ public class ApplicationProperties {
 
         public void setSecretKey(String secretKey) {
             this.secretKey = secretKey;
+        }
+
+        public String getVerifyUrl() {
+            return verifyUrl;
+        }
+
+        public void setVerifyUrl(String verifyUrl) {
+            this.verifyUrl = verifyUrl;
         }
     }
 
