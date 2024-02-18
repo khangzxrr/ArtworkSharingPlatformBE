@@ -45,6 +45,7 @@ enum ArtworkSellingStatus {
 
 enum ComplainStatus {
 	POSTED,
+    ACCEPTED,
     HIDED
 }
 
@@ -62,6 +63,7 @@ enum WalletTransactionStatus {
 
 enum SellingBidStatus {
 	BIDED,
+    FAILED,
     SOLD
 }
 
