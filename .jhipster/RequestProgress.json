@@ -36,8 +36,7 @@
       "otherEntityName": "walletTransaction",
       "relationshipName": "transaction",
       "relationshipSide": "left",
-      "relationshipType": "one-to-one",
-      "relationshipValidateRules": "required"
+      "relationshipType": "one-to-one"
     },
     {
       "otherEntityName": "requestProgressAttachment",

@@ -162,7 +162,7 @@ describe('WalletTransaction e2e test', () => {
       cy.get(`[data-cy="amount"]`).type('7786.46');
       cy.get(`[data-cy="amount"]`).should('have.value', '7786.46');
 
-      cy.get(`[data-cy="type"]`).select('BUY');
+      cy.get(`[data-cy="type"]`).select('REFUND');
 
       cy.get(`[data-cy="status"]`).select('VERIFING');
 

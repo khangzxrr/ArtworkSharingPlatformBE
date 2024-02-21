@@ -60,3 +60,13 @@ src\main\java\com\github\khangzxrr\web\rest\ArtworkSellingResource.java skip
 src\main\java\com\github\khangzxrr\web\rest\ArtworkComplainResource.java skip
 src\main\java\com\github\khangzxrr\web\rest\SellingBidResource.java skip
 src\main\java\com\github\khangzxrr\service\dto\SellingBidDTO.java skip
+src\test\java\com\github\khangzxrr\domain\WalletTestSamples.java skip
+src\test\java\com\github\khangzxrr\domain\WalletTransactionTest.java skip
+src\test\java\com\github\khangzxrr\domain\WalletTransactionTestSamples.java skip
+src\test\java\com\github\khangzxrr\domain\MediaTest.java skip
+src\test\java\com\github\khangzxrr\domain\RequestProgressTest.java skip
+src\test\java\com\github\khangzxrr\domain\SellingBidTest.java skip
+src\test\java\com\github\khangzxrr\web\rest\WalletResourceIT.java skip
+src\test\java\com\github\khangzxrr\web\rest\WalletTransactionResourceIT.java skip
+src\test\java\com\github\khangzxrr\web\rest\RequestResourceIT.java skip
+src\test\java\com\github\khangzxrr\web\rest\SellingBidResourceIT.java skip

@@ -132,7 +132,6 @@ export const RequestProgressMySuffixUpdate = () => {
                 data-cy="transaction"
                 label="Transaction"
                 type="select"
-                required
               >
                 <option value="" key="0" />
                 {walletTransactions
@@ -143,7 +142,6 @@ export const RequestProgressMySuffixUpdate = () => {
                     ))
                   : null}
               </ValidatedField>
-              <FormText>This field is required.</FormText>
               <ValidatedField id="request-progress-my-suffix-request" name="request" data-cy="request" label="Request" type="select">
                 <option value="" key="0" />
                 {requests

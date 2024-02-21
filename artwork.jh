@@ -221,7 +221,7 @@ relationship OneToOne {
     
     Artwork{artworkSelling} to ArtworkSelling
     
-    RequestProgress{transaction required} to WalletTransaction
+    RequestProgress{transaction} to WalletTransaction
   	SellingBid{transaction required} to WalletTransaction
     
     Wallet to User with builtInEntity

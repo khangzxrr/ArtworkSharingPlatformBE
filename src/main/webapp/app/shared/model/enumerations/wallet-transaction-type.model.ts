@@ -4,4 +4,6 @@ export enum WalletTransactionType {
   WITHDRAWAL = 'WITHDRAWAL',
 
   BUY = 'BUY',
+
+  REFUND = 'REFUND',
 }
