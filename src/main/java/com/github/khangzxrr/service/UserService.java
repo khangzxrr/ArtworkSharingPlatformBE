@@ -9,6 +9,7 @@ import com.github.khangzxrr.security.AuthoritiesConstants;
 import com.github.khangzxrr.security.SecurityUtils;
 import com.github.khangzxrr.service.dto.AdminUserDTO;
 import com.github.khangzxrr.service.dto.UserDTO;
+import com.github.khangzxrr.web.rest.errors.UsernameAlreadyUsedException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
