@@ -7,4 +7,5 @@ public enum WalletTransactionType {
     DEPOSIT,
     WITHDRAWAL,
     BUY,
+    REFUND,
 }

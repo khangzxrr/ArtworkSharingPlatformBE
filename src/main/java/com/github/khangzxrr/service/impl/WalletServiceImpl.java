@@ -107,7 +107,7 @@ public class WalletServiceImpl implements WalletService {
         //init new wallet if it doesnt exist
 
         Wallet wallet = new Wallet();
-        wallet.setAmount(0l);
+        wallet.setAmount(0d);
         wallet.setUser(userOptional.get());
 
         //push to database immedietly, even when badRequest of other service..

@@ -199,7 +199,7 @@ public class RequestProgressServiceImpl implements RequestProgressReportService 
 
         WalletTransaction walletTransaction = new WalletTransaction();
         walletTransaction.setType(WalletTransactionType.REFUND);
-        walletTransaction.setAmount(0l);
+        walletTransaction.setAmount(0d);
         walletTransaction.setCreateAt(LocalDate.now());
 
         wallet.addTransactions(walletTransaction);
