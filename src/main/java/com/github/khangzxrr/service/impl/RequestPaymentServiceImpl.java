@@ -103,14 +103,14 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
         switch (type) {
             case FIRST_PAYMENT:
-                long firstPaymentAmount = (long) Math.ceil(
+                double firstPaymentAmount = Math.ceil(
                     (requestBidOptional.get().getPrice() * applicationProperties.getArtworkConfiguration().getFirstPaymentPercent()) /
                     (double) 100
                 );
                 requestProgressPaymentDTO = new RequestProgressPaymentDTO(firstPaymentAmount, type, RequestProgressStatus.PENDING);
                 break;
             case SECOND_PAYMENT:
-                long secondPaymentAmount = (long) Math.ceil(
+                double secondPaymentAmount = Math.ceil(
                     (requestBidOptional.get().getPrice() * applicationProperties.getArtworkConfiguration().getSecondPaymentPercent()) /
                     (double) 100
                 );
@@ -163,6 +163,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         walletTransaction.setAmount(paymentDto.getAmount());
         walletTransaction.setStatus(WalletTransactionStatus.SUCCEED);
         walletTransaction.setType(WalletTransactionType.BUY);
+        walletTransaction.createAt(LocalDate.now());
 
         //if not enough cash => throw exception inside addTransaction method
         wallet.addTransactions(walletTransaction);

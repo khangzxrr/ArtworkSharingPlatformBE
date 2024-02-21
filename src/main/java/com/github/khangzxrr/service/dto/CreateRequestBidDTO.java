@@ -11,7 +11,7 @@ public class CreateRequestBidDTO implements Serializable {
 
     @NotNull
     @Min(value = 1L, message = "The value must be larger than 1")
-    private Long price;
+    private Double price;
 
     @NotNull
     @Min(value = 1L, message = "The value must be larger than 1")
@@ -25,11 +25,11 @@ public class CreateRequestBidDTO implements Serializable {
         this.description = description;
     }
 
-    public Long getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
