@@ -159,8 +159,8 @@ describe('WalletTransaction e2e test', () => {
     });
 
     it('should create an instance of WalletTransaction', () => {
-      cy.get(`[data-cy="amount"]`).type('7786');
-      cy.get(`[data-cy="amount"]`).should('have.value', '7786');
+      cy.get(`[data-cy="amount"]`).type('7786.46');
+      cy.get(`[data-cy="amount"]`).should('have.value', '7786.46');
 
       cy.get(`[data-cy="type"]`).select('BUY');
 

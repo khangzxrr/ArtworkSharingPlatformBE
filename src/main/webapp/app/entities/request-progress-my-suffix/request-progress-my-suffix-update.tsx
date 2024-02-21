@@ -80,7 +80,7 @@ export const RequestProgressMySuffixUpdate = () => {
       ? {}
       : {
           type: 'FIRST_PAYMENT',
-          status: 'SUCCEED',
+          status: 'PENDING',
           ...requestProgressEntity,
           transaction: requestProgressEntity?.transaction?.id,
           request: requestProgressEntity?.request?.id,

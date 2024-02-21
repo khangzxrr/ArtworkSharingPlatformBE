@@ -14,7 +14,7 @@
             <column name="id" type="bigint" autoIncrement="true" startWith="1500">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="amount" type="bigint">
+            <column name="amount" type="double">
                 <constraints nullable="true" />
             </column>
             <column name="user_id" type="bigint">

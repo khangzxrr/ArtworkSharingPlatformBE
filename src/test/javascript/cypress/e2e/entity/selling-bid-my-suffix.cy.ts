@@ -29,7 +29,7 @@ describe('SellingBid e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/wallet-transactions',
-      body: { amount: 1509, type: 'BUY', status: 'VERIFING', createAt: '2024-01-25' },
+      body: { amount: 1509.6, type: 'BUY', status: 'VERIFING', createAt: '2024-01-25' },
     }).then(({ body }) => {
       walletTransaction = body;
     });
@@ -205,7 +205,7 @@ describe('SellingBid e2e test', () => {
       cy.get(`[data-cy="createAt"]`).blur();
       cy.get(`[data-cy="createAt"]`).should('have.value', '2024-01-25');
 
-      cy.get(`[data-cy="status"]`).select('SOLD');
+      cy.get(`[data-cy="status"]`).select('FAILED');
 
       cy.get(`[data-cy="transaction"]`).select(1);
 

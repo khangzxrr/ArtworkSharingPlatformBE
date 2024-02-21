@@ -27,7 +27,7 @@
                 <constraints nullable="true" />
             </column>
             <column name="transaction_id" type="bigint">
-                <constraints nullable="true" unique="true" uniqueConstraintName="ux_request_progress__transaction_id" />
+                <constraints nullable="false" unique="true" uniqueConstraintName="ux_request_progress__transaction_id" />
             </column>
             <column name="request_id" type="bigint">
                 <constraints nullable="true" />

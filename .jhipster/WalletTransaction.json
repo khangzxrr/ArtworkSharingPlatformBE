@@ -13,7 +13,7 @@
     },
     {
       "fieldName": "amount",
-      "fieldType": "Long"
+      "fieldType": "Double"
     },
     {
       "fieldName": "type",

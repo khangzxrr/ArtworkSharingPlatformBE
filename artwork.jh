@@ -22,14 +22,14 @@ enum RequestProgressType {
     REPORT_3,
     REPORT_4,
     SECOND_PAYMENT,
-    NO_ACTION_LEFT,
+    NO_ACTION_LEFT
 }
 
 
 enum RequestProgressStatus {
     PENDING,
     SUCCEED,
-    FAILED,
+    FAILED
 }
 
 enum ArtworkSellingType {
@@ -70,12 +70,12 @@ enum SellingBidStatus {
 
 entity Wallet {
 	id Long,
-    amount Long
+    amount Double
 }
 
 entity WalletTransaction {
 	id Long,
-    amount Long,
+    amount Double,
     type WalletTransactionType,
     status WalletTransactionStatus,
     createAt LocalDate,

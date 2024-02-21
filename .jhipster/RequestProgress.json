@@ -22,12 +22,12 @@
     {
       "fieldName": "type",
       "fieldType": "RequestProgressType",
-      "fieldValues": "FIRST_PAYMENT,SECOND_PAYMENT,REPORT"
+      "fieldValues": "FIRST_PAYMENT,REPORT_1,REPORT_2,REPORT_3,REPORT_4,SECOND_PAYMENT,NO_ACTION_LEFT"
     },
     {
       "fieldName": "status",
       "fieldType": "RequestProgressStatus",
-      "fieldValues": "SUCCEED,FAILED"
+      "fieldValues": "PENDING,SUCCEED,FAILED"
     }
   ],
   "name": "RequestProgress",

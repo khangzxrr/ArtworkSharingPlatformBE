@@ -23,7 +23,7 @@ public class Wallet implements Serializable {
     private Long id;
 
     @Column(name = "amount")
-    private Long amount;
+    private Double amount;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
@@ -48,8 +48,17 @@ public class Wallet implements Serializable {
         this.id = id;
     }
 
-    public Long getAmount() {
+    public Double getAmount() {
         return this.amount;
+    }
+
+    public Wallet amount(Double amount) {
+        this.setAmount(amount);
+        return this;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 
     public User getUser() {
@@ -88,7 +97,7 @@ public class Wallet implements Serializable {
         this.transactions.add(walletTransaction);
         walletTransaction.setWallet(this);
 
-        Long currentAmount = getAmount();
+        Double currentAmount = getAmount();
 
         switch (walletTransaction.getType()) {
             case BUY:
@@ -111,8 +120,6 @@ public class Wallet implements Serializable {
             default:
                 break;
         }
-
-        setAmount(currentAmount);
 
         return this;
     }
@@ -149,9 +156,5 @@ public class Wallet implements Serializable {
             "id=" + getId() +
             ", amount=" + getAmount() +
             "}";
-    }
-
-    public void setAmount(Long amount) {
-        this.amount = amount;
     }
 }

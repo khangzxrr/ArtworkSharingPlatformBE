@@ -29,7 +29,7 @@ describe('RequestProgress e2e test', () => {
     cy.authenticatedRequest({
       method: 'POST',
       url: '/api/wallet-transactions',
-      body: { amount: 30534, type: 'BUY', status: 'VERIFING', createAt: '2024-01-25' },
+      body: { amount: 30533.46, type: 'BUY', status: 'VERIFING', createAt: '2024-01-25' },
     }).then(({ body }) => {
       walletTransaction = body;
     });
@@ -210,9 +210,9 @@ describe('RequestProgress e2e test', () => {
       cy.get(`[data-cy="description"]`).type('yahoo');
       cy.get(`[data-cy="description"]`).should('have.value', 'yahoo');
 
-      cy.get(`[data-cy="type"]`).select('SECOND_PAYMENT');
+      cy.get(`[data-cy="type"]`).select('REPORT_3');
 
-      cy.get(`[data-cy="status"]`).select('FAILED');
+      cy.get(`[data-cy="status"]`).select('SUCCEED');
 
       cy.get(`[data-cy="transaction"]`).select(1);
 
