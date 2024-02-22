@@ -13,7 +13,6 @@ import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.domain.enumeration.WalletTransactionStatus;
 import com.github.khangzxrr.domain.enumeration.WalletTransactionType;
 import com.github.khangzxrr.repository.RequestRepository;
-import com.github.khangzxrr.repository.WalletRepository;
 import com.github.khangzxrr.service.RequestPaymentService;
 import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.WalletService;
@@ -36,8 +35,6 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
     private final RequestRepository requestRepository;
 
-    private final WalletRepository walletRepository;
-
     private final RequestProgressMapper requestProgressMapper;
 
     private final WalletService walletService;
@@ -50,14 +47,12 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         RequestRepository requestRepository,
         RequestProgressMapper requestProgressMapper,
         WalletService walletService,
-        WalletRepository walletRepository,
         RequestService requestService,
         ApplicationProperties applicationProperties
     ) {
         this.requestRepository = requestRepository;
         this.requestProgressMapper = requestProgressMapper;
         this.walletService = walletService;
-        this.walletRepository = walletRepository;
         this.requestService = requestService;
         this.applicationProperties = applicationProperties;
     }
@@ -111,7 +106,9 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
                 break;
             case SECOND_PAYMENT:
                 double secondPaymentAmount = Math.ceil(
-                    (requestBidOptional.get().getPrice() * applicationProperties.getArtworkConfiguration().getSecondPaymentPercent()) /
+                    (requestBidOptional.get().getPrice() *
+                        (applicationProperties.getArtworkConfiguration().getSecondPaymentPercent() +
+                            applicationProperties.getArtworkConfiguration().getServiceFeeEarnPercent())) /
                     (double) 100
                 );
 
@@ -167,7 +164,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
         //if not enough cash => throw exception inside addTransaction method
         wallet.addTransactions(walletTransaction);
-        wallet = walletRepository.save(wallet);
+        walletService.save(wallet);
 
         //convert payment dto to requestProgress entity
         RequestProgress requestProgress = requestProgressMapper.toEntity(paymentDto);
