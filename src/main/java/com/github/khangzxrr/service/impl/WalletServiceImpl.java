@@ -39,11 +39,10 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public WalletDTO save(WalletDTO walletDTO) {
-        log.debug("Request to save Wallet : {}", walletDTO);
-        Wallet wallet = walletMapper.toEntity(walletDTO);
+    public Wallet save(Wallet wallet) {
+        log.debug("Request to save Wallet : {}", wallet);
         wallet = walletRepository.save(wallet);
-        return walletMapper.toDto(wallet);
+        return wallet;
     }
 
     @Override
