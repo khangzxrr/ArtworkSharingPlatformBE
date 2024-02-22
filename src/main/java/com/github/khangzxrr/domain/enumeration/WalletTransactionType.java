@@ -8,4 +8,8 @@ public enum WalletTransactionType {
     WITHDRAWAL,
     BUY,
     REFUND,
+    REQUEST_EARN,
+    SERVICE_FEE_EARN,
+    REQUEST_FIRST_PAYMENT_TEMP,
+    WITHDRAW_REQUEST_FIRST_PAYMENT_TEMP,
 }

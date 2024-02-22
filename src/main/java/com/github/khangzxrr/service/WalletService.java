@@ -9,7 +9,11 @@ import java.util.Optional;
  * Service Interface for managing {@link com.github.khangzxrr.domain.Wallet}.
  */
 public interface WalletService {
+    Wallet getAdminWallet();
+
     Wallet getCurrentUserWallet();
+
+    Wallet getWalletByUserLogin(String login);
     /**
      * Save a wallet.
      *
