@@ -110,6 +110,9 @@ public class Wallet implements Serializable {
             case DEPOSIT:
                 currentAmount += walletTransaction.getAmount();
                 break;
+            case REFUND:
+                currentAmount += walletTransaction.getAmount();
+                break;
             case WITHDRAWAL:
                 if (currentAmount < walletTransaction.getAmount()) {
                     throw new WalletAmountIsNotEnoughException();
@@ -125,6 +128,13 @@ public class Wallet implements Serializable {
                 break;
             case REQUEST_FIRST_PAYMENT_TEMP:
                 currentAmount += walletTransaction.getAmount();
+                break;
+            case WITHDRAW_REFUND_REQUEST_FIRST_PAYMENT_TEMP:
+                if (currentAmount < walletTransaction.getAmount()) {
+                    throw new WalletAmountIsNotEnoughException();
+                }
+
+                currentAmount -= walletTransaction.getAmount();
                 break;
             case WITHDRAW_REQUEST_FIRST_PAYMENT_TEMP:
                 if (currentAmount < walletTransaction.getAmount()) {

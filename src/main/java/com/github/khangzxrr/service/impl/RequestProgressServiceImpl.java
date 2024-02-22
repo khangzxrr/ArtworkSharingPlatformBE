@@ -5,16 +5,13 @@ import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.domain.RequestBid;
 import com.github.khangzxrr.domain.RequestProgress;
 import com.github.khangzxrr.domain.User;
-import com.github.khangzxrr.domain.Wallet;
-import com.github.khangzxrr.domain.WalletTransaction;
 import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
 import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
-import com.github.khangzxrr.domain.enumeration.WalletTransactionType;
 import com.github.khangzxrr.repository.RequestRepository;
+import com.github.khangzxrr.service.RequestPaymentService;
 import com.github.khangzxrr.service.RequestProgressReportService;
 import com.github.khangzxrr.service.UserService;
-import com.github.khangzxrr.service.WalletService;
 import com.github.khangzxrr.service.dto.RequestProgressDTO;
 import com.github.khangzxrr.service.dto.requestProgressDto.CreateRequestProgressReportDTO;
 import com.github.khangzxrr.service.mapper.RequestProgressMapper;
@@ -48,18 +45,18 @@ public class RequestProgressServiceImpl implements RequestProgressReportService 
 
     private final UserService userService;
 
-    private final WalletService walletService;
+    private final RequestPaymentService requestPaymentService;
 
     public RequestProgressServiceImpl(
         RequestProgressMapper requestProgressMapper,
         RequestRepository requestRepository,
         UserService userService,
-        WalletService walletService
+        RequestPaymentService requestPaymentService
     ) {
         this.requestProgressMapper = requestProgressMapper;
         this.requestRepository = requestRepository;
         this.userService = userService;
-        this.walletService = walletService;
+        this.requestPaymentService = requestPaymentService;
     }
 
     private Request getRequestByIdAndCreatorBid(long requestId) {
@@ -191,19 +188,12 @@ public class RequestProgressServiceImpl implements RequestProgressReportService 
         }
 
         requestProgress.setStatus(RequestProgressStatus.FAILED);
-
         //failed request progress report = failed request
         request.setStatus(RequestStatus.FAILED);
 
-        Wallet wallet = walletService.getCurrentUserWallet();
-
-        WalletTransaction walletTransaction = new WalletTransaction();
-        walletTransaction.setType(WalletTransactionType.REFUND);
-        walletTransaction.setAmount(0d);
-        walletTransaction.setCreateAt(LocalDate.now());
-
-        wallet.addTransactions(walletTransaction);
-
         requestRepository.save(request);
+
+        //refund payment
+        requestPaymentService.refund(requestId);
     }
 }
