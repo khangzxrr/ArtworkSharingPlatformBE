@@ -62,6 +62,8 @@ public class ApplicationProperties {
 
         private double firstPaymentPercent;
         private double secondPaymentPercent;
+        private double refundPercent;
+        private double serviceFeeEarnPercent;
 
         public double getFirstPaymentPercent() {
             return firstPaymentPercent;
@@ -77,6 +79,22 @@ public class ApplicationProperties {
 
         public void setSecondPaymentPercent(double secondPaymentPercent) {
             this.secondPaymentPercent = secondPaymentPercent;
+        }
+
+        public double getRefundPercent() {
+            return refundPercent;
+        }
+
+        public void setRefundPercent(double refundPercent) {
+            this.refundPercent = refundPercent;
+        }
+
+        public double getServiceFeeEarnPercent() {
+            return serviceFeeEarnPercent;
+        }
+
+        public void setServiceFeeEarnPercent(double serviceFeeEarnPercent) {
+            this.serviceFeeEarnPercent = serviceFeeEarnPercent;
         }
     }
 }
