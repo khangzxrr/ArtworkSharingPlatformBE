@@ -11,7 +11,7 @@ public class WalletDTO implements Serializable {
 
     private Long id;
 
-    private Long amount;
+    private Double amount;
 
     private UserDTO user;
 
@@ -23,11 +23,11 @@ public class WalletDTO implements Serializable {
         this.id = id;
     }
 
-    public Long getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
-    public void setAmount(Long amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 

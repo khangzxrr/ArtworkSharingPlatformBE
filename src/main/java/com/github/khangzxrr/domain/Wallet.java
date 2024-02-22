@@ -23,7 +23,7 @@ public class Wallet implements Serializable {
     private Long id;
 
     @Column(name = "amount")
-    private Long amount;
+    private Double amount;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
@@ -48,8 +48,17 @@ public class Wallet implements Serializable {
         this.id = id;
     }
 
-    public Long getAmount() {
+    public Double getAmount() {
         return this.amount;
+    }
+
+    public Wallet amount(Double amount) {
+        this.setAmount(amount);
+        return this;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 
     public User getUser() {
@@ -88,7 +97,7 @@ public class Wallet implements Serializable {
         this.transactions.add(walletTransaction);
         walletTransaction.setWallet(this);
 
-        Long currentAmount = getAmount();
+        Double currentAmount = getAmount();
 
         switch (walletTransaction.getType()) {
             case BUY:
@@ -101,7 +110,33 @@ public class Wallet implements Serializable {
             case DEPOSIT:
                 currentAmount += walletTransaction.getAmount();
                 break;
+            case REFUND:
+                currentAmount += walletTransaction.getAmount();
+                break;
             case WITHDRAWAL:
+                if (currentAmount < walletTransaction.getAmount()) {
+                    throw new WalletAmountIsNotEnoughException();
+                }
+
+                currentAmount -= walletTransaction.getAmount();
+                break;
+            case REQUEST_EARN:
+                currentAmount += walletTransaction.getAmount();
+                break;
+            case SERVICE_FEE_EARN:
+                currentAmount += walletTransaction.getAmount();
+                break;
+            case REQUEST_FIRST_PAYMENT_TEMP:
+                currentAmount += walletTransaction.getAmount();
+                break;
+            case WITHDRAW_REFUND_REQUEST_FIRST_PAYMENT_TEMP:
+                if (currentAmount < walletTransaction.getAmount()) {
+                    throw new WalletAmountIsNotEnoughException();
+                }
+
+                currentAmount -= walletTransaction.getAmount();
+                break;
+            case WITHDRAW_REQUEST_FIRST_PAYMENT_TEMP:
                 if (currentAmount < walletTransaction.getAmount()) {
                     throw new WalletAmountIsNotEnoughException();
                 }
@@ -123,7 +158,8 @@ public class Wallet implements Serializable {
         return this;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and
+    // setters here
 
     @Override
     public boolean equals(Object o) {
@@ -138,7 +174,8 @@ public class Wallet implements Serializable {
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        // see
+        // https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
@@ -146,12 +183,8 @@ public class Wallet implements Serializable {
     @Override
     public String toString() {
         return "Wallet{" +
-            "id=" + getId() +
-            ", amount=" + getAmount() +
-            "}";
-    }
-
-    public void setAmount(Long amount) {
-        this.amount = amount;
+                "id=" + getId() +
+                ", amount=" + getAmount() +
+                "}";
     }
 }

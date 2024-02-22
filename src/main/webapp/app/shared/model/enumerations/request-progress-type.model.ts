@@ -1,7 +1,15 @@
 export enum RequestProgressType {
   FIRST_PAYMENT = 'FIRST_PAYMENT',
 
+  REPORT_1 = 'REPORT_1',
+
+  REPORT_2 = 'REPORT_2',
+
+  REPORT_3 = 'REPORT_3',
+
+  REPORT_4 = 'REPORT_4',
+
   SECOND_PAYMENT = 'SECOND_PAYMENT',
 
-  REPORT = 'REPORT',
+  NO_ACTION_LEFT = 'NO_ACTION_LEFT',
 }

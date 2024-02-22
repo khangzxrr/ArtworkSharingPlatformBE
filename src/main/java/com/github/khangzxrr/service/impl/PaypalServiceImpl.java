@@ -166,7 +166,7 @@ public class PaypalServiceImpl implements PaypalService {
                 }
 
                 //temping ignore after .
-                Long amount = (long) Double.parseDouble(capture.getAmount().getValue());
+                Double amount = Double.parseDouble(capture.getAmount().getValue());
 
                 WalletTransaction transaction = new WalletTransaction();
                 transaction.setAmount(amount);

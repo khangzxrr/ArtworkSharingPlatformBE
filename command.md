@@ -13,3 +13,7 @@ jhipster jdl artwork.jh
 # Ngrok test webhook
 
 ngrok http --host-header="localhost:9000" --domain=notably-cosmic-snake.ngrok-free.app 9000
+
+# Build docker image
+
+./build_docker_image.sh

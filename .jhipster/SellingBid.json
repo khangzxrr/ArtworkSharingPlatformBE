@@ -22,7 +22,7 @@
     {
       "fieldName": "status",
       "fieldType": "SellingBidStatus",
-      "fieldValues": "BIDED,SOLD"
+      "fieldValues": "BIDED,FAILED,SOLD"
     }
   ],
   "name": "SellingBid",

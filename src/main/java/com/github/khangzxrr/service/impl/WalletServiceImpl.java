@@ -7,7 +7,9 @@ import com.github.khangzxrr.service.UserService;
 import com.github.khangzxrr.service.WalletService;
 import com.github.khangzxrr.service.dto.WalletDTO;
 import com.github.khangzxrr.service.mapper.WalletMapper;
+import com.github.khangzxrr.web.rest.errors.AdminWalletNotExistException;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
+import com.github.khangzxrr.web.rest.errors.UserNotExistException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -39,11 +41,10 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public WalletDTO save(WalletDTO walletDTO) {
-        log.debug("Request to save Wallet : {}", walletDTO);
-        Wallet wallet = walletMapper.toEntity(walletDTO);
+    public Wallet save(Wallet wallet) {
+        log.debug("Request to save Wallet : {}", wallet);
         wallet = walletRepository.save(wallet);
-        return walletMapper.toDto(wallet);
+        return wallet;
     }
 
     @Override
@@ -107,8 +108,48 @@ public class WalletServiceImpl implements WalletService {
         //init new wallet if it doesnt exist
 
         Wallet wallet = new Wallet();
-        wallet.setAmount(0l);
+        wallet.setAmount(0d);
         wallet.setUser(userOptional.get());
+
+        //push to database immedietly, even when badRequest of other service..
+        wallet = walletRepository.saveAndFlush(wallet);
+
+        return wallet;
+    }
+
+    @Override
+    public Wallet getAdminWallet() {
+        Optional<Wallet> adminWalletOptional = walletRepository.findByAdmin();
+
+        if (!adminWalletOptional.isPresent()) {
+            throw new AdminWalletNotExistException();
+        }
+
+        return adminWalletOptional.get();
+    }
+
+    @Override
+    public Wallet getWalletByUserLogin(String login) {
+        Optional<User> userOptional = userService.getUserWithAuthoritiesByLogin(login);
+        if (!userOptional.isPresent()) {
+            throw new UserNotExistException();
+        }
+
+        User user = userOptional.get();
+
+        log.debug("get wallet of user {} - id {}", user.getLogin(), user.getId());
+
+        Optional<Wallet> walletOptional = walletRepository.findByUserLogin(user.getLogin());
+
+        if (walletOptional.isPresent()) {
+            return walletOptional.get();
+        }
+
+        //init new wallet if it doesnt exist
+
+        Wallet wallet = new Wallet();
+        wallet.setAmount(0d);
+        wallet.setUser(user);
 
         //push to database immedietly, even when badRequest of other service..
         wallet = walletRepository.saveAndFlush(wallet);

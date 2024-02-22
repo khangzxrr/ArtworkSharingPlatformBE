@@ -9,14 +9,18 @@ import java.util.Optional;
  * Service Interface for managing {@link com.github.khangzxrr.domain.Wallet}.
  */
 public interface WalletService {
+    Wallet getAdminWallet();
+
     Wallet getCurrentUserWallet();
+
+    Wallet getWalletByUserLogin(String login);
     /**
      * Save a wallet.
      *
-     * @param walletDTO the entity to save.
+     * @param wallet the entity to save.
      * @return the persisted entity.
      */
-    WalletDTO save(WalletDTO walletDTO);
+    Wallet save(Wallet wallet);
 
     /**
      * Updates a wallet.

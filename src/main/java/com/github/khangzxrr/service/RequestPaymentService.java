@@ -3,9 +3,16 @@ package com.github.khangzxrr.service;
 import com.github.khangzxrr.service.dto.requestProgressDto.RequestProgressPaymentDTO;
 
 public interface RequestPaymentService {
-    RequestProgressPaymentDTO getFirstPayment(Long requestId);
-    RequestProgressPaymentDTO getSecondPayment(Long reqquestId);
+    double calculateFirstPayment(double bidPrice);
+    double calculateSecondPayment(double bidPrice);
+    double calculateFeeEarn(double bidPrice);
+    double calculateRefund(double bidPrice);
 
-    RequestProgressPaymentDTO payFirstPayment(Long requestId);
-    RequestProgressPaymentDTO paySecondPayment(Long requestId);
+    void refund(long requestId);
+
+    RequestProgressPaymentDTO getFirstPayment(long requestId);
+    RequestProgressPaymentDTO getSecondPayment(long reqquestId);
+
+    RequestProgressPaymentDTO payFirstPayment(long requestId);
+    RequestProgressPaymentDTO paySecondPayment(long requestId);
 }

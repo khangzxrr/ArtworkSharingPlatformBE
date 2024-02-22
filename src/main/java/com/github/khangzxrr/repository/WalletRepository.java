@@ -8,9 +8,13 @@ import org.springframework.stereotype.Repository;
 /**
  * Spring Data JPA repository for the Wallet entity.
  */
-@SuppressWarnings("unused")
 @Repository
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
+    @Query("select wallet from Wallet wallet where wallet.user.login = 'admin'")
+    Optional<Wallet> findByAdmin();
+
     @Query("select wallet from Wallet wallet where wallet.user.login = ?#{authentication.name}")
     Optional<Wallet> findByUserIsCurrentUser();
+
+    Optional<Wallet> findByUserLogin(String login);
 }

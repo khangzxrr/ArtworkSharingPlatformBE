@@ -13,7 +13,6 @@ import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.domain.enumeration.WalletTransactionStatus;
 import com.github.khangzxrr.domain.enumeration.WalletTransactionType;
 import com.github.khangzxrr.repository.RequestRepository;
-import com.github.khangzxrr.repository.WalletRepository;
 import com.github.khangzxrr.service.RequestPaymentService;
 import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.WalletService;
@@ -27,6 +26,7 @@ import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestProgressTypeIsNotValid;
 import java.time.LocalDate;
 import java.util.Optional;
+import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RequestPaymentServiceImpl implements RequestPaymentService {
 
     private final RequestRepository requestRepository;
-
-    private final WalletRepository walletRepository;
 
     private final RequestProgressMapper requestProgressMapper;
 
@@ -50,16 +48,38 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         RequestRepository requestRepository,
         RequestProgressMapper requestProgressMapper,
         WalletService walletService,
-        WalletRepository walletRepository,
         RequestService requestService,
         ApplicationProperties applicationProperties
     ) {
         this.requestRepository = requestRepository;
         this.requestProgressMapper = requestProgressMapper;
         this.walletService = walletService;
-        this.walletRepository = walletRepository;
         this.requestService = requestService;
         this.applicationProperties = applicationProperties;
+    }
+
+    private double getServiceFeeEarnByRequestId(long requestId) {
+        Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
+
+        if (!requestOptional.isPresent()) {
+            throw new RequestNotFoundException();
+        }
+
+        Request request = requestOptional.get();
+
+        Optional<RequestBid> requestBidOptional = request
+            .getRequestBids()
+            .stream()
+            .filter(rb -> rb.getStatus() == RequestBidStatus.SELECTED_BID)
+            .findFirst();
+
+        if (!requestBidOptional.isPresent()) {
+            // this should never happen because request state = ON_GOING mean that
+            // at least ONE request bid has been selected and change state to SELECTED_BID
+            throw new RequestBidNotFoundException();
+        }
+
+        return calculateFeeEarn(requestBidOptional.get().getPrice());
     }
 
     private RequestProgressPaymentDTO getPaymentByType(long requestId, RequestProgressType type) {
@@ -81,8 +101,8 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
             .filter(rp -> rp.getType() == type)
             .findFirst();
 
-        //immediately return payment dto if requestProgress is present
-        //otherwise create a new payment DTO base on platform policy
+        // immediately return payment dto if requestProgress is present
+        // otherwise create a new payment DTO base on platform policy
         if (requestProgressOptional.isPresent()) {
             return requestProgressOptional.map(requestProgressMapper::toPaymentDTO).get();
         }
@@ -94,8 +114,8 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
             .findFirst();
 
         if (!requestBidOptional.isPresent()) {
-            //this should never happen because request state = ON_GOING mean that
-            //at least ONE request bid has been selected and change state to SELECTED_BID
+            // this should never happen because request state = ON_GOING mean that
+            // at least ONE request bid has been selected and change state to SELECTED_BID
             throw new RequestBidNotFoundException();
         }
 
@@ -103,19 +123,19 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
         switch (type) {
             case FIRST_PAYMENT:
-                long firstPaymentAmount = (long) Math.ceil(
-                    (requestBidOptional.get().getPrice() * applicationProperties.getArtworkConfiguration().getFirstPaymentPercent()) /
-                    (double) 100
-                );
-                requestProgressPaymentDTO = new RequestProgressPaymentDTO(firstPaymentAmount, type, RequestProgressStatus.PENDING);
+                double firstPaymentPrice = calculateFirstPayment(requestBidOptional.get().getPrice());
+                requestProgressPaymentDTO = new RequestProgressPaymentDTO(firstPaymentPrice, type, RequestProgressStatus.PENDING);
+
                 break;
             case SECOND_PAYMENT:
-                long secondPaymentAmount = (long) Math.ceil(
-                    (requestBidOptional.get().getPrice() * applicationProperties.getArtworkConfiguration().getSecondPaymentPercent()) /
-                    (double) 100
-                );
+                double secondPaymentPrice = calculateFirstPayment(requestBidOptional.get().getPrice());
+                double serviceFeeEarnPrice = calculateFeeEarn(requestBidOptional.get().getPrice());
+
+                double secondPaymentAmount = secondPaymentPrice + serviceFeeEarnPrice; // second payment must pay fee
+                // earn too
 
                 requestProgressPaymentDTO = new RequestProgressPaymentDTO(secondPaymentAmount, type, RequestProgressStatus.PENDING);
+
                 break;
             default:
                 throw new RequestProgressTypeIsNotValid();
@@ -124,7 +144,18 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         return requestProgressPaymentDTO;
     }
 
-    private RequestProgressPaymentDTO payPayment(long requestId, RequestProgressType type) {
+    @Override
+    public RequestProgressPaymentDTO getFirstPayment(long requestId) {
+        return getPaymentByType(requestId, RequestProgressType.FIRST_PAYMENT);
+    }
+
+    @Override
+    public RequestProgressPaymentDTO getSecondPayment(long reqquestId) {
+        return getPaymentByType(reqquestId, RequestProgressType.SECOND_PAYMENT);
+    }
+
+    @Override
+    public RequestProgressPaymentDTO payFirstPayment(long requestId) {
         Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
         if (!requestOptional.isPresent()) {
             throw new RequestNotFoundException();
@@ -132,27 +163,18 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
         Request request = requestOptional.get();
 
-        //doesnt need to check user is authenticate or not because walletService getCurrentUserWallet is already
-        //checked
+        if (request.getStatus() != RequestStatus.ON_GOING) {
+            throw new RequestIsNotInCorrectState();
+        }
+
+        // doesnt need to check user is authenticate or not because walletService
+        // getCurrentUserWallet is already
+        // checked
         Wallet wallet = walletService.getCurrentUserWallet();
 
         RequestProgressPaymentDTO paymentDto;
 
-        //first payment doesnt need to validate report
-        if (type == RequestProgressType.FIRST_PAYMENT) {
-            paymentDto = getFirstPayment(requestId);
-        } else if (type == RequestProgressType.SECOND_PAYMENT) {
-            paymentDto = getSecondPayment(requestId);
-
-            //second payment must check all report finished first
-            if (!requestService.isAllRequestReportSuccessed(request)) {
-                throw new NotAllRequestProgressReportFinishedException();
-            }
-
-            request.setStatus(RequestStatus.ENDED); //end request if payment success
-        } else {
-            throw new RequestProgressTypeIsNotValid();
-        }
+        paymentDto = getFirstPayment(requestId);
 
         if (paymentDto.getStatus() == RequestProgressStatus.SUCCEED) {
             throw new PaymentIsAlreadySuccessed();
@@ -163,12 +185,28 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         walletTransaction.setAmount(paymentDto.getAmount());
         walletTransaction.setStatus(WalletTransactionStatus.SUCCEED);
         walletTransaction.setType(WalletTransactionType.BUY);
+        walletTransaction.createAt(LocalDate.now());
 
-        //if not enough cash => throw exception inside addTransaction method
+        // if not enough cash => throw exception inside addTransaction method
         wallet.addTransactions(walletTransaction);
-        wallet = walletRepository.save(wallet);
+        walletService.save(wallet);
 
-        //convert payment dto to requestProgress entity
+        // deposit temping money to admin wallet
+        Wallet adminWallet = walletService.getAdminWallet();
+
+        WalletTransaction serviceFeeEarnTransaction = new WalletTransaction();
+        serviceFeeEarnTransaction.setAmount(walletTransaction.getAmount()); // get from user transaction is a
+        // work-round, becareful
+        serviceFeeEarnTransaction.setType(WalletTransactionType.REQUEST_FIRST_PAYMENT_TEMP);
+        serviceFeeEarnTransaction.setStatus(WalletTransactionStatus.SUCCEED);
+        serviceFeeEarnTransaction.setCreateAt(LocalDate.now());
+
+        adminWallet.addTransactions(serviceFeeEarnTransaction);
+        walletService.save(adminWallet);
+
+        // ===============
+
+        // convert payment dto to requestProgress entity
         RequestProgress requestProgress = requestProgressMapper.toEntity(paymentDto);
 
         requestProgress.setStatus(RequestProgressStatus.SUCCEED);
@@ -182,22 +220,196 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
     }
 
     @Override
-    public RequestProgressPaymentDTO getFirstPayment(Long requestId) {
-        return getPaymentByType(requestId, RequestProgressType.FIRST_PAYMENT);
+    public RequestProgressPaymentDTO paySecondPayment(long requestId) {
+        Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
+        if (!requestOptional.isPresent()) {
+            throw new RequestNotFoundException();
+        }
+
+        Request request = requestOptional.get();
+
+        if (request.getStatus() != RequestStatus.ON_GOING) {
+            throw new RequestIsNotInCorrectState();
+        }
+
+        Optional<RequestBid> requestBidOptional = request
+            .getRequestBids()
+            .stream()
+            .filter(rb -> rb.getStatus() == RequestBidStatus.SELECTED_BID)
+            .findFirst();
+
+        if (!requestBidOptional.isPresent()) {
+            // this should never happen because request state = ON_GOING mean that
+            // at least ONE request bid has been selected and change state to SELECTED_BID
+            throw new RequestBidNotFoundException();
+        }
+        RequestBid requestBid = requestBidOptional.get();
+
+        // doesnt need to check user is authenticate or not because walletService
+        // getCurrentUserWallet is already
+        // checked
+        Wallet wallet = walletService.getCurrentUserWallet();
+        Wallet adminWallet = walletService.getAdminWallet();
+        Wallet creatorWallet = walletService.getWalletByUserLogin(requestBid.getUser().getLogin());
+
+        RequestProgressPaymentDTO paymentDto;
+
+        paymentDto = getSecondPayment(requestId);
+
+        // second payment must check all report finished first
+        if (!requestService.isAllRequestReportSuccessed(request)) {
+            throw new NotAllRequestProgressReportFinishedException();
+        }
+
+        request.setStatus(RequestStatus.ENDED); // end request if payment success
+
+        if (paymentDto.getStatus() == RequestProgressStatus.SUCCEED) {
+            throw new PaymentIsAlreadySuccessed();
+        }
+
+        // withdraw money from request owner
+        WalletTransaction walletTransaction = new WalletTransaction();
+
+        walletTransaction.setAmount(paymentDto.getAmount());
+        walletTransaction.setStatus(WalletTransactionStatus.SUCCEED);
+        walletTransaction.setType(WalletTransactionType.BUY);
+        walletTransaction.createAt(LocalDate.now());
+
+        // if not enough cash => throw exception inside addTransaction method
+        wallet.addTransactions(walletTransaction);
+        walletService.save(wallet);
+
+        // ===========================================================
+
+        // deposit service fee money to admin wallet
+        // withdraw temping first payment from admin wallet
+
+        WalletTransaction serviceFeeEarnTransaction = new WalletTransaction();
+
+        serviceFeeEarnTransaction.setAmount(getServiceFeeEarnByRequestId(requestId));
+        serviceFeeEarnTransaction.setStatus(WalletTransactionStatus.SUCCEED);
+        serviceFeeEarnTransaction.setType(WalletTransactionType.SERVICE_FEE_EARN);
+        serviceFeeEarnTransaction.createAt(LocalDate.now());
+
+        WalletTransaction withdrawTempingFirstPaymentTransaction = new WalletTransaction();
+        withdrawTempingFirstPaymentTransaction.setAmount(calculateFirstPayment(requestBid.getPrice()));
+        withdrawTempingFirstPaymentTransaction.setStatus(WalletTransactionStatus.SUCCEED);
+        withdrawTempingFirstPaymentTransaction.setType(WalletTransactionType.WITHDRAW_REQUEST_FIRST_PAYMENT_TEMP);
+        withdrawTempingFirstPaymentTransaction.createAt(LocalDate.now());
+
+        adminWallet.addTransactions(serviceFeeEarnTransaction);
+        adminWallet.addTransactions(withdrawTempingFirstPaymentTransaction);
+
+        walletService.save(adminWallet);
+        // ==================================================
+
+        //deposit request's money to creator wallet
+        WalletTransaction creatorEarnTransaction = new WalletTransaction();
+        creatorEarnTransaction.setAmount(requestBid.getPrice()); //work-round to get full price
+        creatorEarnTransaction.setType(WalletTransactionType.REQUEST_EARN);
+        creatorEarnTransaction.setStatus(WalletTransactionStatus.SUCCEED);
+        creatorEarnTransaction.createAt(LocalDate.now());
+
+        creatorWallet.addTransactions(creatorEarnTransaction);
+        walletService.save(creatorWallet);
+
+        //===================================================
+
+        // convert payment dto to requestProgress entity
+        RequestProgress requestProgress = requestProgressMapper.toEntity(paymentDto);
+
+        requestProgress.setStatus(RequestProgressStatus.SUCCEED);
+        requestProgress.setTransaction(walletTransaction);
+        requestProgress.setDate(LocalDate.now());
+
+        request.addRequestProgresses(requestProgress);
+        requestRepository.save(request);
+
+        return requestProgressMapper.toPaymentDTO(requestProgress);
     }
 
     @Override
-    public RequestProgressPaymentDTO getSecondPayment(Long reqquestId) {
-        return getPaymentByType(reqquestId, RequestProgressType.SECOND_PAYMENT);
+    public double calculateFirstPayment(double bidPrice) {
+        double firstPaymentPercent = applicationProperties.getArtworkConfiguration().getFirstPaymentPercent();
+
+        return Math.ceil((bidPrice * firstPaymentPercent) / 100.0d);
     }
 
     @Override
-    public RequestProgressPaymentDTO payFirstPayment(Long requestId) {
-        return payPayment(requestId, RequestProgressType.FIRST_PAYMENT);
+    public double calculateSecondPayment(double bidPrice) {
+        double secondPaymentPercent = applicationProperties.getArtworkConfiguration().getSecondPaymentPercent();
+
+        return Math.ceil((bidPrice * secondPaymentPercent) / 100.0d);
     }
 
     @Override
-    public RequestProgressPaymentDTO paySecondPayment(Long requestId) {
-        return payPayment(requestId, RequestProgressType.SECOND_PAYMENT);
+    public double calculateFeeEarn(double bidPrice) {
+        double serviceFeeEarnPercent = applicationProperties.getArtworkConfiguration().getServiceFeeEarnPercent();
+
+        return Math.ceil((bidPrice * serviceFeeEarnPercent) / 100.0d);
+    }
+
+    @Override
+    public double calculateRefund(double bidPrice) {
+        double refundPercent = applicationProperties.getArtworkConfiguration().getRefundPercent();
+
+        return Math.ceil((bidPrice * refundPercent) / 100.0d);
+    }
+
+    @Override
+    public void refund(long requestId) {
+        Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
+        if (!requestOptional.isPresent()) {
+            throw new RequestNotFoundException();
+        }
+
+        Request request = requestOptional.get();
+
+        if (request.getStatus() != RequestStatus.ON_GOING) {
+            throw new RequestIsNotInCorrectState();
+        }
+
+        Optional<RequestBid> requestBidOptional = request
+            .getRequestBids()
+            .stream()
+            .filter(rb -> rb.getStatus() == RequestBidStatus.SELECTED_BID)
+            .findFirst();
+
+        if (!requestBidOptional.isPresent()) {
+            // this should never happen because request state = ON_GOING mean that
+            // at least ONE request bid has been selected and change state to SELECTED_BID
+            throw new RequestBidNotFoundException();
+        }
+        RequestBid requestBid = requestBidOptional.get();
+
+        // doesnt need to check user is authenticate or not because walletService
+        // getCurrentUserWallet is already
+        // checked
+        Wallet userWallet = walletService.getCurrentUserWallet();
+        Wallet adminWallet = walletService.getAdminWallet();
+
+        double refundPrice = calculateRefund(requestBid.getPrice());
+
+        //withdraw refund price of first payment temping in admin wallet
+
+        WalletTransaction withdrawRefundFromFirstPaymentTransaction = new WalletTransaction();
+        withdrawRefundFromFirstPaymentTransaction.amount(refundPrice);
+        withdrawRefundFromFirstPaymentTransaction.setType(WalletTransactionType.WITHDRAW_REFUND_REQUEST_FIRST_PAYMENT_TEMP);
+        withdrawRefundFromFirstPaymentTransaction.setStatus(WalletTransactionStatus.SUCCEED);
+        withdrawRefundFromFirstPaymentTransaction.setCreateAt(LocalDate.now());
+        adminWallet.addTransactions(withdrawRefundFromFirstPaymentTransaction);
+
+        walletService.save(adminWallet);
+        //===================================
+        // refund to request owner
+        WalletTransaction refundToRequestOwnerTransaction = new WalletTransaction();
+
+        refundToRequestOwnerTransaction.setAmount(refundPrice);
+        refundToRequestOwnerTransaction.setStatus(WalletTransactionStatus.SUCCEED);
+        refundToRequestOwnerTransaction.setType(WalletTransactionType.REFUND);
+        refundToRequestOwnerTransaction.createAt(LocalDate.now());
+        userWallet.addTransactions(refundToRequestOwnerTransaction);
+
+        walletService.save(userWallet);
     }
 }

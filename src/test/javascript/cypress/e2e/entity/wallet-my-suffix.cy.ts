@@ -159,8 +159,8 @@ describe('Wallet e2e test', () => {
     });
 
     it('should create an instance of Wallet', () => {
-      cy.get(`[data-cy="amount"]`).type('4985');
-      cy.get(`[data-cy="amount"]`).should('have.value', '4985');
+      cy.get(`[data-cy="amount"]`).type('4984.92');
+      cy.get(`[data-cy="amount"]`).should('have.value', '4984.92');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

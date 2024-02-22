@@ -9,6 +9,7 @@ import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
 import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.repository.RequestRepository;
+import com.github.khangzxrr.service.RequestPaymentService;
 import com.github.khangzxrr.service.RequestProgressReportService;
 import com.github.khangzxrr.service.UserService;
 import com.github.khangzxrr.service.dto.RequestProgressDTO;
@@ -44,14 +45,18 @@ public class RequestProgressServiceImpl implements RequestProgressReportService 
 
     private final UserService userService;
 
+    private final RequestPaymentService requestPaymentService;
+
     public RequestProgressServiceImpl(
         RequestProgressMapper requestProgressMapper,
         RequestRepository requestRepository,
-        UserService userService
+        UserService userService,
+        RequestPaymentService requestPaymentService
     ) {
         this.requestProgressMapper = requestProgressMapper;
         this.requestRepository = requestRepository;
         this.userService = userService;
+        this.requestPaymentService = requestPaymentService;
     }
 
     private Request getRequestByIdAndCreatorBid(long requestId) {
@@ -182,10 +187,13 @@ public class RequestProgressServiceImpl implements RequestProgressReportService 
             throw new RequestProgressStatusNotInPendingException();
         }
 
-        //failed request progress report = failed request
         requestProgress.setStatus(RequestProgressStatus.FAILED);
+        //failed request progress report = failed request
         request.setStatus(RequestStatus.FAILED);
 
         requestRepository.save(request);
+
+        //refund payment
+        requestPaymentService.refund(requestId);
     }
 }
