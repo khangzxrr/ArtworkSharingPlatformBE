@@ -11,6 +11,7 @@ public interface RequestBidService {
     RequestBidDTO placeBidOnRequest(Long requestId, CreateRequestBidDTO createRequestBidDTO);
     RequestBidDTO updateRequestBid(Long requestId, Long requestBidId, UpdateRequestBidDTO updateRequestDTO);
     Optional<RequestBidDTO> findOneRequestBid(Long requestId, Long requestBidId);
+    Optional<RequestBidDTO> findChoosed(Long requestId);
     Page<RequestBidDTO> findAllRequestBid(Long requestId, Pageable pageable);
     void deleteRequestBid(Long requestId, Long requestBidId);
 }

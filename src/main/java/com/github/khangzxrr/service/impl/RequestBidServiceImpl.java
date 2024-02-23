@@ -53,24 +53,24 @@ public class RequestBidServiceImpl implements RequestBidService {
 
         Optional<User> user = userService.getUserWithAuthorities();
 
-        //throw exception when user is not logged
+        // throw exception when user is not logged
         if (!user.isPresent()) {
             throw new NotLoggedException();
         }
 
-        //throw exception when request not found
+        // throw exception when request not found
         if (!requestOptional.isPresent()) {
             throw new RequestNotFoundException();
         }
 
         Request request = requestOptional.get();
 
-        //throw exception when request is owned by user
+        // throw exception when request is owned by user
         if (request.getUser() == user.get()) {
             throw new RequestIsBelongToCurrentUser();
         }
 
-        //throw exception when request is not on biding state
+        // throw exception when request is not on biding state
         if (request.getStatus() != RequestStatus.ON_BIDING) {
             throw new RequestIsNotInCorrectState();
         }
@@ -106,7 +106,7 @@ public class RequestBidServiceImpl implements RequestBidService {
     public RequestBidDTO updateRequestBid(Long requestId, Long requestBidId, UpdateRequestBidDTO updateRequestDTO) {
         RequestBid requestBid = validateRequestBidBelongToUserAndRequest(requestId, requestBidId).get();
 
-        //do not modify when not in bided state
+        // do not modify when not in bided state
         if (requestBid.getStatus() != RequestBidStatus.BIDED) {
             throw new RequestBidIsNotInValidStateException();
         }
@@ -136,11 +136,39 @@ public class RequestBidServiceImpl implements RequestBidService {
     public void deleteRequestBid(Long requestId, Long requestBidId) {
         RequestBid requestBid = validateRequestBidBelongToUserAndRequest(requestId, requestBidId).get();
 
-        //only able to delete bid ưhen on_biding state
+        // only able to delete bid ưhen on_biding state
         if (requestBid.getRequest().getStatus() != RequestStatus.ON_BIDING) {
             throw new RequestIsNotInCorrectState();
         }
 
         requestBidRepository.delete(requestBid);
+    }
+
+    @Override
+    public Optional<RequestBidDTO> findChoosed(Long requestId) {
+        Optional<User> userOptional = userService.getUserWithAuthorities();
+
+        if (!userOptional.isPresent()) {
+            throw new NotLoggedException();
+        }
+
+        Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
+
+        if (!requestOptional.isPresent()) {
+            throw new RequestNotFoundException();
+        }
+
+        Request request = requestOptional.get();
+
+        if (request.getStatus() == RequestStatus.ON_BIDING) {
+            throw new RequestIsNotInCorrectState();
+        }
+
+        return request
+            .getRequestBids()
+            .stream()
+            .filter(rb -> rb.getStatus() == RequestBidStatus.SELECTED_BID)
+            .findFirst()
+            .map(requestBidMapper::toDto);
     }
 }

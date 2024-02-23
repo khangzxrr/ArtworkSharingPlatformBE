@@ -39,7 +39,8 @@ public class RequestBidResourceOfAudience {
     /**
      * {@code GET  /request-bids} : get all the requestBids.
      *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of requestBids in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
+     *         of requestBids in body.
      */
     @GetMapping("/{requestId}/request-bids")
     public ResponseEntity<List<RequestBidDTO>> getAllRequestBids(
@@ -54,11 +55,21 @@ public class RequestBidResourceOfAudience {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @GetMapping("{requestId}/request-bids/choosed")
+    public ResponseEntity<RequestBidDTO> getChoosedRequestBid(@PathVariable("requestId") Long requestId) {
+        log.debug("REST request to get choosed request bid : {}", requestId);
+
+        Optional<RequestBidDTO> requestBidDTO = requestBidService.findChoosed(requestId);
+
+        return ResponseUtil.wrapOrNotFound(requestBidDTO);
+    }
+
     /**
      * {@code GET  /request-bids/:id} : get the "id" requestBid.
      *
      * @param id the id of the requestBidDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the requestBidDTO, or with status {@code 404 (Not Found)}.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
+     *         the requestBidDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("{requestId}/request-bids/{requestBidId}")
     public ResponseEntity<RequestBidDTO> getRequestBid(
