@@ -22,6 +22,9 @@ public class Request implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "description")
     private String description;
 
@@ -218,5 +221,17 @@ public class Request implements Serializable {
             ", description='" + getDescription() + "'" +
             ", status='" + getStatus() + "'" +
             "}";
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

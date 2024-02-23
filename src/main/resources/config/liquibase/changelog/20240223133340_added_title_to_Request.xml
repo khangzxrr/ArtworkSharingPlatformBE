@@ -1,6 +1,12 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet author="khang (generated)" id="1707839437472-1">
-        <modifyDataType columnName="email" newDataType="varchar(254)" tableName="jhi_user"/>
+    <changeSet author="khang (generated)" id="1708670038843-1">
+        <modifyDataType columnName="amount" newDataType="float(53)" tableName="wallet"/>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1708670038843-2">
+        <modifyDataType columnName="amount" newDataType="float(53)" tableName="wallet_transaction"/>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1708670038843-3">
+        <modifyDataType columnName="price" newDataType="float(53)" tableName="request_bid"/>
     </changeSet>
 </databaseChangeLog>
