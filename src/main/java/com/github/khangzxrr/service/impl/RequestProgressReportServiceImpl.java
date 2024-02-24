@@ -35,9 +35,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @Transactional
-public class RequestProgressServiceImpl implements RequestProgressReportService {
+public class RequestProgressReportServiceImpl implements RequestProgressReportService {
 
-    private final Logger log = LoggerFactory.getLogger(RequestProgressServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(RequestProgressReportServiceImpl.class);
 
     private final RequestProgressMapper requestProgressMapper;
 
@@ -47,7 +47,7 @@ public class RequestProgressServiceImpl implements RequestProgressReportService 
 
     private final RequestPaymentService requestPaymentService;
 
-    public RequestProgressServiceImpl(
+    public RequestProgressReportServiceImpl(
         RequestProgressMapper requestProgressMapper,
         RequestRepository requestRepository,
         UserService userService,
