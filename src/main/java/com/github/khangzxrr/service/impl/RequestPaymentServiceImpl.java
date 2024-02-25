@@ -26,7 +26,6 @@ import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestProgressTypeIsNotValid;
 import java.time.LocalDate;
 import java.util.Optional;
-import org.hibernate.resource.transaction.spi.TransactionStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,7 +82,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
     }
 
     private RequestProgressPaymentDTO getPaymentByType(long requestId, RequestProgressType type) {
-        Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
+        Optional<Request> requestOptional = requestRepository.findById(requestId);
 
         if (!requestOptional.isPresent()) {
             throw new RequestNotFoundException();
