@@ -29,8 +29,6 @@ public class RequestProgressResourceOfAudience {
     private final RequestProgressReportService requestProgressReportService;
     private final RequestProgressService requestProgressService;
 
-    //private final RequestProgressService requestProgre;
-
     public RequestProgressResourceOfAudience(
         RequestProgressReportService requestProgressReportService,
         RequestProgressService requestProgressService
