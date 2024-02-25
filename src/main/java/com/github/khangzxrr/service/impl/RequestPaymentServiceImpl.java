@@ -90,7 +90,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
         Request request = requestOptional.get();
 
-        if (request.getStatus() != RequestStatus.ON_GOING) {
+        if (request.getStatus() == RequestStatus.ON_BIDING) {
             throw new RequestIsNotInCorrectState();
         }
 
