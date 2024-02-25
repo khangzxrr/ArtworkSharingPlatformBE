@@ -3,6 +3,7 @@ package com.github.khangzxrr.web.rest;
 import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.dto.RequestDTO;
+import com.github.khangzxrr.service.dto.requestProgressDto.RequestStepGuideDTO;
 import com.github.khangzxrr.service.mapper.RequestMapper;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +44,8 @@ public class RequestResourceOfCreator {
      * {@code GET  /requests} : get all the requests belong to audience
      *
      * @param pageable the pagination information.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of requests in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
+     *         of requests in body.
      */
     @GetMapping("")
     public ResponseEntity<List<RequestDTO>> getAllRequests(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
@@ -54,14 +56,21 @@ public class RequestResourceOfCreator {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @GetMapping("{requestId}/current-step")
+    public ResponseEntity<RequestStepGuideDTO> getCurrentStep(@PathVariable("requestId") Long requestId) {
+        return ResponseEntity.ok().body(requestService.getCurrentStep(requestId));
+    }
+
     /**
      * {@code GET  /requests/:id} : get the "id" request.
      *
      * @param id the id of the requestDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the requestDTO, or with status {@code 404 (Not Found)}.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
+     *         the requestDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    //required transactional because mapstruct require single transaction to map lazy entities
+    // required transactional because mapstruct require single transaction to map
+    // lazy entities
     @Transactional(readOnly = true)
     public ResponseEntity<RequestDTO> getRequest(@PathVariable("id") Long id) {
         log.debug("REST request to get Request : {}", id);
