@@ -187,13 +187,13 @@ public class RequestProgressReportServiceImpl implements RequestProgressReportSe
             throw new RequestProgressStatusNotInPendingException();
         }
 
+        //refund payment
+        requestPaymentService.refund(requestId);
+
         requestProgress.setStatus(RequestProgressStatus.FAILED);
         //failed request progress report = failed request
         request.setStatus(RequestStatus.FAILED);
 
         requestRepository.save(request);
-
-        //refund payment
-        requestPaymentService.refund(requestId);
     }
 }
