@@ -127,7 +127,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
                 break;
             case SECOND_PAYMENT:
-                double secondPaymentPrice = calculateFirstPayment(requestBidOptional.get().getPrice());
+                double secondPaymentPrice = calculateSecondPayment(requestBidOptional.get().getPrice());
                 double serviceFeeEarnPrice = calculateFeeEarn(requestBidOptional.get().getPrice());
 
                 double secondPaymentAmount = secondPaymentPrice + serviceFeeEarnPrice; // second payment must pay fee
