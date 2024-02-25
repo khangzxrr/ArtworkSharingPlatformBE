@@ -186,16 +186,15 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public RequestStepGuideDTO getCurrentStep(Long requestId) {
-        Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
+        Optional<Request> requestOptional = requestRepository.findById(requestId);
 
-        //not allow to get step when request is not found OR request is not belong to audience
         if (!requestOptional.isPresent()) {
             throw new RequestNotFoundException();
         }
 
-        // if (requestOptional.get().getStatus() != RequestStatus.ON_GOING) {
-        //     throw new RequestIsNotInCorrectState();
-        // }
+        if (requestOptional.get().getStatus() != RequestStatus.ON_GOING) {
+            throw new RequestIsNotInCorrectState();
+        }
 
         RequestProgressType currentRequestProgressType = RequestProgressType.NO_ACTION_LEFT;
 
