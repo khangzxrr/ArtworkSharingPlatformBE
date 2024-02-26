@@ -2,6 +2,7 @@ package com.github.khangzxrr.service;
 
 import com.github.khangzxrr.domain.Wallet;
 import com.github.khangzxrr.service.dto.WalletDTO;
+import com.github.khangzxrr.service.dto.WalletTransactionDTO;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,8 @@ public interface WalletService {
     Wallet getAdminWallet();
 
     Wallet getCurrentUserWallet();
+
+    List<WalletTransactionDTO> getWalletTransactionsByCurrentUserWallet();
 
     Wallet getWalletByUserLogin(String login);
     /**
@@ -31,32 +34,10 @@ public interface WalletService {
     WalletDTO update(WalletDTO walletDTO);
 
     /**
-     * Partially updates a wallet.
-     *
-     * @param walletDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<WalletDTO> partialUpdate(WalletDTO walletDTO);
-
-    /**
-     * Get all the wallets.
-     *
-     * @return the list of entities.
-     */
-    List<WalletDTO> findAll();
-
-    /**
      * Get the "id" wallet.
      *
      * @param id the id of the entity.
      * @return the entity.
      */
     Optional<WalletDTO> findOne(Long id);
-
-    /**
-     * Delete the "id" wallet.
-     *
-     * @param id the id of the entity.
-     */
-    void delete(Long id);
 }
