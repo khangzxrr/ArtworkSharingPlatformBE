@@ -1,6 +1,6 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet author="khang (generated)" id="1709204604422-4">
+    <changeSet author="khang (generated)" id="1709208508336-5">
         <createTable tableName="request_chat">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="request_chatPK"/>
@@ -16,66 +16,99 @@
             <column name="request_id" type="BIGINT"/>
         </createTable>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-5">
+    <changeSet author="khang (generated)" id="1709208508336-6">
         <addColumn tableName="request">
             <column name="created_by" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-6">
+    <changeSet author="khang (generated)" id="1709208508336-7">
         <addColumn tableName="request_bid">
             <column name="created_by" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
         </addColumn>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-7">
+    <changeSet author="khang (generated)" id="1709208508336-8">
+        <addColumn tableName="request_progress">
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709208508336-9">
         <addColumn tableName="request">
             <column name="created_date" type="datetime(6)"/>
         </addColumn>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-8">
+    <changeSet author="khang (generated)" id="1709208508336-10">
         <addColumn tableName="request_bid">
             <column name="created_date" type="datetime(6)"/>
         </addColumn>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-9">
+    <changeSet author="khang (generated)" id="1709208508336-11">
+        <addColumn tableName="request_progress">
+            <column name="created_date" type="datetime(6)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709208508336-12">
         <addColumn tableName="request">
             <column name="last_modified_by" type="varchar(50)"/>
         </addColumn>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-10">
+    <changeSet author="khang (generated)" id="1709208508336-13">
         <addColumn tableName="request_bid">
             <column name="last_modified_by" type="varchar(50)"/>
         </addColumn>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-11">
+    <changeSet author="khang (generated)" id="1709208508336-14">
+        <addColumn tableName="request_progress">
+            <column name="last_modified_by" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709208508336-15">
         <addColumn tableName="request">
             <column name="last_modified_date" type="datetime(6)"/>
         </addColumn>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-12">
+    <changeSet author="khang (generated)" id="1709208508336-16">
         <addColumn tableName="request_bid">
             <column name="last_modified_date" type="datetime(6)"/>
         </addColumn>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-13">
+    <changeSet author="khang (generated)" id="1709208508336-17">
+        <addColumn tableName="request_progress">
+            <column name="last_modified_date" type="datetime(6)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709208508336-18">
+        <addColumn tableName="request">
+            <column name="title" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709208508336-19">
         <addUniqueConstraint columnNames="request_id" constraintName="UC_REQUEST_CHATREQUEST_ID_COL" tableName="request_chat"/>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-14">
+    <changeSet author="khang (generated)" id="1709208508336-20">
         <addForeignKeyConstraint baseColumnNames="request_id" baseTableName="request_chat" constraintName="FK5yq97h2a2buqw5c7997gayg2c" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="request" validate="true"/>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-15">
+    <changeSet author="khang (generated)" id="1709208508336-21">
         <addForeignKeyConstraint baseColumnNames="from_user_id" baseTableName="request_chat" constraintName="FKjiw4bpr6o8awv04po5lnw7mab" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="jhi_user" validate="true"/>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-1">
+    <changeSet author="khang (generated)" id="1709208508336-22">
+        <dropTable tableName="jhi_date_time_wrapper"/>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709208508336-1">
         <modifyDataType columnName="amount" newDataType="float(53)" tableName="wallet"/>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-2">
+    <changeSet author="khang (generated)" id="1709208508336-2">
         <modifyDataType columnName="amount" newDataType="float(53)" tableName="wallet_transaction"/>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709204604422-3">
+    <changeSet author="khang (generated)" id="1709208508336-3">
+        <modifyDataType columnName="email" newDataType="varchar(254)" tableName="jhi_user"/>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709208508336-4">
         <modifyDataType columnName="price" newDataType="float(53)" tableName="request_bid"/>
     </changeSet>
 </databaseChangeLog>

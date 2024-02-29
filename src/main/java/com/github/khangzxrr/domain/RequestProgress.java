@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
 import com.github.khangzxrr.domain.enumeration.RequestProgressType;
 import jakarta.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,9 +12,9 @@ import java.util.Set;
  * A RequestProgress.
  */
 @Entity
-@Table(name = "request_progress", uniqueConstraints = @UniqueConstraint(columnNames = { "request_id", "type" }))
+@Table(name = "request_progress")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class RequestProgress implements Serializable {
+public class RequestProgress extends AbstractAuditingEntity<Long> {
 
     private static final long serialVersionUID = 1L;
 
@@ -64,15 +63,6 @@ public class RequestProgress implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public LocalDate getDate() {
-        return this.date;
-    }
-
-    public RequestProgress date(LocalDate date) {
-        this.setDate(date);
-        return this;
     }
 
     public void setDate(LocalDate date) {
@@ -199,7 +189,6 @@ public class RequestProgress implements Serializable {
     public String toString() {
         return "RequestProgress{" +
             "id=" + getId() +
-            ", date='" + getDate() + "'" +
             ", description='" + getDescription() + "'" +
             ", type='" + getType() + "'" +
             ", status='" + getStatus() + "'" +
