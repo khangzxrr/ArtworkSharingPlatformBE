@@ -27,9 +27,9 @@ public interface RequestService {
 
     void chooseRequestBid(long requestId, long requestBidId);
 
-    RequestStepGuideDTO getCurrentStep(Long requestId);
+    boolean hasAnyReport(Request request);
 
-    boolean isAllRequestReportSuccessed(Request request);
+    RequestStepGuideDTO getCurrentStep(Long requestId);
 
     List<RequestProgressAttachmentDTO> getFinishedArtworkAttachments(long requestId);
 }
