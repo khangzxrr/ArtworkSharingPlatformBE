@@ -18,7 +18,6 @@ import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.WalletService;
 import com.github.khangzxrr.service.dto.requestProgressDto.RequestProgressPaymentDTO;
 import com.github.khangzxrr.service.mapper.RequestProgressMapper;
-import com.github.khangzxrr.web.rest.errors.NotAllRequestProgressReportFinishedException;
 import com.github.khangzxrr.web.rest.errors.PaymentIsAlreadySuccessed;
 import com.github.khangzxrr.web.rest.errors.RequestBidNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestIsNotInCorrectState;
@@ -212,6 +211,9 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         requestProgress.setTransaction(walletTransaction);
         requestProgress.setDate(LocalDate.now());
 
+        //set request to next on payment
+        request.setStatus(RequestStatus.ON_REPORTING);
+
         request.addRequestProgresses(requestProgress);
         requestRepository.save(request);
 
@@ -254,11 +256,6 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         RequestProgressPaymentDTO paymentDto;
 
         paymentDto = getSecondPayment(requestId);
-
-        // second payment must check all report finished first
-        if (!requestService.isAllRequestReportSuccessed(request)) {
-            throw new NotAllRequestProgressReportFinishedException();
-        }
 
         request.setStatus(RequestStatus.ENDED); // end request if payment success
 
