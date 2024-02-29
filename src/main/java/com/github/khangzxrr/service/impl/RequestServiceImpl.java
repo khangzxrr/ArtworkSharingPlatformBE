@@ -179,7 +179,7 @@ public class RequestServiceImpl implements RequestService {
         selectedBidOptional.get().setStatus(RequestBidStatus.SELECTED_BID);
 
         //set continue state is ON_GOING
-        request.setStatus(RequestStatus.ON_GOING);
+        request.setStatus(RequestStatus.ON_PAYING_FIRST);
 
         requestRepository.save(request);
     }
@@ -190,10 +190,6 @@ public class RequestServiceImpl implements RequestService {
 
         if (!requestOptional.isPresent()) {
             throw new RequestNotFoundException();
-        }
-
-        if (requestOptional.get().getStatus() != RequestStatus.ON_GOING) {
-            throw new RequestIsNotInCorrectState();
         }
 
         RequestProgressType currentRequestProgressType = RequestProgressType.NO_ACTION_LEFT;

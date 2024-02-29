@@ -3,7 +3,6 @@ package com.github.khangzxrr.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import jakarta.persistence.*;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +12,7 @@ import java.util.Set;
 @Entity
 @Table(name = "request")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class Request implements Serializable {
+public class Request extends AbstractAuditingEntity<Long> {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,6 +42,9 @@ public class Request implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "request", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "media", "request" }, allowSetters = true)
     private Set<RequestAttachment> attachments = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "request", cascade = CascadeType.ALL)
+    private Set<RequestChat> chats = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;

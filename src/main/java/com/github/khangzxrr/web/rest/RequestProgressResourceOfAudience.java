@@ -41,34 +41,4 @@ public class RequestProgressResourceOfAudience {
     public ResponseEntity<List<RequestProgressDTO>> getRequestProgresses(@PathVariable(name = "requestId") long requestId) {
         return ResponseEntity.ok().body(requestProgressService.findAllByRequestId(requestId));
     }
-
-    @PostMapping("{requestId}/request-progresses/{requestProgressId}/reports/reject")
-    public ResponseEntity<Void> rejectReport(
-        @PathVariable(name = "requestId") long requestId,
-        @PathVariable(name = "requestProgressId") long requestProgressId
-    ) {
-        log.info("Reject report with request id: {}", requestId);
-
-        requestProgressReportService.reject(requestId, requestProgressId);
-
-        return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, Long.toString(requestId)))
-            .build();
-    }
-
-    @PostMapping("{requestId}/request-progresses/{requestProgressId}/reports/accept")
-    public ResponseEntity<Void> acceptReport(
-        @PathVariable(name = "requestId") long requestId,
-        @PathVariable(name = "requestProgressId") long requestProgressId
-    ) {
-        log.info("Accept report with request id: {}", requestId);
-
-        requestProgressReportService.accept(requestId, requestProgressId);
-
-        return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, Long.toString(requestId)))
-            .build();
-    }
 }

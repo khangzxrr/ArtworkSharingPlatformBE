@@ -162,7 +162,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
         Request request = requestOptional.get();
 
-        if (request.getStatus() != RequestStatus.ON_GOING) {
+        if (request.getStatus() != RequestStatus.ON_PAYING_FIRST) {
             throw new RequestIsNotInCorrectState();
         }
 
@@ -227,7 +227,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
         Request request = requestOptional.get();
 
-        if (request.getStatus() != RequestStatus.ON_GOING) {
+        if (request.getStatus() != RequestStatus.ON_PAYING_SECOND) {
             throw new RequestIsNotInCorrectState();
         }
 
@@ -364,7 +364,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
         Request request = requestOptional.get();
 
-        if (request.getStatus() != RequestStatus.ON_GOING) {
+        if (request.getStatus() != RequestStatus.ON_REPORTING) {
             throw new RequestIsNotInCorrectState();
         }
 
