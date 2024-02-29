@@ -21,7 +21,7 @@ import com.github.khangzxrr.service.dto.requestProgressDto.RequestStepGuideDTO;
 import com.github.khangzxrr.service.mapper.RequestBidMapper;
 import com.github.khangzxrr.service.mapper.RequestMapper;
 import com.github.khangzxrr.service.mapper.RequestProgressMapper;
-import com.github.khangzxrr.web.rest.errors.NotAllRequestProgressReportFinishedException;
+import com.github.khangzxrr.web.rest.errors.NoRequestReportException;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
 import com.github.khangzxrr.web.rest.errors.NotPaidSecondPaymentYetException;
 import com.github.khangzxrr.web.rest.errors.RequestBidNotFoundException;
@@ -215,17 +215,6 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public boolean isAllRequestReportSuccessed(Request request) {
-        long finishedRequestProgressReportCount = request
-            .getRequestProgresses()
-            .stream()
-            .filter(rp -> Constants.REQUEST_PROGRESS_REPORT_TYPES.contains(rp.getType()) && rp.getStatus() == RequestProgressStatus.SUCCEED)
-            .count();
-
-        return finishedRequestProgressReportCount == Constants.REQUEST_PROGRESS_REPORT_TYPES.size();
-    }
-
-    @Override
     public List<RequestProgressAttachmentDTO> getFinishedArtworkAttachments(long requestId) {
         Optional<Request> requestOptional = getOneOfUser(requestId);
 
@@ -235,10 +224,8 @@ public class RequestServiceImpl implements RequestService {
 
         Request request = requestOptional.get();
 
-        boolean isAllReportSuccessed = isAllRequestReportSuccessed(request);
-
-        if (!isAllReportSuccessed) {
-            throw new NotAllRequestProgressReportFinishedException();
+        if (!hasAnyReport(request)) {
+            throw new NoRequestReportException();
         }
 
         Optional<RequestProgress> secondPaymentRequestProgress = request
@@ -251,16 +238,11 @@ public class RequestServiceImpl implements RequestService {
             throw new NotPaidSecondPaymentYetException();
         }
 
-        //make sure list is not empty otherwise it will throw exception here
-        RequestProgressType lastProgressReportType = Constants.REQUEST_PROGRESS_REPORT_TYPES.get(
-            Constants.REQUEST_PROGRESS_REPORT_TYPES.size() - 1
-        );
-
         RequestProgress lastRequestProgressReport = request
             .getRequestProgresses()
             .stream()
-            .filter(rp -> rp.getType() == lastProgressReportType)
-            .findFirst()
+            .filter(rp -> rp.getType() == RequestProgressType.REPORT)
+            .reduce((first, second) -> second)
             .get();
 
         RequestProgressDTO requestProgressDTO = requestProgressMapper.toDto(lastRequestProgressReport);
@@ -276,5 +258,10 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public Optional<Request> getOne(long requestId) {
         return requestRepository.findById(requestId);
+    }
+
+    @Override
+    public boolean hasAnyReport(Request request) {
+        return request.getRequestProgresses().stream().anyMatch(rp -> rp.getType() == RequestProgressType.REPORT);
     }
 }
