@@ -1,12 +1,12 @@
 package com.github.khangzxrr.service.impl;
 
-import com.github.khangzxrr.config.Constants;
 import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.domain.RequestBid;
 import com.github.khangzxrr.domain.RequestProgress;
 import com.github.khangzxrr.domain.User;
 import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
 import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
+import com.github.khangzxrr.domain.enumeration.RequestProgressType;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.repository.RequestRepository;
 import com.github.khangzxrr.service.RequestPaymentService;
@@ -17,13 +17,10 @@ import com.github.khangzxrr.service.dto.requestProgressDto.CreateRequestProgress
 import com.github.khangzxrr.service.mapper.RequestProgressMapper;
 import com.github.khangzxrr.web.rest.errors.CreatorIsNotSelectedInRequest;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
+import com.github.khangzxrr.web.rest.errors.RequestIsNotInCorrectState;
 import com.github.khangzxrr.web.rest.errors.RequestIsOwnedByUserException;
 import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
-import com.github.khangzxrr.web.rest.errors.RequestProgressIsNotExistException;
-import com.github.khangzxrr.web.rest.errors.RequestProgressReportIsExistException;
-import com.github.khangzxrr.web.rest.errors.RequestProgressStatusNotInPendingException;
 import com.github.khangzxrr.web.rest.errors.RequestProgressTypeIsNotAReportException;
-import java.time.LocalDate;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +42,6 @@ public class RequestProgressReportServiceImpl implements RequestProgressReportSe
 
     private final UserService userService;
 
-    private final RequestPaymentService requestPaymentService;
-
     public RequestProgressReportServiceImpl(
         RequestProgressMapper requestProgressMapper,
         RequestRepository requestRepository,
@@ -56,7 +51,6 @@ public class RequestProgressReportServiceImpl implements RequestProgressReportSe
         this.requestProgressMapper = requestProgressMapper;
         this.requestRepository = requestRepository;
         this.userService = userService;
-        this.requestPaymentService = requestPaymentService;
     }
 
     private Request getRequestByIdAndCreatorBid(long requestId) {
@@ -97,27 +91,25 @@ public class RequestProgressReportServiceImpl implements RequestProgressReportSe
     @Override
     public RequestProgressDTO create(long requestId, CreateRequestProgressReportDTO createRequestProgressReportDTO) {
         //validate if this is not a report type
-        if (!Constants.REQUEST_PROGRESS_REPORT_TYPES.contains(createRequestProgressReportDTO.getType())) {
+        if (createRequestProgressReportDTO.getType() != RequestProgressType.REPORT) {
             throw new RequestProgressTypeIsNotAReportException();
         }
 
         Request request = getRequestByIdAndCreatorBid(requestId);
 
-        Optional<RequestProgress> requestProgressOptional = request
-            .getRequestProgresses()
-            .stream()
-            .filter(rp -> rp.getType() == createRequestProgressReportDTO.getType())
-            .findFirst();
-
-        if (requestProgressOptional.isPresent()) {
-            throw new RequestProgressReportIsExistException();
+        if (request.getStatus() != RequestStatus.ON_REPORTING && request.getStatus() != RequestStatus.ON_PAYING_SECOND) {
+            throw new RequestIsNotInCorrectState();
         }
 
         RequestProgress requestProgress = requestProgressMapper.toEntity(createRequestProgressReportDTO);
-        requestProgress.setStatus(RequestProgressStatus.PENDING);
-        requestProgress.setDate(LocalDate.now());
+        requestProgress.setStatus(RequestProgressStatus.SUCCEED);
 
         request.addRequestProgresses(requestProgress);
+
+        //if at least one report then user can pay 2nd payment
+        if (request.getRequestProgresses().size() > 0) {
+            request.setStatus(RequestStatus.ON_PAYING_SECOND);
+        }
 
         requestRepository.save(request);
 
