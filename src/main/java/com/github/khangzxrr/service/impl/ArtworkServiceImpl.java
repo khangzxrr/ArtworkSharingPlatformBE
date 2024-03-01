@@ -2,6 +2,7 @@ package com.github.khangzxrr.service.impl;
 
 import com.github.khangzxrr.domain.Artwork;
 import com.github.khangzxrr.repository.ArtworkRepository;
+import com.github.khangzxrr.repository.ArtworkSellingRepository;
 import com.github.khangzxrr.service.ArtworkService;
 import com.github.khangzxrr.service.dto.ArtworkDTO;
 import com.github.khangzxrr.service.mapper.ArtworkMapper;
@@ -27,9 +28,16 @@ public class ArtworkServiceImpl implements ArtworkService {
 
     private final ArtworkMapper artworkMapper;
 
-    public ArtworkServiceImpl(ArtworkRepository artworkRepository, ArtworkMapper artworkMapper) {
+    private final ArtworkSellingRepository artworkSellingRepository;
+
+    public ArtworkServiceImpl(
+        ArtworkRepository artworkRepository,
+        ArtworkMapper artworkMapper,
+        ArtworkSellingRepository artworkSellingRepository
+    ) {
         this.artworkRepository = artworkRepository;
         this.artworkMapper = artworkMapper;
+        this.artworkSellingRepository = artworkSellingRepository;
     }
 
     @Override
@@ -81,5 +89,27 @@ public class ArtworkServiceImpl implements ArtworkService {
     public void delete(Long id) {
         log.debug("Request to delete Artwork : {}", id);
         artworkRepository.deleteById(id);
+    }
+
+    @Override
+    public ArtworkDTO DirectSellings(ArtworkDTO artworkDTO) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'DirectSellings'");
+    }
+
+    @Override
+    public ArtworkDTO updateSaleDirect(ArtworkDTO artworkDTO) {
+        log.debug("Request to update Artwork : {}", artworkDTO);
+        Artwork artwork = artworkMapper.toEntity(artworkDTO);
+
+        Optional<Artwork> optionalArtwork = artworkRepository.findById(artworkDTO.getId());
+        if (optionalArtwork.isPresent()) {
+            Artwork artworkafterDeleteSeling = optionalArtwork.get();
+            artworkSellingRepository.deleteById(artworkafterDeleteSeling.getArtworkSelling().getId());
+            artworkafterDeleteSeling = artwork;
+            artwork = artworkRepository.save(artwork);
+            return artworkMapper.toDto(artwork);
+        }
+        return artworkDTO;
     }
 }

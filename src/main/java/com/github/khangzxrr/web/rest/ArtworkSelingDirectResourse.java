@@ -1,0 +1,89 @@
+package com.github.khangzxrr.web.rest;
+
+import com.github.khangzxrr.repository.ArtworkRepository;
+import com.github.khangzxrr.service.ArtworkService;
+import com.github.khangzxrr.service.dto.ArtworkDTO;
+import com.github.khangzxrr.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Objects;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.ResponseUtil;
+
+/**
+ * REST controller for managing {@link com.github.khangzxrr.domain.ArtworkSelling}.
+ */
+
+@RestController
+@RequestMapping("/api/artwork-Directsellings")
+public class ArtworkSelingDirectResourse {
+
+    private final Logger log = LoggerFactory.getLogger(ArtworkSellingResource.class);
+
+    private static final String ENTITY_NAME = "artwork";
+
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
+
+    private final ArtworkService artworkService;
+
+    private final ArtworkRepository artworkRepository;
+
+    public ArtworkSelingDirectResourse(ArtworkService artworkService, ArtworkRepository artworkRepository) {
+        this.artworkService = artworkService;
+        this.artworkRepository = artworkRepository;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ArtworkDTO> getArtwork(@PathVariable("id") Long id) {
+        log.debug("REST request to get Artwork : {}", id);
+        Optional<ArtworkDTO> artworkDTO = artworkService.findOne(id);
+        return ResponseUtil.wrapOrNotFound(artworkDTO);
+    }
+
+    @PostMapping("/audience/artworkSelling/{artworkId}/buy")
+    public ResponseEntity<ArtworkDTO> createArtwork(@RequestBody ArtworkDTO artworkDTO) throws URISyntaxException {
+        log.debug("REST request to save Artwork : {}", artworkDTO);
+        if (artworkDTO.getId() != null) {
+            throw new BadRequestAlertException("A new artwork cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        ArtworkDTO result = artworkService.DirectSellings(artworkDTO);
+        return ResponseEntity
+            .created(new URI("/api/artworks/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
+
+    @PutMapping("/creator/artworkSelling/{id}")
+    public ResponseEntity<ArtworkDTO> updateArtwork(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody ArtworkDTO artworkDTO
+    ) throws URISyntaxException {
+        log.debug("REST request to update Artwork : {}, {}", id, artworkDTO);
+        if (artworkDTO.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, artworkDTO.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!artworkRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+        if (!artworkRepository.existsArtworkSellingByArtworkId(id)) {
+            throw new BadRequestAlertException("Artwork are being sold on shelves", ENTITY_NAME, "ArtworkSelingexist");
+        }
+
+        ArtworkDTO result = artworkService.update(artworkDTO);
+        return ResponseEntity
+            .ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, artworkDTO.getId().toString()))
+            .body(result);
+    }
+}
