@@ -17,7 +17,7 @@ public class RequestChat extends AbstractAuditingEntity<Long> {
     @Column(name = "id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Request request;
 
     @ManyToOne(fetch = FetchType.LAZY)
