@@ -1,9 +1,11 @@
 package com.github.khangzxrr.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import jakarta.persistence.*;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -50,6 +52,19 @@ public class Request extends AbstractAuditingEntity<Long> {
     private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
+    public Optional<User> getSelectedBidUser() {
+        Optional<RequestBid> optionalRequestBid = getRequestBids()
+            .stream()
+            .filter(rb -> rb.getStatus() == RequestBidStatus.SELECTED_BID)
+            .findFirst();
+
+        if (!optionalRequestBid.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(optionalRequestBid.get().getUser());
+    }
 
     public Long getId() {
         return this.id;
@@ -196,7 +211,8 @@ public class Request extends AbstractAuditingEntity<Long> {
         return this;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and
+    // setters here
 
     @Override
     public boolean equals(Object o) {
@@ -211,7 +227,8 @@ public class Request extends AbstractAuditingEntity<Long> {
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        // see
+        // https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
@@ -219,10 +236,10 @@ public class Request extends AbstractAuditingEntity<Long> {
     @Override
     public String toString() {
         return "Request{" +
-            "id=" + getId() +
-            ", description='" + getDescription() + "'" +
-            ", status='" + getStatus() + "'" +
-            "}";
+                "id=" + getId() +
+                ", description='" + getDescription() + "'" +
+                ", status='" + getStatus() + "'" +
+                "}";
     }
 
     public static long getSerialversionuid() {
