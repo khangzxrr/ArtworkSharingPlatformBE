@@ -39,14 +39,10 @@ public class RequestChatResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of requests in body.
      */
     @GetMapping("{requestId}/chats")
-    public ResponseEntity<List<RequestChatDTO>> getAllChats(
-        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
-        @RequestParam final long afterId,
-        @PathVariable(name = "requestId") final long requestId
-    ) {
-        log.debug("REST request to get a page of Requests belong to audience");
+    public ResponseEntity<List<RequestChatDTO>> getAllChats(@PathVariable(name = "requestId") final long requestId) {
+        log.debug("REST request to get list of chat history");
 
-        return ResponseEntity.ok().body(requestChatService.getAllAfterId(requestId, afterId));
+        return ResponseEntity.ok().body(requestChatService.getAllAfterId(requestId, 0));
     }
 
     @PostMapping("{requestId}/chats")
