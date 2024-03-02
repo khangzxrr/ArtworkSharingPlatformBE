@@ -8,18 +8,15 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class RequestChatController {
 
     private final RequestChatService requestChatService;
-    private final SimpMessageSendingOperations messagingTemplate;
 
-    public RequestChatController(RequestChatService requestChatService, SimpMessageSendingOperations messagingTemplate) {
+    public RequestChatController(RequestChatService requestChatService) {
         this.requestChatService = requestChatService;
-        this.messagingTemplate = messagingTemplate;
     }
 
     @MessageMapping("/topic/requests/{requestId}/chats")

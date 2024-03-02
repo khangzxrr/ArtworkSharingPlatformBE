@@ -22,6 +22,7 @@ import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,16 +36,20 @@ public class RequestBidServiceImpl implements RequestBidService {
 
     private final RequestBidMapper requestBidMapper;
 
+    private final SimpMessageSendingOperations messagingTemplate;
+
     public RequestBidServiceImpl(
         RequestRepository requestRepository,
         RequestBidRepository requestBidRepository,
         UserService userService,
-        RequestBidMapper requestBidMapper
+        RequestBidMapper requestBidMapper,
+        SimpMessageSendingOperations messagingTemplate
     ) {
         this.requestRepository = requestRepository;
         this.requestBidRepository = requestBidRepository;
         this.userService = userService;
         this.requestBidMapper = requestBidMapper;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Override
@@ -82,6 +87,12 @@ public class RequestBidServiceImpl implements RequestBidService {
         request.addRequestBids(requestBid);
 
         requestRepository.save(request);
+
+        try {
+            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", requestBid);
+        } catch (Exception ex) {
+            //ignore exception if any
+        }
 
         return requestBidMapper.toDto(requestBid);
     }

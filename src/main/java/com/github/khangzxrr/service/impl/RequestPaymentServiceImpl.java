@@ -14,7 +14,6 @@ import com.github.khangzxrr.domain.enumeration.WalletTransactionStatus;
 import com.github.khangzxrr.domain.enumeration.WalletTransactionType;
 import com.github.khangzxrr.repository.RequestRepository;
 import com.github.khangzxrr.service.RequestPaymentService;
-import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.WalletService;
 import com.github.khangzxrr.service.dto.requestProgressDto.RequestProgressPaymentDTO;
 import com.github.khangzxrr.service.mapper.RequestProgressMapper;
@@ -25,6 +24,7 @@ import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestProgressTypeIsNotValid;
 import java.time.LocalDate;
 import java.util.Optional;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +38,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
     private final WalletService walletService;
 
-    private final RequestService requestService;
+    private final SimpMessageSendingOperations messagingTemplate;
 
     private final ApplicationProperties applicationProperties;
 
@@ -46,13 +46,14 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         RequestRepository requestRepository,
         RequestProgressMapper requestProgressMapper,
         WalletService walletService,
-        RequestService requestService,
+        SimpMessageSendingOperations messagingTemplate,
         ApplicationProperties applicationProperties
     ) {
         this.requestRepository = requestRepository;
         this.requestProgressMapper = requestProgressMapper;
         this.walletService = walletService;
-        this.requestService = requestService;
+        this.messagingTemplate = messagingTemplate;
+
         this.applicationProperties = applicationProperties;
     }
 
@@ -211,13 +212,21 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         requestProgress.setTransaction(walletTransaction);
         requestProgress.setDate(LocalDate.now());
 
-        //set request to next on payment
+        // set request to next on payment
         request.setStatus(RequestStatus.ON_REPORTING);
 
         request.addRequestProgresses(requestProgress);
         requestRepository.save(request);
 
-        return requestProgressMapper.toPaymentDTO(requestProgress);
+        RequestProgressPaymentDTO requestProgressPaymentDTO = requestProgressMapper.toPaymentDTO(requestProgress);
+
+        try {
+            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", requestProgressPaymentDTO);
+        } catch (Exception ex) {
+            // ignore exception if any
+        }
+
+        return requestProgressPaymentDTO;
     }
 
     @Override
@@ -299,9 +308,9 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         walletService.save(adminWallet);
         // ==================================================
 
-        //deposit request's money to creator wallet
+        // deposit request's money to creator wallet
         WalletTransaction creatorEarnTransaction = new WalletTransaction();
-        creatorEarnTransaction.setAmount(requestBid.getPrice()); //work-round to get full price
+        creatorEarnTransaction.setAmount(requestBid.getPrice()); // work-round to get full price
         creatorEarnTransaction.setType(WalletTransactionType.REQUEST_EARN);
         creatorEarnTransaction.setStatus(WalletTransactionStatus.SUCCEED);
         creatorEarnTransaction.createAt(LocalDate.now());
@@ -309,7 +318,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         creatorWallet.addTransactions(creatorEarnTransaction);
         walletService.save(creatorWallet);
 
-        //===================================================
+        // ===================================================
 
         // convert payment dto to requestProgress entity
         RequestProgress requestProgress = requestProgressMapper.toEntity(paymentDto);
@@ -321,7 +330,14 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         request.addRequestProgresses(requestProgress);
         requestRepository.save(request);
 
-        return requestProgressMapper.toPaymentDTO(requestProgress);
+        RequestProgressPaymentDTO paymentDTO = requestProgressMapper.toPaymentDTO(requestProgress);
+        try {
+            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", paymentDTO);
+        } catch (Exception ex) {
+            // ignore exception if any
+        }
+
+        return paymentDTO;
     }
 
     @Override
@@ -386,7 +402,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
         double refundPrice = calculateRefund(requestBid.getPrice());
 
-        //withdraw refund price of first payment temping in admin wallet
+        // withdraw refund price of first payment temping in admin wallet
 
         WalletTransaction withdrawRefundFromFirstPaymentTransaction = new WalletTransaction();
         withdrawRefundFromFirstPaymentTransaction.amount(refundPrice);
@@ -396,7 +412,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         adminWallet.addTransactions(withdrawRefundFromFirstPaymentTransaction);
 
         walletService.save(adminWallet);
-        //===================================
+        // ===================================
         // refund to request owner
         WalletTransaction refundToRequestOwnerTransaction = new WalletTransaction();
 

@@ -24,11 +24,13 @@ import com.github.khangzxrr.web.rest.errors.RequestProgressTypeIsNotAReportExcep
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service Implementation for managing {@link com.github.khangzxrr.domain.RequestProgress}.
+ * Service Implementation for managing
+ * {@link com.github.khangzxrr.domain.RequestProgress}.
  */
 @Service
 @Transactional
@@ -42,15 +44,19 @@ public class RequestProgressReportServiceImpl implements RequestProgressReportSe
 
     private final UserService userService;
 
+    private final SimpMessageSendingOperations messagingTemplate;
+
     public RequestProgressReportServiceImpl(
         RequestProgressMapper requestProgressMapper,
         RequestRepository requestRepository,
         UserService userService,
-        RequestPaymentService requestPaymentService
+        RequestPaymentService requestPaymentService,
+        SimpMessageSendingOperations messagingTemplate
     ) {
         this.requestProgressMapper = requestProgressMapper;
         this.requestRepository = requestRepository;
         this.userService = userService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     private Request getRequestByIdAndCreatorBid(long requestId) {
@@ -68,12 +74,12 @@ public class RequestProgressReportServiceImpl implements RequestProgressReportSe
 
         Request request = requestOptional.get();
 
-        //validate request is MUST NOT belong to creator - audience
+        // validate request is MUST NOT belong to creator - audience
         if (request.getUser().equals(user)) {
             throw new RequestIsOwnedByUserException();
         }
 
-        //validate creator must be selected in bid
+        // validate creator must be selected in bid
         Optional<RequestBid> requestBidOptional = requestOptional
             .get()
             .getRequestBids()
@@ -90,7 +96,7 @@ public class RequestProgressReportServiceImpl implements RequestProgressReportSe
 
     @Override
     public RequestProgressDTO create(long requestId, CreateRequestProgressReportDTO createRequestProgressReportDTO) {
-        //validate if this is not a report type
+        // validate if this is not a report type
         if (createRequestProgressReportDTO.getType() != RequestProgressType.REPORT) {
             throw new RequestProgressTypeIsNotAReportException();
         }
@@ -106,13 +112,21 @@ public class RequestProgressReportServiceImpl implements RequestProgressReportSe
 
         request.addRequestProgresses(requestProgress);
 
-        //if at least one report then user can pay 2nd payment
+        // if at least one report then user can pay 2nd payment
         if (request.getRequestProgresses().size() > 0) {
             request.setStatus(RequestStatus.ON_PAYING_SECOND);
         }
 
         requestRepository.save(request);
 
-        return requestProgressMapper.toDto(requestProgress);
+        RequestProgressDTO requestProgressDTO = requestProgressMapper.toDto(requestProgress);
+
+        try {
+            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", requestProgressDTO);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+        }
+
+        return requestProgressDTO;
     }
 }
