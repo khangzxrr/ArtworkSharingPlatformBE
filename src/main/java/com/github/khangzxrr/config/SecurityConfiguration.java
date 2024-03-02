@@ -1,8 +1,8 @@
 package com.github.khangzxrr.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
+import static org.springframework.security.config.Customizer.*;
 
-import com.github.khangzxrr.security.*;
+import com.github.khangzxrr.security.AuthoritiesConstants;
 import com.github.khangzxrr.web.filter.SpaWebFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -73,7 +73,9 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/api/register")).permitAll()
                     .requestMatchers(mvc.pattern("/api/activate")).permitAll()
 
+
                     .requestMatchers(mvc.pattern("/api/account/**")).authenticated()
+                    .requestMatchers(mvc.pattern("/api/artworks/**")).authenticated()
 
                     .requestMatchers(mvc.pattern("/api/account/reset-password/init")).permitAll()
                     .requestMatchers(mvc.pattern("/api/account/reset-password/finish")).permitAll()
@@ -89,7 +91,7 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/management/info")).permitAll()
                     .requestMatchers(mvc.pattern("/management/prometheus")).permitAll()
                     .requestMatchers(mvc.pattern("/management/**")).hasAuthority(AuthoritiesConstants.ADMIN)
-                    
+
                     .requestMatchers(mvc.pattern("/api/audience/**")).hasAuthority(AuthoritiesConstants.USER)
                     .requestMatchers(mvc.pattern("/api/creator/**")).hasAuthority(AuthoritiesConstants.CREATOR)
             )
