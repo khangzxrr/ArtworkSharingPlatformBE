@@ -53,6 +53,15 @@ public class Request extends AbstractAuditingEntity<Long> {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
+    public Optional<RequestBid> getSelectedBid() {
+        Optional<RequestBid> optionalRequestBid = getRequestBids()
+            .stream()
+            .filter(rb -> rb.getStatus() == RequestBidStatus.SELECTED_BID)
+            .findFirst();
+
+        return optionalRequestBid;
+    }
+
     public Optional<User> getSelectedBidUser() {
         Optional<RequestBid> optionalRequestBid = getRequestBids()
             .stream()
