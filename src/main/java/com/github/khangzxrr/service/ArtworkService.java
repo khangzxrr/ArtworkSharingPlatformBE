@@ -58,4 +58,6 @@ public interface ArtworkService {
     ArtworkDTO DirectSellings(ArtworkDTO artworkDTO);
 
     void cancel(Long id);
+
+    int purchaseArtwork(Long artworkId);
 }

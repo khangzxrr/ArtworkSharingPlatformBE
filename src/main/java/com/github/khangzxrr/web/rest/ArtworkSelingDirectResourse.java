@@ -4,13 +4,13 @@ import com.github.khangzxrr.repository.ArtworkRepository;
 import com.github.khangzxrr.service.ArtworkService;
 import com.github.khangzxrr.service.dto.ArtworkDTO;
 import com.github.khangzxrr.web.rest.errors.BadRequestAlertException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -47,17 +47,18 @@ public class ArtworkSelingDirectResourse {
         return ResponseUtil.wrapOrNotFound(artworkDTO);
     }
 
-    @PostMapping("/audience/artworkSelling/{artworkId}/buy")
-    public ResponseEntity<ArtworkDTO> createArtwork(@RequestBody ArtworkDTO artworkDTO) throws URISyntaxException {
-        log.debug("REST request to save Artwork : {}", artworkDTO);
-        if (artworkDTO.getId() != null) {
-            throw new BadRequestAlertException("A new artwork cannot already have an ID", ENTITY_NAME, "idexists");
+    @PostMapping("/{artworkId}/purchase")
+    public ResponseEntity<String> purchaseArtwork(@PathVariable Long artworkId) {
+        switch (artworkService.purchaseArtwork(artworkId)) {
+            case 1:
+                return ResponseEntity.ok("Artwork purchased successfully.");
+            case 2:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to purchase artwork.");
+            case 3:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You cannot purchase your own artwork.");
+            default:
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
-        ArtworkDTO result = artworkService.DirectSellings(artworkDTO);
-        return ResponseEntity
-            .created(new URI("/api/artworks/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
-            .body(result);
     }
 
     @PutMapping("/creator/artworkSelling/{id}/sell")
