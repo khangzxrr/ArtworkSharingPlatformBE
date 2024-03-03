@@ -60,7 +60,7 @@ public class ArtworkSelingDirectResourse {
             .body(result);
     }
 
-    @PutMapping("/creator/artworkSelling/{id}")
+    @PutMapping("/creator/artworkSelling/{id}/sell")
     public ResponseEntity<ArtworkDTO> updateArtwork(
         @PathVariable(value = "id", required = false) final Long id,
         @RequestBody ArtworkDTO artworkDTO
@@ -76,14 +76,24 @@ public class ArtworkSelingDirectResourse {
         if (!artworkRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
-        if (!artworkRepository.existsArtworkSellingByArtworkId(id)) {
+        if (artworkRepository.existsArtworkSellingByArtworkId(id)) {
             throw new BadRequestAlertException("Artwork are being sold on shelves", ENTITY_NAME, "ArtworkSelingexist");
         }
 
-        ArtworkDTO result = artworkService.update(artworkDTO);
+        ArtworkDTO result = artworkService.updateSaleDirect(artworkDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, artworkDTO.getId().toString()))
             .body(result);
+    }
+
+    @DeleteMapping("/creator/artworkSelling/{id}/cancel")
+    public ResponseEntity<Void> deleteArtwork(@PathVariable("id") Long id) {
+        log.debug("REST request to delete Artwork : {}", id);
+        artworkService.cancel(id);
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

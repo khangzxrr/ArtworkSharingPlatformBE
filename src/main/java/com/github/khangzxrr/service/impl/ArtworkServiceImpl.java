@@ -1,6 +1,8 @@
 package com.github.khangzxrr.service.impl;
 
 import com.github.khangzxrr.domain.Artwork;
+import com.github.khangzxrr.domain.enumeration.ArtworkSellingStatus;
+import com.github.khangzxrr.domain.enumeration.ArtworkSellingType;
 import com.github.khangzxrr.repository.ArtworkRepository;
 import com.github.khangzxrr.repository.ArtworkSellingRepository;
 import com.github.khangzxrr.service.ArtworkService;
@@ -102,14 +104,23 @@ public class ArtworkServiceImpl implements ArtworkService {
         log.debug("Request to update Artwork : {}", artworkDTO);
         Artwork artwork = artworkMapper.toEntity(artworkDTO);
 
-        Optional<Artwork> optionalArtwork = artworkRepository.findById(artworkDTO.getId());
-        if (optionalArtwork.isPresent()) {
-            Artwork artworkafterDeleteSeling = optionalArtwork.get();
-            artworkSellingRepository.deleteById(artworkafterDeleteSeling.getArtworkSelling().getId());
-            artworkafterDeleteSeling = artwork;
-            artwork = artworkRepository.save(artwork);
-            return artworkMapper.toDto(artwork);
+        artwork.getArtworkSelling().setType(ArtworkSellingType.DIRECT);
+        artwork.getArtworkSelling().setStatus(ArtworkSellingStatus.ON_GOING);
+        artworkSellingRepository.save(artwork.getArtworkSelling());
+        artwork = artworkRepository.save(artwork);
+        return artworkMapper.toDto(artwork);
+    }
+
+    @Override
+    public void cancel(Long id) {
+        Optional<Artwork> artworkafterdelteSeling = artworkRepository.findById(id);
+
+        if (artworkafterdelteSeling.isPresent()) {
+            Artwork aftercancel = artworkafterdelteSeling.get();
+            long idSelling = aftercancel.getArtworkSelling().getId();
+            aftercancel.setArtworkSelling(null);
+            artworkSellingRepository.deleteById(idSelling);
+            artworkRepository.save(aftercancel);
         }
-        return artworkDTO;
     }
 }

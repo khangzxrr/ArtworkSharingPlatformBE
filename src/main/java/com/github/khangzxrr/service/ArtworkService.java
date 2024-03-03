@@ -56,4 +56,6 @@ public interface ArtworkService {
     void delete(Long id);
 
     ArtworkDTO DirectSellings(ArtworkDTO artworkDTO);
+
+    void cancel(Long id);
 }

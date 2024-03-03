@@ -21,17 +21,17 @@ public interface ArtworkMapper extends EntityMapper<ArtworkDTO, Artwork> {
     ArtworkDTO toDto(Artwork s);
 
     @Named("artworkSellingId")
-    @BeanMapping(ignoreByDefault = true)
+    @BeanMapping(ignoreByDefault = false)
     @Mapping(target = "id", source = "id")
     ArtworkSellingDTO toDtoArtworkSellingId(ArtworkSelling artworkSelling);
 
     @Named("userId")
-    @BeanMapping(ignoreByDefault = true)
+    @BeanMapping(ignoreByDefault = false)
     @Mapping(target = "id", source = "id")
     UserDTO toDtoUserId(User user);
 
     @Named("artworkCategoryId")
-    @BeanMapping(ignoreByDefault = true)
+    @BeanMapping(ignoreByDefault = false)
     @Mapping(target = "id", source = "id")
     ArtworkCategoryDTO toDtoArtworkCategoryId(ArtworkCategory artworkCategory);
 }
