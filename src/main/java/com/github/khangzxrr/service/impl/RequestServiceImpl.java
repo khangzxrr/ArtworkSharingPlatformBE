@@ -202,6 +202,12 @@ public class RequestServiceImpl implements RequestService {
         request.setStatus(RequestStatus.ON_PAYING_FIRST);
 
         requestRepository.save(request);
+
+        try {
+            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", "choosedRequestBid");
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
+        }
     }
 
     @Override
