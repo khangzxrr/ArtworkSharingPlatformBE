@@ -3,6 +3,7 @@ package com.github.khangzxrr.web.rest;
 import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.dto.CreateRequestDTO;
+import com.github.khangzxrr.service.dto.RefundDTO;
 import com.github.khangzxrr.service.dto.RequestDTO;
 import com.github.khangzxrr.service.dto.RequestProgressAttachmentDTO;
 import com.github.khangzxrr.service.dto.UpdateRequestDTO;
@@ -142,6 +143,13 @@ public class RequestResourceOfAudience {
     @GetMapping("{requestId}/current-step")
     public ResponseEntity<RequestStepGuideDTO> getCurrentStep(@PathVariable("requestId") Long requestId) {
         return ResponseEntity.ok().body(requestService.getCurrentStep(requestId));
+    }
+
+    @PostMapping("{requestId}/refund")
+    public ResponseEntity<RefundDTO> refund(@PathVariable("requestId") Long requestId) {
+        log.debug("REST request to refund Request : {}", requestId);
+
+        return ResponseEntity.ok().body(requestService.refund(requestId));
     }
 
     @GetMapping("{requestId}/finished-artwork/download")
