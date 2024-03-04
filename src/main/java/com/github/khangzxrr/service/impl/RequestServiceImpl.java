@@ -13,6 +13,7 @@ import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.domain.enumeration.WalletTransactionStatus;
 import com.github.khangzxrr.domain.enumeration.WalletTransactionType;
 import com.github.khangzxrr.repository.RequestRepository;
+import com.github.khangzxrr.service.NotificationService;
 import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.UserService;
 import com.github.khangzxrr.service.WalletService;
@@ -37,7 +38,9 @@ import com.github.khangzxrr.web.rest.errors.RequestProgressIsNotExistException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +72,8 @@ public class RequestServiceImpl implements RequestService {
 
     private final SimpMessageSendingOperations messagingTemplate;
 
+    private final NotificationService notificationService;
+
     public RequestServiceImpl(
         RequestRepository requestRepository,
         RequestMapper requestMapper,
@@ -76,7 +81,8 @@ public class RequestServiceImpl implements RequestService {
         RequestBidMapper requestBidMapper,
         RequestProgressMapper requestProgressMapper,
         WalletService walletService,
-        SimpMessageSendingOperations messagingTemplate
+        SimpMessageSendingOperations messagingTemplate,
+        NotificationService notificationService
     ) {
         this.requestRepository = requestRepository;
         this.requestMapper = requestMapper;
@@ -84,6 +90,7 @@ public class RequestServiceImpl implements RequestService {
         this.requestProgressMapper = requestProgressMapper;
         this.walletService = walletService;
         this.messagingTemplate = messagingTemplate;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -205,6 +212,12 @@ public class RequestServiceImpl implements RequestService {
 
         try {
             messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", "choosedRequestBid");
+
+            Map<String, String> data = new HashMap<>();
+
+            data.put("body", "audience choosed YOUR DEAL!");
+
+            notificationService.sendToUser(data, selectedBidOptional.get().getUser());
         } catch (Exception ex) {
             log.error(ex.getMessage(), ex);
         }
