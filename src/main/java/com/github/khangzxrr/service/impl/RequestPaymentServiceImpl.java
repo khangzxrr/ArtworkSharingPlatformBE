@@ -24,6 +24,8 @@ import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestProgressTypeIsNotValid;
 import java.time.LocalDate;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class RequestPaymentServiceImpl implements RequestPaymentService {
+
+    private final Logger log = LoggerFactory.getLogger(RequestPaymentServiceImpl.class);
 
     private final RequestRepository requestRepository;
 
