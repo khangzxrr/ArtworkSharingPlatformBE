@@ -46,6 +46,27 @@ spring:
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+    properties:
+      org:
+        quartz:
+          threadPool:
+            threadCount: 2
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            dataSource: myDataSource
+          dataSource:
+            myDataSource:
+              provider: hikaricp
+              driver: com.mysql.jdbc.Driver
+              URL: jdbc:mysql://localhost:3306/artworkSharingPlatformJhipter?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&createDatabaseIfNotExist=true
+              user: root
+              password:
+
   mail:
     host: localhost
     port: 25

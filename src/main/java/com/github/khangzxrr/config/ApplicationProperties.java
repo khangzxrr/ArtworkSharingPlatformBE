@@ -97,4 +97,12 @@ public class ApplicationProperties {
             this.serviceFeeEarnPercent = serviceFeeEarnPercent;
         }
     }
+
+    public PaypalConfiguration getPaypal() {
+        return paypal;
+    }
+
+    public ArtworkConfiguration getArtwork() {
+        return artwork;
+    }
 }
