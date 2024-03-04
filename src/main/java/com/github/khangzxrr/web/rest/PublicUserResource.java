@@ -65,8 +65,11 @@ public class PublicUserResource {
     }
 
     @PostMapping("/account/notify-token")
-    public ResponseEntity<Void> addNewNotifyToken(@Valid @RequestBody AddNotifyTokenDTO addNewNotifyToken) {
-        userService.addNotifyToken(addNewNotifyToken);
+    public ResponseEntity<Void> addNewNotifyToken(
+        @RequestHeader(value = "User-Agent") String userAgent,
+        @Valid @RequestBody AddNotifyTokenDTO addNewNotifyToken
+    ) {
+        userService.addNotifyToken(addNewNotifyToken, userAgent);
 
         return ResponseEntity.ok().build();
     }
