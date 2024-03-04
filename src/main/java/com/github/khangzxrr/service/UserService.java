@@ -7,10 +7,12 @@ import com.github.khangzxrr.repository.AuthorityRepository;
 import com.github.khangzxrr.repository.UserRepository;
 import com.github.khangzxrr.security.AuthoritiesConstants;
 import com.github.khangzxrr.security.SecurityUtils;
+import com.github.khangzxrr.service.dto.AddNotifyTokenDTO;
 import com.github.khangzxrr.service.dto.AdminUserDTO;
 import com.github.khangzxrr.service.dto.UserDTO;
 import com.github.khangzxrr.web.rest.errors.EmailAlreadyUsedException;
 import com.github.khangzxrr.web.rest.errors.InvalidPasswordException;
+import com.github.khangzxrr.web.rest.errors.NotLoggedException;
 import com.github.khangzxrr.web.rest.errors.UsernameAlreadyUsedException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -45,6 +47,18 @@ public class UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
+    }
+
+    public void addNotifyToken(AddNotifyTokenDTO addNotifyTokenDTO, String userAgent) {
+        Optional<User> user = getUserWithAuthorities();
+
+        if (!user.isPresent()) {
+            throw new NotLoggedException();
+        }
+
+        user.get().addNotifyToken(addNotifyTokenDTO.getToken(), userAgent);
+
+        userRepository.save(user.get());
     }
 
     public Optional<User> activateRegistration(String key) {

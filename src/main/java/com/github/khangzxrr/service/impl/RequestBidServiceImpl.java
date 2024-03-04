@@ -95,7 +95,7 @@ public class RequestBidServiceImpl implements RequestBidService {
         requestRepository.save(request);
 
         try {
-            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", requestBid);
+            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", "newRequestBid");
 
             Map<String, String> data = new HashMap<>();
             data.put("body", "new deal placed by " + requestBid.getUser().getLogin() + "!");
