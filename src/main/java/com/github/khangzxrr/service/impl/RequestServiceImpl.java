@@ -38,6 +38,8 @@ import com.github.khangzxrr.web.rest.errors.RequestProgressIsNotExistException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -348,18 +350,18 @@ public class RequestServiceImpl implements RequestService {
             throw new DayLeftMustPositiveException();
         }
 
-        //duration 10 days
-        //on-going 5 days
+        // duration 10 days
+        // on-going 5 days
 
-        //left 1 days
+        // left 1 days
 
-        //price = 100$
-        //refund = price * (7/12)
+        // price = 100$
+        // refund = price * (7/12)
 
         double firstPaymentAmount = requestFirstPaymentProgress.get().getTransaction().getAmount();
         double refundAmount = (firstPaymentAmount * dayLefts.doubleValue()) / selectedBid.get().getDuration().doubleValue();
 
-        //round to 2 decimals
+        // round to 2 decimals
         refundAmount = Math.round(refundAmount * 100);
         refundAmount = refundAmount / 100;
 
@@ -397,5 +399,38 @@ public class RequestServiceImpl implements RequestService {
         }
 
         return refundDTO;
+    }
+
+    @Override
+    public void clearExpiredRequest() {
+        List<RequestStatus> requestStatus = Arrays.asList(RequestStatus.ON_REPORTING, RequestStatus.ON_PAYING_SECOND);
+
+        List<Request> requests = requestRepository.findByStatusIn(requestStatus);
+
+        long countClearedRequest = 0;
+
+        for (Request request : requests) {
+            long duration = request.getSelectedBid().get().getDuration();
+            RequestProgress firstPaymentProgress = request
+                .getRequestProgresses()
+                .stream()
+                .filter(rp -> rp.getType() == RequestProgressType.FIRST_PAYMENT)
+                .findFirst()
+                .get();
+
+            Instant deadline = firstPaymentProgress.getCreatedDate().plus(Math.toIntExact(duration), ChronoUnit.DAYS);
+
+            Instant current = Instant.now();
+
+            if (current.isAfter(deadline)) {
+                request.setStatus(RequestStatus.FAILED);
+                requestRepository.save(request);
+
+                countClearedRequest += 1;
+                log.info("close request with id " + request.getId() + " expired");
+            }
+        }
+
+        log.info("cleared " + countClearedRequest + " expired requests");
     }
 }
