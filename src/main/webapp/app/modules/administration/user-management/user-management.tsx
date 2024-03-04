@@ -134,59 +134,66 @@ export const UserManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user, i) => (
-            <tr id={user.login} key={`user-${i}`}>
-              <td>
-                <Button tag={Link} to={user.login} color="link" size="sm">
-                  {user.id}
-                </Button>
-              </td>
-              <td>{user.login}</td>
-              <td>{user.email}</td>
-              <td>
-                {user.activated ? (
-                  <Button color="success" onClick={toggleActive(user)}>
-                    Activated
+          {users.map((user, i) => {
+            return (
+              <tr id={user.login} key={`user-${i}`}>
+                <td>
+                  <Button tag={Link} to={user.login} color="link" size="sm">
+                    {user.id}
                   </Button>
-                ) : (
-                  <Button color="danger" onClick={toggleActive(user)}>
-                    Deactivated
-                  </Button>
-                )}
-              </td>
-              <td>
-                {user.authorities
-                  ? user.authorities.map((authority, j) => (
-                      <div key={`user-auth-${i}-${j}`}>
-                        <Badge color="info">{authority}</Badge>
-                      </div>
-                    ))
-                  : null}
-              </td>
-              <td>
-                {user.createdDate ? <TextFormat value={user.createdDate} type="date" format={APP_DATE_FORMAT} blankOnInvalid /> : null}
-              </td>
-              <td>{user.lastModifiedBy}</td>
-              <td>
-                {user.lastModifiedDate ? (
-                  <TextFormat value={user.lastModifiedDate} type="date" format={APP_DATE_FORMAT} blankOnInvalid />
-                ) : null}
-              </td>
-              <td className="text-end">
-                <div className="btn-group flex-btn-group-container">
-                  <Button tag={Link} to={user.login} color="info" size="sm">
-                    <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
-                  </Button>
-                  <Button tag={Link} to={`${user.login}/edit`} color="primary" size="sm">
-                    <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
-                  </Button>
-                  <Button tag={Link} to={`${user.login}/delete`} color="danger" size="sm" disabled={account.login === user.login}>
-                    <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
-                  </Button>
-                </div>
-              </td>
-            </tr>
-          ))}
+                </td>
+                <td>{user.login}</td>
+                <td>{user.email}</td>
+                <td>
+                  {user.activated ? (
+                    <Button color="success" onClick={toggleActive(user)}>
+                      Activated
+                    </Button>
+                  ) : (
+                    <Button color="danger" onClick={toggleActive(user)}>
+                      Deactivated
+                    </Button>
+                  )}
+                </td>
+                <td>
+                  {user.authorities
+                    ? user.authorities.map((authority, j) => (
+                        <div key={`user-auth-${i}-${j}`}>
+                          <Badge color="info">{authority}</Badge>
+                        </div>
+                      ))
+                    : null}
+                </td>
+                <td>
+                  {user.createdDate ? <TextFormat value={user.createdDate} type="date" format={APP_DATE_FORMAT} blankOnInvalid /> : null}
+                </td>
+                <td>{user.lastModifiedBy}</td>
+                <td>
+                  {user.lastModifiedDate ? (
+                    <TextFormat value={user.lastModifiedDate} type="date" format={APP_DATE_FORMAT} blankOnInvalid />
+                  ) : null}
+                </td>
+
+                <td className="text-end">
+                  <div className="btn-group flex-btn-group-container">
+                    {user.login !== 'admin' && (
+                      <>
+                        <Button tag={Link} to={user.login} color="info" size="sm">
+                          <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">View</span>
+                        </Button>
+                        <Button tag={Link} to={`${user.login}/edit`} color="primary" size="sm">
+                          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Edit</span>
+                        </Button>
+                        <Button tag={Link} to={`${user.login}/delete`} color="danger" size="sm" disabled={account.login === user.login}>
+                          <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Delete</span>
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
       {totalItems ? (

@@ -32,6 +32,7 @@ public interface RequestProgressMapper extends EntityMapper<RequestProgressDTO, 
     @Named("walletTransactionId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "amount", source = "amount")
     WalletTransactionDTO toDtoWalletTransactionId(WalletTransaction walletTransaction);
 
     @Named("requestId")

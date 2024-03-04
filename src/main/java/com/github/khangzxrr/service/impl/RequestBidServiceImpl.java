@@ -7,6 +7,7 @@ import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.repository.RequestBidRepository;
 import com.github.khangzxrr.repository.RequestRepository;
+import com.github.khangzxrr.service.NotificationService;
 import com.github.khangzxrr.service.RequestBidService;
 import com.github.khangzxrr.service.UserService;
 import com.github.khangzxrr.service.dto.CreateRequestBidDTO;
@@ -19,9 +20,12 @@ import com.github.khangzxrr.web.rest.errors.RequestBidNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestIsBelongToCurrentUser;
 import com.github.khangzxrr.web.rest.errors.RequestIsNotInCorrectState;
 import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,16 +39,23 @@ public class RequestBidServiceImpl implements RequestBidService {
 
     private final RequestBidMapper requestBidMapper;
 
+    private final SimpMessageSendingOperations messagingTemplate;
+    private final NotificationService notificationService;
+
     public RequestBidServiceImpl(
         RequestRepository requestRepository,
         RequestBidRepository requestBidRepository,
         UserService userService,
-        RequestBidMapper requestBidMapper
+        RequestBidMapper requestBidMapper,
+        SimpMessageSendingOperations messagingTemplate,
+        NotificationService notificationService
     ) {
         this.requestRepository = requestRepository;
         this.requestBidRepository = requestBidRepository;
         this.userService = userService;
         this.requestBidMapper = requestBidMapper;
+        this.messagingTemplate = messagingTemplate;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -53,24 +64,24 @@ public class RequestBidServiceImpl implements RequestBidService {
 
         Optional<User> user = userService.getUserWithAuthorities();
 
-        //throw exception when user is not logged
+        // throw exception when user is not logged
         if (!user.isPresent()) {
             throw new NotLoggedException();
         }
 
-        //throw exception when request not found
+        // throw exception when request not found
         if (!requestOptional.isPresent()) {
             throw new RequestNotFoundException();
         }
 
         Request request = requestOptional.get();
 
-        //throw exception when request is owned by user
+        // throw exception when request is owned by user
         if (request.getUser() == user.get()) {
             throw new RequestIsBelongToCurrentUser();
         }
 
-        //throw exception when request is not on biding state
+        // throw exception when request is not on biding state
         if (request.getStatus() != RequestStatus.ON_BIDING) {
             throw new RequestIsNotInCorrectState();
         }
@@ -82,6 +93,17 @@ public class RequestBidServiceImpl implements RequestBidService {
         request.addRequestBids(requestBid);
 
         requestRepository.save(request);
+
+        try {
+            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", "newRequestBid");
+
+            Map<String, String> data = new HashMap<>();
+            data.put("body", "new deal placed by " + requestBid.getUser().getLogin() + "!");
+
+            notificationService.sendToUser(data, request.getUser());
+        } catch (Exception ex) {
+            //ignore exception if any
+        }
 
         return requestBidMapper.toDto(requestBid);
     }
@@ -106,7 +128,7 @@ public class RequestBidServiceImpl implements RequestBidService {
     public RequestBidDTO updateRequestBid(Long requestId, Long requestBidId, UpdateRequestBidDTO updateRequestDTO) {
         RequestBid requestBid = validateRequestBidBelongToUserAndRequest(requestId, requestBidId).get();
 
-        //do not modify when not in bided state
+        // do not modify when not in bided state
         if (requestBid.getStatus() != RequestBidStatus.BIDED) {
             throw new RequestBidIsNotInValidStateException();
         }
@@ -136,11 +158,39 @@ public class RequestBidServiceImpl implements RequestBidService {
     public void deleteRequestBid(Long requestId, Long requestBidId) {
         RequestBid requestBid = validateRequestBidBelongToUserAndRequest(requestId, requestBidId).get();
 
-        //only able to delete bid ưhen on_biding state
+        // only able to delete bid ưhen on_biding state
         if (requestBid.getRequest().getStatus() != RequestStatus.ON_BIDING) {
             throw new RequestIsNotInCorrectState();
         }
 
         requestBidRepository.delete(requestBid);
+    }
+
+    @Override
+    public Optional<RequestBidDTO> findChoosed(Long requestId) {
+        Optional<User> userOptional = userService.getUserWithAuthorities();
+
+        if (!userOptional.isPresent()) {
+            throw new NotLoggedException();
+        }
+
+        Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
+
+        if (!requestOptional.isPresent()) {
+            throw new RequestNotFoundException();
+        }
+
+        Request request = requestOptional.get();
+
+        if (request.getStatus() == RequestStatus.ON_BIDING) {
+            throw new RequestIsNotInCorrectState();
+        }
+
+        return request
+            .getRequestBids()
+            .stream()
+            .filter(rb -> rb.getStatus() == RequestBidStatus.SELECTED_BID)
+            .findFirst()
+            .map(requestBidMapper::toDto);
     }
 }

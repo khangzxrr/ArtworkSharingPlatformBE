@@ -1,5 +1,6 @@
 package com.github.khangzxrr.service.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
@@ -7,6 +8,11 @@ import java.util.List;
 public class CreateRequestDTO implements Serializable {
 
     @NotNull
+    @NotBlank
+    private String title;
+
+    @NotNull
+    @NotBlank
     private String description;
 
     @NotNull
@@ -26,5 +32,13 @@ public class CreateRequestDTO implements Serializable {
 
     public void setAttachments(List<String> attachments) {
         this.attachments = attachments;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

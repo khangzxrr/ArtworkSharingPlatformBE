@@ -13,6 +13,8 @@ public class RequestDTO implements Serializable {
 
     private Long id;
 
+    private String title;
+
     private String description;
 
     private RequestStatus status;
@@ -91,5 +93,13 @@ public class RequestDTO implements Serializable {
 
     public void setAttachments(List<RequestAttachmentDTO> attachments) {
         this.attachments = attachments;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

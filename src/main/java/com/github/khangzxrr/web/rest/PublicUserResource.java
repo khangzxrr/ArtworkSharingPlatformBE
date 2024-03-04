@@ -1,9 +1,10 @@
 package com.github.khangzxrr.web.rest;
 
 import com.github.khangzxrr.service.UserService;
+import com.github.khangzxrr.service.dto.AddNotifyTokenDTO;
 import com.github.khangzxrr.service.dto.UserDTO;
+import jakarta.validation.Valid;
 import java.util.*;
-import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -61,5 +62,15 @@ public class PublicUserResource {
     @GetMapping("/authorities")
     public List<String> getAuthorities() {
         return userService.getAuthorities();
+    }
+
+    @PostMapping("/account/notify-token")
+    public ResponseEntity<Void> addNewNotifyToken(
+        @RequestHeader(value = "User-Agent") String userAgent,
+        @Valid @RequestBody AddNotifyTokenDTO addNewNotifyToken
+    ) {
+        userService.addNotifyToken(addNewNotifyToken, userAgent);
+
+        return ResponseEntity.ok().build();
     }
 }

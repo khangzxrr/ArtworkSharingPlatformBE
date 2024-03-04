@@ -1,11 +1,14 @@
 package com.github.khangzxrr.web.rest;
 
-import com.github.khangzxrr.repository.WalletRepository;
 import com.github.khangzxrr.service.PaypalService;
 import com.github.khangzxrr.service.WalletService;
 import com.github.khangzxrr.service.dto.PaypalCaptureDTO;
 import com.github.khangzxrr.service.dto.PaypalOrderDTO;
+import com.github.khangzxrr.service.dto.WalletDTO;
+import com.github.khangzxrr.service.dto.WalletTransactionDTO;
+import com.github.khangzxrr.service.mapper.WalletMapper;
 import java.net.URISyntaxException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +24,13 @@ public class WalletResource {
     private String applicationName;
 
     private final PaypalService paypalService;
+    private final WalletService walletService;
+    private final WalletMapper walletMapper;
 
-    public WalletResource(WalletService walletService, WalletRepository walletRepository, PaypalService paypalService) {
+    public WalletResource(WalletService walletService, PaypalService paypalService, WalletMapper walletMapper) {
         this.paypalService = paypalService;
+        this.walletService = walletService;
+        this.walletMapper = walletMapper;
     }
 
     @PostMapping("orders/{orderId}/capture")
@@ -31,6 +38,18 @@ public class WalletResource {
         PaypalCaptureDTO paypalCaptureDTO = paypalService.verifyPayment(orderId);
 
         return ResponseEntity.ok().body(paypalCaptureDTO);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<WalletDTO> getWallet() {
+        WalletDTO walletDTO = walletMapper.toDto(walletService.getCurrentUserWallet());
+
+        return ResponseEntity.ok().body(walletDTO);
+    }
+
+    @GetMapping("/transactions")
+    public ResponseEntity<List<WalletTransactionDTO>> getWalletTransactions() {
+        return ResponseEntity.ok().body(walletService.getWalletTransactionsByCurrentUserWallet());
     }
 
     /**

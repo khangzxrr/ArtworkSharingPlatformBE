@@ -6,6 +6,7 @@ import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
 import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
 
+@SuppressWarnings("deprecation")
 @Configuration
 public class WebsocketSecurityConfiguration extends AbstractSecurityWebSocketMessageBrokerConfigurer {
 
@@ -23,7 +24,7 @@ public class WebsocketSecurityConfiguration extends AbstractSecurityWebSocketMes
             .simpDestMatchers("/topic/**")
             .authenticated()
             // message types other than MESSAGE and SUBSCRIBE
-            .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE)
+            .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE, SimpMessageType.CONNECT, SimpMessageType.DISCONNECT)
             .denyAll()
             // catch all
             .anyMessage()

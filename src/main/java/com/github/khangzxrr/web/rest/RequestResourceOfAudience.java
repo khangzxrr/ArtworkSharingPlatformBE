@@ -3,6 +3,7 @@ package com.github.khangzxrr.web.rest;
 import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.service.RequestService;
 import com.github.khangzxrr.service.dto.CreateRequestDTO;
+import com.github.khangzxrr.service.dto.RefundDTO;
 import com.github.khangzxrr.service.dto.RequestDTO;
 import com.github.khangzxrr.service.dto.RequestProgressAttachmentDTO;
 import com.github.khangzxrr.service.dto.UpdateRequestDTO;
@@ -102,7 +103,7 @@ public class RequestResourceOfAudience {
     public ResponseEntity<List<RequestDTO>> getAllRequests(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get a page of Requests belong to audience");
 
-        Page<RequestDTO> page = requestService.getAllOfUser(pageable);
+        Page<RequestDTO> page = requestService.getAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
@@ -118,7 +119,7 @@ public class RequestResourceOfAudience {
     @Transactional(readOnly = true)
     public ResponseEntity<RequestDTO> getRequest(@PathVariable("id") Long id) {
         log.debug("REST request to get Request : {}", id);
-        Optional<Request> request = requestService.getOneOfUser(id);
+        Optional<Request> request = requestService.getOne(id);
 
         return ResponseUtil.wrapOrNotFound(request.map(requestMapper::toDto));
     }
@@ -142,6 +143,13 @@ public class RequestResourceOfAudience {
     @GetMapping("{requestId}/current-step")
     public ResponseEntity<RequestStepGuideDTO> getCurrentStep(@PathVariable("requestId") Long requestId) {
         return ResponseEntity.ok().body(requestService.getCurrentStep(requestId));
+    }
+
+    @PostMapping("{requestId}/refund")
+    public ResponseEntity<RefundDTO> refund(@PathVariable("requestId") Long requestId) {
+        log.debug("REST request to refund Request : {}", requestId);
+
+        return ResponseEntity.ok().body(requestService.refund(requestId));
     }
 
     @GetMapping("{requestId}/finished-artwork/download")

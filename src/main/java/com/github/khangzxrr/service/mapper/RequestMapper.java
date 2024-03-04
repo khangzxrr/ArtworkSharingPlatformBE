@@ -20,6 +20,7 @@ public interface RequestMapper extends EntityMapper<RequestDTO, Request> {
     @Named("userId")
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
+    @Mapping(target = "login", source = "login")
     UserDTO toDtoUserId(User user);
 
     RequestDTO toDto(CreateRequestDTO createRequestDTO);

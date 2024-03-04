@@ -2,6 +2,7 @@ package com.github.khangzxrr.service;
 
 import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.service.dto.CreateRequestDTO;
+import com.github.khangzxrr.service.dto.RefundDTO;
 import com.github.khangzxrr.service.dto.RequestDTO;
 import com.github.khangzxrr.service.dto.RequestProgressAttachmentDTO;
 import com.github.khangzxrr.service.dto.UpdateRequestDTO;
@@ -27,9 +28,11 @@ public interface RequestService {
 
     void chooseRequestBid(long requestId, long requestBidId);
 
+    boolean hasAnyReport(Request request);
+
     RequestStepGuideDTO getCurrentStep(Long requestId);
 
-    boolean isAllRequestReportSuccessed(Request request);
+    RefundDTO refund(long requestId);
 
     List<RequestProgressAttachmentDTO> getFinishedArtworkAttachments(long requestId);
 }

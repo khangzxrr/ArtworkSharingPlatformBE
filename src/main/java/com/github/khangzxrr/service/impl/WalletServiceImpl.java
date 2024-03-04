@@ -6,14 +6,14 @@ import com.github.khangzxrr.repository.WalletRepository;
 import com.github.khangzxrr.service.UserService;
 import com.github.khangzxrr.service.WalletService;
 import com.github.khangzxrr.service.dto.WalletDTO;
+import com.github.khangzxrr.service.dto.WalletTransactionDTO;
 import com.github.khangzxrr.service.mapper.WalletMapper;
+import com.github.khangzxrr.service.mapper.WalletTransactionMapper;
 import com.github.khangzxrr.web.rest.errors.AdminWalletNotExistException;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
 import com.github.khangzxrr.web.rest.errors.UserNotExistException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,10 +34,18 @@ public class WalletServiceImpl implements WalletService {
 
     private final WalletMapper walletMapper;
 
-    public WalletServiceImpl(WalletRepository walletRepository, UserService userService, WalletMapper walletMapper) {
+    private final WalletTransactionMapper walletTransactionMapper;
+
+    public WalletServiceImpl(
+        WalletRepository walletRepository,
+        UserService userService,
+        WalletMapper walletMapper,
+        WalletTransactionMapper walletTransactionMapper
+    ) {
         this.walletRepository = walletRepository;
         this.userService = userService;
         this.walletMapper = walletMapper;
+        this.walletTransactionMapper = walletTransactionMapper;
     }
 
     @Override
@@ -56,38 +64,10 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public Optional<WalletDTO> partialUpdate(WalletDTO walletDTO) {
-        log.debug("Request to partially update Wallet : {}", walletDTO);
-
-        return walletRepository
-            .findById(walletDTO.getId())
-            .map(existingWallet -> {
-                walletMapper.partialUpdate(existingWallet, walletDTO);
-
-                return existingWallet;
-            })
-            .map(walletRepository::save)
-            .map(walletMapper::toDto);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<WalletDTO> findAll() {
-        log.debug("Request to get all Wallets");
-        return walletRepository.findAll().stream().map(walletMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public Optional<WalletDTO> findOne(Long id) {
         log.debug("Request to get Wallet : {}", id);
         return walletRepository.findById(id).map(walletMapper::toDto);
-    }
-
-    @Override
-    public void delete(Long id) {
-        log.debug("Request to delete Wallet : {}", id);
-        walletRepository.deleteById(id);
     }
 
     @Override
@@ -155,5 +135,11 @@ public class WalletServiceImpl implements WalletService {
         wallet = walletRepository.saveAndFlush(wallet);
 
         return wallet;
+    }
+
+    @Override
+    public List<WalletTransactionDTO> getWalletTransactionsByCurrentUserWallet() {
+        Wallet wallet = getCurrentUserWallet();
+        return wallet.getTransactions().stream().map(walletTransactionMapper::toDto).toList();
     }
 }

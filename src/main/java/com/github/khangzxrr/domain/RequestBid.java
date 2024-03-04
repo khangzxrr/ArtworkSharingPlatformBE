@@ -3,7 +3,6 @@ package com.github.khangzxrr.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
 import jakarta.persistence.*;
-import java.io.Serializable;
 
 /**
  * A RequestBid.
@@ -11,7 +10,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "request_bid")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class RequestBid implements Serializable {
+public class RequestBid extends AbstractAuditingEntity<Long> {
 
     private static final long serialVersionUID = 1L;
 

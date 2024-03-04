@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
 import com.github.khangzxrr.domain.enumeration.RequestProgressType;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,7 +16,7 @@ public class RequestProgressDTO implements Serializable {
 
     private Long id;
 
-    private LocalDate date;
+    private Instant createdDate;
 
     private String description;
 
@@ -24,7 +24,6 @@ public class RequestProgressDTO implements Serializable {
 
     private RequestProgressStatus status;
 
-    @JsonIgnore
     private WalletTransactionDTO transaction;
 
     @JsonIgnore
@@ -38,14 +37,6 @@ public class RequestProgressDTO implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
     }
 
     public String getDescription() {
@@ -114,7 +105,7 @@ public class RequestProgressDTO implements Serializable {
     public String toString() {
         return "RequestProgressDTO{" +
             "id=" + getId() +
-            ", date='" + getDate() + "'" +
+            ", date='" + getCreatedDate() + "'" +
             ", description='" + getDescription() + "'" +
             ", type='" + getType() + "'" +
             ", status='" + getStatus() + "'" +
@@ -129,5 +120,13 @@ public class RequestProgressDTO implements Serializable {
 
     public void setAttachments(List<RequestProgressAttachmentDTO> attachments) {
         this.attachments = attachments;
+    }
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
     }
 }

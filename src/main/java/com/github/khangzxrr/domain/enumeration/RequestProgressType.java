@@ -5,10 +5,7 @@ package com.github.khangzxrr.domain.enumeration;
  */
 public enum RequestProgressType {
     FIRST_PAYMENT,
-    REPORT_1,
-    REPORT_2,
-    REPORT_3,
-    REPORT_4,
+    REPORT,
     SECOND_PAYMENT,
     NO_ACTION_LEFT,
 }
