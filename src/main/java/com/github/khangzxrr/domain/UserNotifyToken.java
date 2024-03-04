@@ -22,6 +22,10 @@ public class UserNotifyToken extends AbstractAuditingEntity<Long> {
     @Column(name = "token", nullable = false)
     private String token;
 
+    @NotNull
+    @Column(name = "user_agent", nullable = false)
+    private String userAgent;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
@@ -48,5 +52,13 @@ public class UserNotifyToken extends AbstractAuditingEntity<Long> {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
 }

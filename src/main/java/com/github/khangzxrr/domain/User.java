@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
@@ -236,11 +237,18 @@ public class User extends AbstractAuditingEntity<Long> {
         return notifyTokens;
     }
 
-    public void addNotifyToken(@NotBlank String token) {
-        UserNotifyToken newToken = new UserNotifyToken();
-        newToken.setToken(token);
-        newToken.setUser(this);
+    public void addNotifyToken(@NotBlank String token, String userAgent) {
+        Optional<UserNotifyToken> existToken = getNotifyTokens().stream().filter(t -> t.getUserAgent().equals(userAgent)).findFirst();
 
-        notifyTokens.add(newToken);
+        if (existToken.isPresent()) {
+            existToken.get().setToken(token);
+        } else {
+            UserNotifyToken newToken = new UserNotifyToken();
+            newToken.setToken(token);
+            newToken.setUser(this);
+            newToken.setUserAgent(userAgent);
+
+            notifyTokens.add(newToken);
+        }
     }
 }
