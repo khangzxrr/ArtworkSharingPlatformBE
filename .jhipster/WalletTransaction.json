@@ -13,12 +13,12 @@
     },
     {
       "fieldName": "amount",
-      "fieldType": "Long"
+      "fieldType": "Double"
     },
     {
       "fieldName": "type",
       "fieldType": "WalletTransactionType",
-      "fieldValues": "DEPOSIT,WITHDRAWAL,BUY"
+      "fieldValues": "DEPOSIT,WITHDRAWAL,BUY,REFUND,SERVICE_FEE_EARN,REQUEST_FIRST_PAYMENT_TEMP,WITHDRAW_REQUEST_FIRST_PAYMENT_TEMP,REQUEST_EARN,WITHDRAW_REFUND_REQUEST_FIRST_PAYMENT_TEMP"
     },
     {
       "fieldName": "status",

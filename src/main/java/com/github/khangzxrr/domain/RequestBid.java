@@ -3,7 +3,6 @@ package com.github.khangzxrr.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
 import jakarta.persistence.*;
-import java.io.Serializable;
 
 /**
  * A RequestBid.
@@ -11,7 +10,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "request_bid")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class RequestBid implements Serializable {
+public class RequestBid extends AbstractAuditingEntity<Long> {
 
     private static final long serialVersionUID = 1L;
 
@@ -24,7 +23,7 @@ public class RequestBid implements Serializable {
     private String description;
 
     @Column(name = "price")
-    private Long price;
+    private Double price;
 
     @Column(name = "duration")
     private Long duration;
@@ -68,16 +67,16 @@ public class RequestBid implements Serializable {
         this.description = description;
     }
 
-    public Long getPrice() {
+    public Double getPrice() {
         return this.price;
     }
 
-    public RequestBid price(Long price) {
+    public RequestBid price(Double price) {
         this.setPrice(price);
         return this;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

@@ -6,18 +6,18 @@ import java.io.Serializable;
 
 public class RequestProgressPaymentDTO implements Serializable {
 
-    private long amount;
+    private double amount;
     private String description;
     private RequestProgressType type;
     private RequestProgressStatus status;
 
-    public RequestProgressPaymentDTO(long amount, RequestProgressType type, RequestProgressStatus status) {
+    public RequestProgressPaymentDTO(double amount, RequestProgressType type, RequestProgressStatus status) {
         this.amount = amount;
         this.type = type;
         this.status = status;
     }
 
-    public long getAmount() {
+    public double getAmount() {
         return amount;
     }
 

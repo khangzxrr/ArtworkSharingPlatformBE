@@ -82,13 +82,13 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
     private ProblemDetailWithCause getProblemDetailWithCause(Throwable ex) {
         if (
-            ex instanceof com.github.khangzxrr.service.UsernameAlreadyUsedException
+            ex instanceof com.github.khangzxrr.web.rest.errors.UsernameAlreadyUsedException
         ) return (ProblemDetailWithCause) new LoginAlreadyUsedException().getBody();
         if (
-            ex instanceof com.github.khangzxrr.service.EmailAlreadyUsedException
+            ex instanceof com.github.khangzxrr.web.rest.errors.EmailAlreadyUsedException
         ) return (ProblemDetailWithCause) new EmailAlreadyUsedException().getBody();
         if (
-            ex instanceof com.github.khangzxrr.service.InvalidPasswordException
+            ex instanceof com.github.khangzxrr.web.rest.errors.InvalidPasswordException
         ) return (ProblemDetailWithCause) new InvalidPasswordException().getBody();
 
         if (

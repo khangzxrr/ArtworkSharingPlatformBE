@@ -88,7 +88,9 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/api/admin/**")).hasAuthority(AuthoritiesConstants.ADMIN)
                     //.requestMatchers(mvc.pattern("/api/**")).authenticated()
                     .requestMatchers(mvc.pattern("/websocket/**")).authenticated()
-                    .requestMatchers(mvc.pattern("/v3/api-docs/**")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    
+                    .requestMatchers(mvc.pattern("/v3/api-docs/**")).permitAll()
+
                     .requestMatchers(mvc.pattern("/management/health")).permitAll()
                     .requestMatchers(mvc.pattern("/management/health/**")).permitAll()
                     .requestMatchers(mvc.pattern("/management/info")).permitAll()
@@ -97,6 +99,12 @@ public class SecurityConfiguration {
 
                     .requestMatchers(mvc.pattern("/api/audience/**")).hasAuthority(AuthoritiesConstants.USER)
                     .requestMatchers(mvc.pattern("/api/creator/**")).hasAuthority(AuthoritiesConstants.CREATOR)
+
+                    .requestMatchers(mvc.pattern("/api/guest/**")).permitAll()
+
+                    .requestMatchers(mvc.pattern("/api/wallets/**")).authenticated()
+                    
+                    .requestMatchers(mvc.pattern("/api/paypal/**")).permitAll()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(exceptions ->

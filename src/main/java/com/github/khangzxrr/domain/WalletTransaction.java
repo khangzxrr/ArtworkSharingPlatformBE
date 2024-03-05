@@ -23,7 +23,7 @@ public class WalletTransaction implements Serializable {
     private Long id;
 
     @Column(name = "amount")
-    private Long amount;
+    private Double amount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
@@ -40,7 +40,7 @@ public class WalletTransaction implements Serializable {
     @JsonIgnoreProperties(value = { "user", "transactions" }, allowSetters = true)
     private Wallet wallet;
 
-    @JsonIgnoreProperties(value = { "transaction", "request" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "transaction", "attachments", "request" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "transaction")
     private RequestProgress requestProgress;
 
@@ -63,16 +63,16 @@ public class WalletTransaction implements Serializable {
         this.id = id;
     }
 
-    public Long getAmount() {
+    public Double getAmount() {
         return this.amount;
     }
 
-    public WalletTransaction amount(Long amount) {
+    public WalletTransaction amount(Double amount) {
         this.setAmount(amount);
         return this;
     }
 
-    public void setAmount(Long amount) {
+    public void setAmount(Double amount) {
         this.amount = amount;
     }
 

@@ -1,10 +1,11 @@
 package com.github.khangzxrr.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.github.khangzxrr.domain.enumeration.RequestBidStatus;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import jakarta.persistence.*;
-import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Set;
 @Entity
 @Table(name = "request")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class Request implements Serializable {
+public class Request extends AbstractAuditingEntity<Long> {
 
     private static final long serialVersionUID = 1L;
 
@@ -21,6 +22,9 @@ public class Request implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
+    @Column(name = "title")
+    private String title;
 
     @Column(name = "description")
     private String description;
@@ -41,10 +45,35 @@ public class Request implements Serializable {
     @JsonIgnoreProperties(value = { "media", "request" }, allowSetters = true)
     private Set<RequestAttachment> attachments = new HashSet<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "request", cascade = CascadeType.ALL)
+    private Set<RequestChat> chats = new HashSet<>();
+
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
+
+    public Optional<RequestBid> getSelectedBid() {
+        Optional<RequestBid> optionalRequestBid = getRequestBids()
+            .stream()
+            .filter(rb -> rb.getStatus() == RequestBidStatus.SELECTED_BID)
+            .findFirst();
+
+        return optionalRequestBid;
+    }
+
+    public Optional<User> getSelectedBidUser() {
+        Optional<RequestBid> optionalRequestBid = getRequestBids()
+            .stream()
+            .filter(rb -> rb.getStatus() == RequestBidStatus.SELECTED_BID)
+            .findFirst();
+
+        if (!optionalRequestBid.isPresent()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(optionalRequestBid.get().getUser());
+    }
 
     public Long getId() {
         return this.id;
@@ -191,7 +220,8 @@ public class Request implements Serializable {
         return this;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and
+    // setters here
 
     @Override
     public boolean equals(Object o) {
@@ -206,7 +236,8 @@ public class Request implements Serializable {
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        // see
+        // https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
@@ -214,9 +245,21 @@ public class Request implements Serializable {
     @Override
     public String toString() {
         return "Request{" +
-            "id=" + getId() +
-            ", description='" + getDescription() + "'" +
-            ", status='" + getStatus() + "'" +
-            "}";
+                "id=" + getId() +
+                ", description='" + getDescription() + "'" +
+                ", status='" + getStatus() + "'" +
+                "}";
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

@@ -18,45 +18,15 @@ describe('RequestProgress e2e test', () => {
   const requestProgressSample = {};
 
   let requestProgress;
-  let walletTransaction;
 
   beforeEach(() => {
     cy.login(username, password);
   });
 
   beforeEach(() => {
-    // create an instance at the required relationship entity:
-    cy.authenticatedRequest({
-      method: 'POST',
-      url: '/api/wallet-transactions',
-      body: { amount: 30534, type: 'BUY', status: 'VERIFING', createAt: '2024-01-25' },
-    }).then(({ body }) => {
-      walletTransaction = body;
-    });
-  });
-
-  beforeEach(() => {
     cy.intercept('GET', '/api/request-progresses+(?*|)').as('entitiesRequest');
     cy.intercept('POST', '/api/request-progresses').as('postEntityRequest');
     cy.intercept('DELETE', '/api/request-progresses/*').as('deleteEntityRequest');
-  });
-
-  beforeEach(() => {
-    // Simulate relationships api for better performance and reproducibility.
-    cy.intercept('GET', '/api/wallet-transactions', {
-      statusCode: 200,
-      body: [walletTransaction],
-    });
-
-    cy.intercept('GET', '/api/request-progress-attachments', {
-      statusCode: 200,
-      body: [],
-    });
-
-    cy.intercept('GET', '/api/requests', {
-      statusCode: 200,
-      body: [],
-    });
   });
 
   afterEach(() => {
@@ -66,17 +36,6 @@ describe('RequestProgress e2e test', () => {
         url: `/api/request-progresses/${requestProgress.id}`,
       }).then(() => {
         requestProgress = undefined;
-      });
-    }
-  });
-
-  afterEach(() => {
-    if (walletTransaction) {
-      cy.authenticatedRequest({
-        method: 'DELETE',
-        url: `/api/wallet-transactions/${walletTransaction.id}`,
-      }).then(() => {
-        walletTransaction = undefined;
       });
     }
   });
@@ -120,10 +79,7 @@ describe('RequestProgress e2e test', () => {
         cy.authenticatedRequest({
           method: 'POST',
           url: '/api/request-progresses',
-          body: {
-            ...requestProgressSample,
-            transaction: walletTransaction,
-          },
+          body: requestProgressSample,
         }).then(({ body }) => {
           requestProgress = body;
 
@@ -210,11 +166,9 @@ describe('RequestProgress e2e test', () => {
       cy.get(`[data-cy="description"]`).type('yahoo');
       cy.get(`[data-cy="description"]`).should('have.value', 'yahoo');
 
-      cy.get(`[data-cy="type"]`).select('SECOND_PAYMENT');
+      cy.get(`[data-cy="type"]`).select('REPORT_3');
 
-      cy.get(`[data-cy="status"]`).select('FAILED');
-
-      cy.get(`[data-cy="transaction"]`).select(1);
+      cy.get(`[data-cy="status"]`).select('SUCCEED');
 
       cy.get(entityCreateSaveButtonSelector).click();
 

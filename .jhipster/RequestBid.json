@@ -17,7 +17,7 @@
     },
     {
       "fieldName": "price",
-      "fieldType": "Long"
+      "fieldType": "Double"
     },
     {
       "fieldName": "duration",

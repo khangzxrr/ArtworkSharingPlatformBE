@@ -22,14 +22,14 @@ enum RequestProgressType {
     REPORT_3,
     REPORT_4,
     SECOND_PAYMENT,
-    NO_ACTION_LEFT,
+    NO_ACTION_LEFT
 }
 
 
 enum RequestProgressStatus {
     PENDING,
     SUCCEED,
-    FAILED,
+    FAILED
 }
 
 enum ArtworkSellingType {
@@ -45,13 +45,20 @@ enum ArtworkSellingStatus {
 
 enum ComplainStatus {
 	POSTED,
+    ACCEPTED,
     HIDED
 }
 
 enum WalletTransactionType {
 	DEPOSIT,
     WITHDRAWAL,
-    BUY
+    BUY,
+    SERVICE_FEE_EARN,
+    REQUEST_EARN,
+    WITHDRAW_REQUEST_FIRST_PAYMENT_TEMP,
+    REQUEST_FIRST_PAYMENT_TEMP,
+    WITHDRAW_REFUND_REQUEST_FIRST_PAYMENT_TEMP,
+    REFUND
 }
 
 enum WalletTransactionStatus {
@@ -62,18 +69,19 @@ enum WalletTransactionStatus {
 
 enum SellingBidStatus {
 	BIDED,
+    FAILED,
     SOLD
 }
 
 
 entity Wallet {
 	id Long,
-    amount Long
+    amount Double
 }
 
 entity WalletTransaction {
 	id Long,
-    amount Long,
+    amount Double,
     type WalletTransactionType,
     status WalletTransactionStatus,
     createAt LocalDate,
@@ -218,7 +226,7 @@ relationship OneToOne {
     
     Artwork{artworkSelling} to ArtworkSelling
     
-    RequestProgress{transaction required} to WalletTransaction
+    RequestProgress{transaction} to WalletTransaction
   	SellingBid{transaction required} to WalletTransaction
     
     Wallet to User with builtInEntity

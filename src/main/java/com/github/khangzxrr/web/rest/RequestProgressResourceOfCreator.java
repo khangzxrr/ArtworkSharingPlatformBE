@@ -1,13 +1,16 @@
 package com.github.khangzxrr.web.rest;
 
 import com.github.khangzxrr.service.RequestProgressReportService;
+import com.github.khangzxrr.service.RequestProgressService;
 import com.github.khangzxrr.service.dto.RequestProgressDTO;
 import com.github.khangzxrr.service.dto.requestProgressDto.CreateRequestProgressReportDTO;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,10 +29,20 @@ public class RequestProgressResourceOfCreator {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final RequestProgressReportService requestProgressService;
+    private final RequestProgressReportService requestProgressReportService;
+    private final RequestProgressService requestProgressService;
 
-    public RequestProgressResourceOfCreator(RequestProgressReportService requestProgressService) {
+    public RequestProgressResourceOfCreator(
+        RequestProgressReportService requestProgressReportService,
+        RequestProgressService requestProgressService
+    ) {
+        this.requestProgressReportService = requestProgressReportService;
         this.requestProgressService = requestProgressService;
+    }
+
+    @GetMapping("{requestId}/request-progresses")
+    public ResponseEntity<List<RequestProgressDTO>> getRequestProgresses(@PathVariable(name = "requestId") long requestId) {
+        return ResponseEntity.ok().body(requestProgressService.findAllByRequestId(requestId));
     }
 
     @PostMapping("{requestId}/request-progresses/reports")
@@ -39,7 +52,7 @@ public class RequestProgressResourceOfCreator {
     ) {
         log.info("Request create new request report progress for request id: {}, {}", requestId, createRequestProgressReportDTO);
 
-        RequestProgressDTO requestProgressDTO = requestProgressService.create(requestId, createRequestProgressReportDTO);
+        RequestProgressDTO requestProgressDTO = requestProgressReportService.create(requestId, createRequestProgressReportDTO);
 
         return ResponseEntity
             .ok()

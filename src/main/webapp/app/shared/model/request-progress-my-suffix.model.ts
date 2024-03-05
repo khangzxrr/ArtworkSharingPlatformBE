@@ -11,7 +11,7 @@ export interface IRequestProgressMySuffix {
   description?: string | null;
   type?: keyof typeof RequestProgressType | null;
   status?: keyof typeof RequestProgressStatus | null;
-  transaction?: IWalletTransactionMySuffix;
+  transaction?: IWalletTransactionMySuffix | null;
   attachments?: IRequestProgressAttachmentMySuffix[] | null;
   request?: IRequestMySuffix | null;
 }

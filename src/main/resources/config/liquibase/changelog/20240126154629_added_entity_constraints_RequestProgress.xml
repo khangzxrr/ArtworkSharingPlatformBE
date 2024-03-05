@@ -8,12 +8,6 @@
     -->
     <changeSet id="20240126154629-2" author="jhipster">
 
-        <addUniqueConstraint
-            columnNames="request_id, type"
-            constraintName="unique_combine_request_id_and_type"
-            tableName="request_progress"
-        />
-
         <addForeignKeyConstraint baseColumnNames="transaction_id"
                                  baseTableName="request_progress"
                                  constraintName="fk_request_progress__transaction_id"
