@@ -1,12 +1,15 @@
 package com.github.khangzxrr.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.khangzxrr.domain.enumeration.ArtworkStatus;
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A DTO for the {@link com.github.khangzxrr.domain.Artwork} entity.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ArtworkDTO implements Serializable {
 
@@ -20,11 +23,20 @@ public class ArtworkDTO implements Serializable {
 
     private ArtworkStatus status;
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private ArtworkSellingDTO artworkSelling;
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private UserDTO owner;
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private ArtworkCategoryDTO category;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private Long numberOfLikes;
+
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private Set<ArtworkCommentDTO> comments;
 
     public Long getId() {
         return id;
@@ -88,6 +100,22 @@ public class ArtworkDTO implements Serializable {
 
     public void setCategory(ArtworkCategoryDTO category) {
         this.category = category;
+    }
+
+    public Long getNumberOfLikes() {
+        return this.numberOfLikes;
+    }
+
+    public void setNumberOfLikes(Long numberOfLikes) {
+        this.numberOfLikes = numberOfLikes;
+    }
+
+    public Set<ArtworkCommentDTO> getArtworkComment() {
+        return comments;
+    }
+
+    public void setArtworkComment(Set<ArtworkCommentDTO> artworkComment) {
+        this.comments = artworkComment;
     }
 
     @Override

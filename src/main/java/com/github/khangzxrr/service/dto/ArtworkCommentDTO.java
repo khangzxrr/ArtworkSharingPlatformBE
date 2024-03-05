@@ -1,5 +1,6 @@
 package com.github.khangzxrr.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -7,6 +8,7 @@ import java.util.Objects;
 /**
  * A DTO for the {@link com.github.khangzxrr.domain.ArtworkComment} entity.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @SuppressWarnings("common-java:DuplicatedBlocks")
 public class ArtworkCommentDTO implements Serializable {
 
@@ -18,6 +20,7 @@ public class ArtworkCommentDTO implements Serializable {
 
     private UserDTO owner;
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private ArtworkDTO artwork;
 
     public Long getId() {

@@ -172,9 +172,6 @@ public class ArtworkServiceImpl implements ArtworkService {
         Long artworkPrice = artworkSelling.getExpectedSellingPrice();
 
         Wallet curWallet = walletService.getCurrentUserWallet();
-        log.debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", artworkPrice);
-
-        log.debug("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", curWallet.getAmount());
 
         if (curWallet.getAmount() < artworkPrice) {
             return 2;
@@ -240,5 +237,26 @@ public class ArtworkServiceImpl implements ArtworkService {
         transaction.setStatus(WalletTransactionStatus.SUCCEED);
         transaction.setCreateAt(LocalDate.now());
         return transaction;
+    }
+
+    @Override
+    public Optional<ArtworkDTO> findAllPostLike(Long id) {
+        log.debug("Request to get Artwork : {}", id);
+
+        Artwork artwork = artworkRepository
+            .findById(id)
+            .orElseThrow(() -> new BadRequestIDAlertException("Artwork not found with ID: ", id, "Artwork_not_found"));
+
+        long likeCount = artwork.getLikes().size();
+        Artwork artworkPost = new Artwork();
+        artworkPost.setId(artwork.getId());
+        artworkPost.setName(artwork.getName());
+        artworkPost.setComments(artwork.getComments());
+
+        ArtworkDTO artworkPostDTO = artworkMapper.toDtoPost(artworkPost);
+
+        artworkPostDTO.setNumberOfLikes(likeCount);
+
+        return Optional.ofNullable(artworkPostDTO);
     }
 }

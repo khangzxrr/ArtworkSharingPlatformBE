@@ -82,6 +82,7 @@ public class SecurityConfiguration {
 
                     .requestMatchers(mvc.pattern("/api/artwork-Directsellings/**")).permitAll()
                     .requestMatchers(mvc.pattern("/api/artworks/**")).permitAll()
+                    .requestMatchers(mvc.pattern("/api/PostOfArtWork/**")).permitAll()
 
                     .requestMatchers(mvc.pattern("/api/authorities")).authenticated()
 

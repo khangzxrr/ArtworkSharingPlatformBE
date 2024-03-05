@@ -58,4 +58,6 @@ public interface ArtworkService {
     void cancel(Long id);
 
     int purchaseArtwork(Long artworkId);
+
+    Optional<ArtworkDTO> findAllPostLike(Long id);
 }
