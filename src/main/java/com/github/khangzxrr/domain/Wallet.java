@@ -147,7 +147,7 @@ public class Wallet implements Serializable {
                 currentAmount -= walletTransaction.getAmount();
                 break;
             case DIRECT_SELLING_FEE_EARN:
-                currentAmount += (walletTransaction.getAmount() * 0.95);
+                currentAmount += (walletTransaction.getAmount() * 0.05);
                 break;
             default:
                 break;

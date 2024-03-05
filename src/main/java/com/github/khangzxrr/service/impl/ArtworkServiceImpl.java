@@ -18,7 +18,6 @@ import com.github.khangzxrr.service.dto.ArtworkDTO;
 import com.github.khangzxrr.service.mapper.ArtworkMapper;
 import com.github.khangzxrr.service.mapper.WalletMapper;
 import com.github.khangzxrr.service.mapper.WalletTransactionMapper;
-import com.github.khangzxrr.web.rest.errors.BadRequestAlertException;
 import com.github.khangzxrr.web.rest.errors.BadRequestIDAlertException;
 import java.time.LocalDate;
 import java.util.LinkedList;
@@ -44,7 +43,6 @@ public class ArtworkServiceImpl implements ArtworkService {
 
     private final WalletService walletService;
     private final ArtworkMapper artworkMapper;
-    private final WalletMapper walletMapper;
     private final WalletRepository walletRepository;
     private final WalletTransactionService walletTransactionService;
     private final WalletTransactionMapper walletTransactionMapper;
@@ -65,7 +63,6 @@ public class ArtworkServiceImpl implements ArtworkService {
         this.artworkMapper = artworkMapper;
         this.artworkSellingRepository = artworkSellingRepository;
         this.walletService = walletService;
-        this.walletMapper = walletMapper;
         this.walletRepository = walletRepository;
         this.walletTransactionService = walletTransactionService;
         this.walletTransactionMapper = walletTransactionMapper;
@@ -123,12 +120,6 @@ public class ArtworkServiceImpl implements ArtworkService {
     }
 
     @Override
-    public ArtworkDTO DirectSellings(ArtworkDTO artworkDTO) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'DirectSellings'");
-    }
-
-    @Override
     public ArtworkDTO updateSaleDirect(ArtworkDTO artworkDTO) {
         log.debug("Request to update Artwork : {}", artworkDTO);
         Artwork artwork = artworkMapper.toEntity(artworkDTO);
@@ -162,59 +153,6 @@ public class ArtworkServiceImpl implements ArtworkService {
         }
     }
 
-    // @Override
-    // public boolean purchaseArtwork(Long artworkId) {
-
-    // Artwork artwork = artworkRepository.findById(artworkId)
-    // .orElseThrow(() -> new IllegalArgumentException("Artwork not found with ID: "
-    // + artworkId));
-
-    // ArtworkSelling artworkSelling =
-    // artworkSellingRepository.findById(artwork.getArtworkSelling().getId())
-    // .orElseThrow(() -> new IllegalArgumentException("Artwork selling not found
-    // for artwork with ID: " + artworkId));
-
-    // Wallet creatorWallet = walletRepository.findById(artwork.getOwner().getId())
-    // .orElseThrow(() -> new IllegalArgumentException("Creator wallet not found " +
-    // artworkId));
-
-    // Long artworkPrice = artworkSelling.getExpectedSellingPrice();
-
-    // Wallet curWallet = walletService.getCurrentUserWallet();
-
-    // if (curWallet.getAmount() < artworkPrice) {
-    // return false;
-    // }
-
-    // WalletTransaction buyTransaction = new WalletTransaction();
-
-    // buyTransaction.setAmount(artworkPrice);
-    // buyTransaction.setType(WalletTransactionType.BUY);
-    // buyTransaction.status(WalletTransactionStatus.SUCCEED);
-    // buyTransaction.setCreateAt(LocalDate.now());
-    // curWallet.addTransactions(buyTransaction);
-
-    // walletTransactionService.save(walletTransactionMapper.toDto(buyTransaction));
-    // walletService.save(walletMapper.toDto(curWallet));
-
-    // WalletTransaction earnTransaction = new WalletTransaction();
-
-    // earnTransaction.setAmount(artworkPrice);
-    // earnTransaction.setType(WalletTransactionType.DIRECT_SELL_EARN);
-    // earnTransaction.status(WalletTransactionStatus.SUCCEED);
-    // earnTransaction.setCreateAt(LocalDate.now());
-    // creatorWallet.addTransactions(earnTransaction);
-
-    // walletTransactionService.save(walletTransactionMapper.toDto(earnTransaction));
-    // walletService.save(walletMapper.toDto(creatorWallet));
-
-    // artwork.setOwner(curWallet.getUser());
-    // cancel(artworkId);
-
-    // return true;
-
-    // }
-
     @Override
     public int purchaseArtwork(Long artworkId) {
         Artwork artwork = artworkRepository
@@ -234,6 +172,9 @@ public class ArtworkServiceImpl implements ArtworkService {
         Long artworkPrice = artworkSelling.getExpectedSellingPrice();
 
         Wallet curWallet = walletService.getCurrentUserWallet();
+        log.debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", artworkPrice);
+
+        log.debug("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", curWallet.getAmount());
 
         if (curWallet.getAmount() < artworkPrice) {
             return 2;
@@ -262,7 +203,7 @@ public class ArtworkServiceImpl implements ArtworkService {
         walletService.save(creatorWallet);
 
         //Cộng phí vào tài khoàn admin
-        WalletTransaction feeTransaction = createEarnTransaction(artworkPrice);
+        WalletTransaction feeTransaction = createFeeTransaction(artworkPrice);
         adminwallet.addTransactions(feeTransaction);
         walletTransactionService.save(walletTransactionMapper.toDto(feeTransaction));
         walletService.save(adminwallet);
