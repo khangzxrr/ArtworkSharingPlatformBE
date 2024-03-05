@@ -120,6 +120,9 @@ public class Wallet implements Serializable {
 
                 currentAmount -= walletTransaction.getAmount();
                 break;
+            case DIRECT_SELL_EARN:
+                currentAmount += walletTransaction.getAmount();
+                break;
             case REQUEST_EARN:
                 currentAmount += walletTransaction.getAmount();
                 break;
@@ -143,6 +146,7 @@ public class Wallet implements Serializable {
 
                 currentAmount -= walletTransaction.getAmount();
                 break;
+            
             default:
                 break;
         }

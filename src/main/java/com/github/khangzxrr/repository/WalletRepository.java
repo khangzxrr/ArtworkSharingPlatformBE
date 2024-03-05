@@ -15,6 +15,7 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
 
     @Query("select wallet from Wallet wallet where wallet.user.login = ?#{authentication.name}")
     Optional<Wallet> findByUserIsCurrentUser();
-
+  
+    Optional<Wallet> findByUserId(Long userId);
     Optional<Wallet> findByUserLogin(String login);
 }

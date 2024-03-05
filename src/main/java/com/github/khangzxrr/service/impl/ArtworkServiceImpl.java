@@ -1,10 +1,24 @@
 package com.github.khangzxrr.service.impl;
 
 import com.github.khangzxrr.domain.Artwork;
+import com.github.khangzxrr.domain.ArtworkSelling;
+import com.github.khangzxrr.domain.Wallet;
+import com.github.khangzxrr.domain.WalletTransaction;
+import com.github.khangzxrr.domain.enumeration.ArtworkSellingStatus;
+import com.github.khangzxrr.domain.enumeration.ArtworkSellingType;
+import com.github.khangzxrr.domain.enumeration.WalletTransactionStatus;
+import com.github.khangzxrr.domain.enumeration.WalletTransactionType;
 import com.github.khangzxrr.repository.ArtworkRepository;
+import com.github.khangzxrr.repository.ArtworkSellingRepository;
+import com.github.khangzxrr.repository.WalletRepository;
 import com.github.khangzxrr.service.ArtworkService;
+import com.github.khangzxrr.service.WalletService;
+import com.github.khangzxrr.service.WalletTransactionService;
 import com.github.khangzxrr.service.dto.ArtworkDTO;
 import com.github.khangzxrr.service.mapper.ArtworkMapper;
+import com.github.khangzxrr.service.mapper.WalletMapper;
+import com.github.khangzxrr.service.mapper.WalletTransactionMapper;
+import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +29,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service Implementation for managing {@link com.github.khangzxrr.domain.Artwork}.
+ * Service Implementation for managing
+ * {@link com.github.khangzxrr.domain.Artwork}.
  */
 @Service
 @Transactional
@@ -25,11 +40,33 @@ public class ArtworkServiceImpl implements ArtworkService {
 
     private final ArtworkRepository artworkRepository;
 
+    private final WalletService walletService;
     private final ArtworkMapper artworkMapper;
+    private final WalletMapper walletMapper;
+    private final WalletRepository walletRepository;
+    private final WalletTransactionService walletTransactionService;
+    private final WalletTransactionMapper walletTransactionMapper;
 
-    public ArtworkServiceImpl(ArtworkRepository artworkRepository, ArtworkMapper artworkMapper) {
+    private final ArtworkSellingRepository artworkSellingRepository;
+
+    public ArtworkServiceImpl(
+        ArtworkRepository artworkRepository,
+        ArtworkMapper artworkMapper,
+        ArtworkSellingRepository artworkSellingRepository,
+        WalletService walletService,
+        WalletMapper walletMapper,
+        WalletRepository walletRepository,
+        WalletTransactionService walletTransactionService,
+        WalletTransactionMapper walletTransactionMapper
+    ) {
         this.artworkRepository = artworkRepository;
         this.artworkMapper = artworkMapper;
+        this.artworkSellingRepository = artworkSellingRepository;
+        this.walletService = walletService;
+        this.walletMapper = walletMapper;
+        this.walletRepository = walletRepository;
+        this.walletTransactionService = walletTransactionService;
+        this.walletTransactionMapper = walletTransactionMapper;
     }
 
     @Override
@@ -81,5 +118,151 @@ public class ArtworkServiceImpl implements ArtworkService {
     public void delete(Long id) {
         log.debug("Request to delete Artwork : {}", id);
         artworkRepository.deleteById(id);
+    }
+
+    @Override
+    public ArtworkDTO DirectSellings(ArtworkDTO artworkDTO) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'DirectSellings'");
+    }
+
+    @Override
+    public ArtworkDTO updateSaleDirect(ArtworkDTO artworkDTO) {
+        log.debug("Request to update Artwork : {}", artworkDTO);
+        Artwork artwork = artworkMapper.toEntity(artworkDTO);
+
+        artwork.getArtworkSelling().setType(ArtworkSellingType.DIRECT);
+        artwork.getArtworkSelling().setStatus(ArtworkSellingStatus.ON_GOING);
+        artworkSellingRepository.save(artwork.getArtworkSelling());
+        artwork = artworkRepository.save(artwork);
+        return artworkMapper.toDto(artwork);
+    }
+
+    @Override
+    public void cancel(Long id) {
+        Optional<Artwork> artworkafterdelteSeling = artworkRepository.findById(id);
+
+        if (artworkafterdelteSeling.isPresent()) {
+            Artwork aftercancel = artworkafterdelteSeling.get();
+            long idSelling = aftercancel.getArtworkSelling().getId();
+            aftercancel.setArtworkSelling(null);
+            artworkSellingRepository.deleteById(idSelling);
+            artworkRepository.save(aftercancel);
+        }
+    }
+
+    // @Override
+    // public boolean purchaseArtwork(Long artworkId) {
+
+    // Artwork artwork = artworkRepository.findById(artworkId)
+    // .orElseThrow(() -> new IllegalArgumentException("Artwork not found with ID: "
+    // + artworkId));
+
+    // ArtworkSelling artworkSelling =
+    // artworkSellingRepository.findById(artwork.getArtworkSelling().getId())
+    // .orElseThrow(() -> new IllegalArgumentException("Artwork selling not found
+    // for artwork with ID: " + artworkId));
+
+    // Wallet creatorWallet = walletRepository.findById(artwork.getOwner().getId())
+    // .orElseThrow(() -> new IllegalArgumentException("Creator wallet not found " +
+    // artworkId));
+
+    // Long artworkPrice = artworkSelling.getExpectedSellingPrice();
+
+    // Wallet curWallet = walletService.getCurrentUserWallet();
+
+    // if (curWallet.getAmount() < artworkPrice) {
+    // return false;
+    // }
+
+    // WalletTransaction buyTransaction = new WalletTransaction();
+
+    // buyTransaction.setAmount(artworkPrice);
+    // buyTransaction.setType(WalletTransactionType.BUY);
+    // buyTransaction.status(WalletTransactionStatus.SUCCEED);
+    // buyTransaction.setCreateAt(LocalDate.now());
+    // curWallet.addTransactions(buyTransaction);
+
+    // walletTransactionService.save(walletTransactionMapper.toDto(buyTransaction));
+    // walletService.save(walletMapper.toDto(curWallet));
+
+    // WalletTransaction earnTransaction = new WalletTransaction();
+
+    // earnTransaction.setAmount(artworkPrice);
+    // earnTransaction.setType(WalletTransactionType.DIRECT_SELL_EARN);
+    // earnTransaction.status(WalletTransactionStatus.SUCCEED);
+    // earnTransaction.setCreateAt(LocalDate.now());
+    // creatorWallet.addTransactions(earnTransaction);
+
+    // walletTransactionService.save(walletTransactionMapper.toDto(earnTransaction));
+    // walletService.save(walletMapper.toDto(creatorWallet));
+
+    // artwork.setOwner(curWallet.getUser());
+    // cancel(artworkId);
+
+    // return true;
+
+    // }
+
+    @Override
+    public int purchaseArtwork(Long artworkId) {
+        Artwork artwork = artworkRepository
+            .findById(artworkId)
+            .orElseThrow(() -> new IllegalArgumentException("Artwork not found with ID: " + artworkId));
+
+        ArtworkSelling artworkSelling = artworkSellingRepository
+            .findById(artwork.getArtworkSelling().getId())
+            .orElseThrow(() -> new IllegalArgumentException("Artwork selling not found for artwork with ID: " + artworkId));
+
+        Wallet creatorWallet = walletRepository
+            .findByUserId(artwork.getOwner().getId())
+            .orElseThrow(() -> new IllegalArgumentException("Creator wallet not found " + artworkId));
+        Long artworkPrice = artworkSelling.getExpectedSellingPrice();
+
+        Wallet curWallet = walletService.getCurrentUserWallet();
+
+        if (curWallet.getAmount() < artworkPrice) {
+            return 2;
+        }
+
+        if (artwork.getOwner().getId() == curWallet.getUser().getId()) {
+            return 3;
+        }
+
+        // Tạo giao dịch mua Artwork và lưu vào ví của người dùng hiện tại
+        WalletTransaction buyTransaction = createBuyTransaction(artworkPrice);
+        curWallet.addTransactions(buyTransaction);
+        walletTransactionService.save(walletTransactionMapper.toDto(buyTransaction));
+        walletService.save(walletMapper.toDto(curWallet));
+
+        // Tạo giao dịch kiếm tiền cho người tạo Artwork và lưu vào ví của họ
+        WalletTransaction earnTransaction = createEarnTransaction(artworkPrice);
+        creatorWallet.addTransactions(earnTransaction);
+        walletTransactionService.save(walletTransactionMapper.toDto(earnTransaction));
+        walletService.save(walletMapper.toDto(creatorWallet));
+
+        // Cập nhật người sở hữu mới cho Artwork và hủy bán Artwork
+        artwork.setOwner(curWallet.getUser());
+        cancel(artworkId);
+
+        return 1;
+    }
+
+    private WalletTransaction createBuyTransaction(Long amount) {
+        WalletTransaction transaction = new WalletTransaction();
+        transaction.setAmount(amount);
+        transaction.setType(WalletTransactionType.BUY);
+        transaction.setStatus(WalletTransactionStatus.SUCCEED);
+        transaction.setCreateAt(LocalDate.now());
+        return transaction;
+    }
+
+    private WalletTransaction createEarnTransaction(Long amount) {
+        WalletTransaction transaction = new WalletTransaction();
+        transaction.setAmount(amount);
+        transaction.setType(WalletTransactionType.DIRECT_SELL_EARN);
+        transaction.setStatus(WalletTransactionStatus.SUCCEED);
+        transaction.setCreateAt(LocalDate.now());
+        return transaction;
     }
 }

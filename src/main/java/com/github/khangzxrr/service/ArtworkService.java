@@ -24,6 +24,7 @@ public interface ArtworkService {
      */
     ArtworkDTO update(ArtworkDTO artworkDTO);
 
+    ArtworkDTO updateSaleDirect(ArtworkDTO artworkDTO);
     /**
      * Partially updates a artwork.
      *
@@ -53,4 +54,10 @@ public interface ArtworkService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    ArtworkDTO DirectSellings(ArtworkDTO artworkDTO);
+
+    void cancel(Long id);
+
+    int purchaseArtwork(Long artworkId);
 }
