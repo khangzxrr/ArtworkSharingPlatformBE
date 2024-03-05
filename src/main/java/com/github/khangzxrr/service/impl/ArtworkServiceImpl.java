@@ -18,6 +18,8 @@ import com.github.khangzxrr.service.dto.ArtworkDTO;
 import com.github.khangzxrr.service.mapper.ArtworkMapper;
 import com.github.khangzxrr.service.mapper.WalletMapper;
 import com.github.khangzxrr.service.mapper.WalletTransactionMapper;
+import com.github.khangzxrr.web.rest.errors.BadRequestAlertException;
+import com.github.khangzxrr.web.rest.errors.BadRequestIDAlertException;
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
@@ -208,15 +210,18 @@ public class ArtworkServiceImpl implements ArtworkService {
     public int purchaseArtwork(Long artworkId) {
         Artwork artwork = artworkRepository
             .findById(artworkId)
-            .orElseThrow(() -> new IllegalArgumentException("Artwork not found with ID: " + artworkId));
+            .orElseThrow(() -> new BadRequestIDAlertException("Artwork not found with ID: ", artworkId, "Artwork_not_found"));
 
         ArtworkSelling artworkSelling = artworkSellingRepository
             .findById(artwork.getArtworkSelling().getId())
-            .orElseThrow(() -> new IllegalArgumentException("Artwork selling not found for artwork with ID: " + artworkId));
+            .orElseThrow(() ->
+                new BadRequestIDAlertException("Artwork selling not found for artwork with ID: ", artworkId, "ArtworkSelling_not_found")
+            );
 
         Wallet creatorWallet = walletRepository
             .findByUserId(artwork.getOwner().getId())
-            .orElseThrow(() -> new IllegalArgumentException("Creator wallet not found " + artworkId));
+            .orElseThrow(() -> new BadRequestIDAlertException("Creator wallet not found ", artworkId, "Creator"));
+
         Long artworkPrice = artworkSelling.getExpectedSellingPrice();
 
         Wallet curWallet = walletService.getCurrentUserWallet();
@@ -229,17 +234,29 @@ public class ArtworkServiceImpl implements ArtworkService {
             return 3;
         }
 
+        if (!artwork.getArtworkSelling().getStatus().equals(ArtworkSellingStatus.ON_GOING)) {
+            return 4;
+        }
+
+        Wallet adminwallet = walletService.getAdminWallet();
+
         // Tạo giao dịch mua Artwork và lưu vào ví của người dùng hiện tại
         WalletTransaction buyTransaction = createBuyTransaction(artworkPrice);
         curWallet.addTransactions(buyTransaction);
         walletTransactionService.save(walletTransactionMapper.toDto(buyTransaction));
-        walletService.save(walletMapper.toDto(curWallet));
+        walletService.save(curWallet);
 
         // Tạo giao dịch kiếm tiền cho người tạo Artwork và lưu vào ví của họ
         WalletTransaction earnTransaction = createEarnTransaction(artworkPrice);
         creatorWallet.addTransactions(earnTransaction);
         walletTransactionService.save(walletTransactionMapper.toDto(earnTransaction));
-        walletService.save(walletMapper.toDto(creatorWallet));
+        walletService.save(creatorWallet);
+
+        //Cộng phí vào tài khoàn admin
+        WalletTransaction feeTransaction = createEarnTransaction(artworkPrice);
+        adminwallet.addTransactions(feeTransaction);
+        walletTransactionService.save(walletTransactionMapper.toDto(feeTransaction));
+        walletService.save(adminwallet);
 
         // Cập nhật người sở hữu mới cho Artwork và hủy bán Artwork
         artwork.setOwner(curWallet.getUser());
@@ -248,7 +265,7 @@ public class ArtworkServiceImpl implements ArtworkService {
         return 1;
     }
 
-    private WalletTransaction createBuyTransaction(Long amount) {
+    private WalletTransaction createBuyTransaction(double amount) {
         WalletTransaction transaction = new WalletTransaction();
         transaction.setAmount(amount);
         transaction.setType(WalletTransactionType.BUY);
@@ -257,10 +274,19 @@ public class ArtworkServiceImpl implements ArtworkService {
         return transaction;
     }
 
-    private WalletTransaction createEarnTransaction(Long amount) {
+    private WalletTransaction createEarnTransaction(double amount) {
         WalletTransaction transaction = new WalletTransaction();
         transaction.setAmount(amount);
         transaction.setType(WalletTransactionType.DIRECT_SELL_EARN);
+        transaction.setStatus(WalletTransactionStatus.SUCCEED);
+        transaction.setCreateAt(LocalDate.now());
+        return transaction;
+    }
+
+    private WalletTransaction createFeeTransaction(double amount) {
+        WalletTransaction transaction = new WalletTransaction();
+        transaction.setAmount(amount);
+        transaction.setType(WalletTransactionType.DIRECT_SELLING_FEE_EARN);
         transaction.setStatus(WalletTransactionStatus.SUCCEED);
         transaction.setCreateAt(LocalDate.now());
         return transaction;

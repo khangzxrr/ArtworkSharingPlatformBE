@@ -56,6 +56,8 @@ public class ArtworkSelingDirectResourse {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to purchase artwork.");
             case 3:
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("You cannot purchase your own artwork.");
+            case 4:
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Artwork have been sold.");
             default:
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
         }
@@ -90,6 +92,10 @@ public class ArtworkSelingDirectResourse {
 
     @DeleteMapping("/creator/artworkSelling/{id}/cancel")
     public ResponseEntity<Void> deleteArtwork(@PathVariable("id") Long id) {
+        if (!artworkRepository.existsArtworkSellingByArtworkId(id)) {
+            throw new BadRequestAlertException("Artwork Selling Doesn't exist", ENTITY_NAME, "ArtworkSeling_Doesnot_exist");
+        }
+
         log.debug("REST request to delete Artwork : {}", id);
         artworkService.cancel(id);
         return ResponseEntity
