@@ -133,11 +133,20 @@ public class ArtworkServiceImpl implements ArtworkService {
         log.debug("Request to update Artwork : {}", artworkDTO);
         Artwork artwork = artworkMapper.toEntity(artworkDTO);
 
+        Long artid = artwork.getId();
+
+        Artwork newArtWork = artworkRepository
+            .findById(artid)
+            .orElseThrow(() -> new BadRequestIDAlertException("Artwork not found with ID: ", artid, "Artwork_not_found"));
+
         artwork.getArtworkSelling().setType(ArtworkSellingType.DIRECT);
         artwork.getArtworkSelling().setStatus(ArtworkSellingStatus.ON_GOING);
-        artworkSellingRepository.save(artwork.getArtworkSelling());
-        artwork = artworkRepository.save(artwork);
-        return artworkMapper.toDto(artwork);
+
+        newArtWork.setArtworkSelling(artwork.getArtworkSelling());
+
+        artworkSellingRepository.save(newArtWork.getArtworkSelling());
+        artwork = artworkRepository.save(newArtWork);
+        return artworkMapper.toDto(newArtWork);
     }
 
     @Override
