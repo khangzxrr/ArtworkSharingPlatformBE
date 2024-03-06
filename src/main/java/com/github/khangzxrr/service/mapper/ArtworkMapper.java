@@ -8,6 +8,7 @@ import com.github.khangzxrr.service.dto.ArtworkCategoryDTO;
 import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
 import com.github.khangzxrr.service.dto.UserDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.CreateArtworkDTO;
 import org.mapstruct.*;
 
 /**
@@ -15,23 +16,10 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface ArtworkMapper extends EntityMapper<ArtworkDTO, Artwork> {
-    @Mapping(target = "artworkSelling", source = "artworkSelling", qualifiedByName = "artworkSellingId")
-    @Mapping(target = "owner", source = "owner", qualifiedByName = "userId")
-    @Mapping(target = "category", source = "category", qualifiedByName = "artworkCategoryId")
+    Artwork toEntity(CreateArtworkDTO s);
+
+    @Mapping(target = "artworkSelling", source = "artworkSelling")
+    @Mapping(target = "owner", source = "owner")
+    @Mapping(target = "category", source = "category")
     ArtworkDTO toDto(Artwork s);
-
-    @Named("artworkSellingId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    ArtworkSellingDTO toDtoArtworkSellingId(ArtworkSelling artworkSelling);
-
-    @Named("userId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    UserDTO toDtoUserId(User user);
-
-    @Named("artworkCategoryId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    ArtworkCategoryDTO toDtoArtworkCategoryId(ArtworkCategory artworkCategory);
 }
