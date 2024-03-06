@@ -11,8 +11,10 @@ import com.github.khangzxrr.service.ArtworkService;
 import com.github.khangzxrr.service.UserService;
 import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.CreateArtworkDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.UpdateArtworkDTO;
 import com.github.khangzxrr.service.mapper.ArtworkMapper;
 import com.github.khangzxrr.web.rest.errors.ArtworkCategoryNotExistException;
+import com.github.khangzxrr.web.rest.errors.ArtworkNotFoundException;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -58,26 +60,33 @@ public class ArtworkServiceImpl implements ArtworkService {
     }
 
     @Override
-    public ArtworkDTO update(ArtworkDTO artworkDTO) {
-        log.debug("Request to update Artwork : {}", artworkDTO);
-        Artwork artwork = artworkMapper.toEntity(artworkDTO);
+    public ArtworkDTO update(Long id, UpdateArtworkDTO updateArtworkDTO) {
+        log.debug("Request to update Artwork : {}", updateArtworkDTO);
+
+        Optional<Artwork> artworkOptional = artworkRepository.findById(id);
+
+        if (!artworkOptional.isPresent()) {
+            throw new ArtworkNotFoundException();
+        }
+
+        Optional<ArtworkCategory> category = artworkCategoryService.findOne(updateArtworkDTO.getCategoryId());
+
+        if (!category.isPresent()) {
+            throw new ArtworkCategoryNotExistException();
+        }
+
+        Artwork updateArtwork = artworkMapper.toEntity(updateArtworkDTO);
+
+        Artwork artwork = artworkOptional.get();
+        artwork.setArtworkAssets(updateArtwork.getArtworkAssets());
+        artwork.setCategory(category.get());
+        artwork.setDescription(updateArtwork.getDescription());
+        artwork.setVisibility(updateArtwork.getVisibility());
+        artwork.setName(updateArtwork.getName());
+
         artwork = artworkRepository.save(artwork);
+
         return artworkMapper.toDto(artwork);
-    }
-
-    @Override
-    public Optional<ArtworkDTO> partialUpdate(ArtworkDTO artworkDTO) {
-        log.debug("Request to partially update Artwork : {}", artworkDTO);
-
-        return artworkRepository
-            .findById(artworkDTO.getId())
-            .map(existingArtwork -> {
-                artworkMapper.partialUpdate(existingArtwork, artworkDTO);
-
-                return existingArtwork;
-            })
-            .map(artworkRepository::save)
-            .map(artworkMapper::toDto);
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.github.khangzxrr.service;
 
 import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.CreateArtworkDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.UpdateArtworkDTO;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,15 +27,7 @@ public interface ArtworkService {
      * @param artworkDTO the entity to update.
      * @return the persisted entity.
      */
-    ArtworkDTO update(ArtworkDTO artworkDTO);
-
-    /**
-     * Partially updates a artwork.
-     *
-     * @param artworkDTO the entity to update partially.
-     * @return the persisted entity.
-     */
-    Optional<ArtworkDTO> partialUpdate(ArtworkDTO artworkDTO);
+    ArtworkDTO update(Long id, UpdateArtworkDTO updateArtworkDTO);
 
     Page<ArtworkDTO> findAllArtworksOfUser(Pageable pageable);
 
