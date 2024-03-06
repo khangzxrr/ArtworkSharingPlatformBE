@@ -2,8 +2,8 @@ package com.github.khangzxrr.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.khangzxrr.domain.enumeration.ArtworkStatus;
+import com.github.khangzxrr.domain.enumeration.ArtworkVisibility;
 import jakarta.persistence.*;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +13,7 @@ import java.util.Set;
 @Entity
 @Table(name = "artwork")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class Artwork implements Serializable {
+public class Artwork extends AbstractAuditingEntity<Long> {
 
     private static final long serialVersionUID = 1L;
 
@@ -28,8 +28,9 @@ public class Artwork implements Serializable {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "create_at")
-    private String createAt;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "visibility")
+    private ArtworkVisibility visibility;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -65,8 +66,9 @@ public class Artwork implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
+    @Override
     public Long getId() {
-        return this.id;
+        return id;
     }
 
     public Artwork id(Long id) {
@@ -102,19 +104,6 @@ public class Artwork implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getCreateAt() {
-        return this.createAt;
-    }
-
-    public Artwork createAt(String createAt) {
-        this.setCreateAt(createAt);
-        return this;
-    }
-
-    public void setCreateAt(String createAt) {
-        this.createAt = createAt;
     }
 
     public ArtworkStatus getStatus() {
@@ -319,8 +308,20 @@ public class Artwork implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
-            ", createAt='" + getCreateAt() + "'" +
+            ", createAt='" + getCreatedDate() + "'" +
             ", status='" + getStatus() + "'" +
             "}";
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public ArtworkVisibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(ArtworkVisibility visibility) {
+        this.visibility = visibility;
     }
 }
