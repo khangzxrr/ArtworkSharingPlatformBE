@@ -1,7 +1,9 @@
 package com.github.khangzxrr.service.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.Objects;
+import org.hibernate.validator.constraints.URL;
 
 /**
  * A DTO for the {@link com.github.khangzxrr.domain.Media} entity.
@@ -11,6 +13,8 @@ public class MediaDTO implements Serializable {
 
     private Long id;
 
+    @NotBlank
+    @URL
     private String url;
 
     public Long getId() {
