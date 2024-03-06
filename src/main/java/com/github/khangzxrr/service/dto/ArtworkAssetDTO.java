@@ -1,6 +1,6 @@
 package com.github.khangzxrr.service.dto;
 
-import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -12,8 +12,10 @@ public class ArtworkAssetDTO implements Serializable {
 
     private Long id;
 
+    @NotNull
     private MediaDTO media;
 
+    @NotNull
     private boolean isThumbnail;
 
     public Long getId() {

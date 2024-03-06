@@ -1,9 +1,10 @@
 package com.github.khangzxrr.service.dto.artworkDTOs;
 
 import com.github.khangzxrr.domain.enumeration.ArtworkVisibility;
+import com.github.khangzxrr.service.dto.ArtworkAssetDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.hibernate.validator.constraints.URL;
+import java.util.List;
 
 public class CreateArtworkDTO {
 
@@ -16,9 +17,8 @@ public class CreateArtworkDTO {
     @NotBlank
     private String description;
 
-    @NotBlank
-    @URL
-    private String thumbnail;
+    @NotNull
+    private List<ArtworkAssetDTO> assets;
 
     @NotNull
     private ArtworkVisibility visibility;
@@ -55,11 +55,11 @@ public class CreateArtworkDTO {
         this.visibility = visibility;
     }
 
-    public String getThumbnail() {
-        return thumbnail;
+    public List<ArtworkAssetDTO> getAssets() {
+        return assets;
     }
 
-    public void setThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
+    public void setAssets(List<ArtworkAssetDTO> assets) {
+        this.assets = assets;
     }
 }

@@ -1,12 +1,6 @@
 package com.github.khangzxrr.service.mapper;
 
 import com.github.khangzxrr.domain.Artwork;
-import com.github.khangzxrr.domain.ArtworkCategory;
-import com.github.khangzxrr.domain.ArtworkSelling;
-import com.github.khangzxrr.domain.User;
-import com.github.khangzxrr.service.dto.ArtworkCategoryDTO;
-import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
-import com.github.khangzxrr.service.dto.UserDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.CreateArtworkDTO;
 import org.mapstruct.*;
@@ -14,9 +8,10 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity {@link Artwork} and its DTO {@link ArtworkDTO}.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = ArtworkAssetMapper.class)
 public interface ArtworkMapper extends EntityMapper<ArtworkDTO, Artwork> {
-    Artwork toEntity(CreateArtworkDTO s);
+    @Mapping(target = "artworkAssets", source = "assets")
+    Artwork toEntity(CreateArtworkDTO dto);
 
     @Mapping(target = "artworkSelling", source = "artworkSelling")
     @Mapping(target = "owner", source = "owner")
