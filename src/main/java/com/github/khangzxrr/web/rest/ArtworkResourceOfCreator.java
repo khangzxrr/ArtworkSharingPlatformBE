@@ -3,7 +3,10 @@ package com.github.khangzxrr.web.rest;
 import com.github.khangzxrr.repository.ArtworkRepository;
 import com.github.khangzxrr.service.ArtworkService;
 import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.CreateArtworkDTO;
 import com.github.khangzxrr.web.rest.errors.BadRequestAlertException;
+import jakarta.validation.Valid;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
@@ -25,10 +28,10 @@ import tech.jhipster.web.util.ResponseUtil;
  * REST controller for managing {@link com.github.khangzxrr.domain.Artwork}.
  */
 @RestController
-@RequestMapping({ "/api/audience/artworks", "/api/creator/artworks" })
-public class ArtworkResource {
+@RequestMapping({ "/api/creator/artworks" })
+public class ArtworkResourceOfCreator {
 
-    private final Logger log = LoggerFactory.getLogger(ArtworkResource.class);
+    private final Logger log = LoggerFactory.getLogger(ArtworkResourceOfCreator.class);
 
     private static final String ENTITY_NAME = "artwork";
 
@@ -39,9 +42,29 @@ public class ArtworkResource {
 
     private final ArtworkRepository artworkRepository;
 
-    public ArtworkResource(ArtworkService artworkService, ArtworkRepository artworkRepository) {
+    public ArtworkResourceOfCreator(ArtworkService artworkService, ArtworkRepository artworkRepository) {
         this.artworkService = artworkService;
         this.artworkRepository = artworkRepository;
+    }
+
+    /**
+     * {@code POST  /artworks} : Create a new artwork.
+     *
+     * @param artworkDTO the artworkDTO to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
+     *         body the new artworkDTO, or with status {@code 400 (Bad Request)} if
+     *         the artwork has already an ID.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PostMapping("")
+    public ResponseEntity<ArtworkDTO> createArtwork(@Valid @RequestBody CreateArtworkDTO createArtworkDTO) throws URISyntaxException {
+        log.debug("REST request to save Artwork : {}", createArtworkDTO);
+
+        ArtworkDTO result = artworkService.save(createArtworkDTO);
+        return ResponseEntity
+            .created(new URI("/api/artworks/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+            .body(result);
     }
 
     /**
@@ -129,20 +152,10 @@ public class ArtworkResource {
      *         of artworks in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<ArtworkDTO>> getAllPublicArtworks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<ArtworkDTO>> getAllArtworks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         log.debug("REST request to get all Artworks");
 
         Page<ArtworkDTO> artworkPages = artworkService.findAllPublicArtworks(pageable);
-
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), artworkPages);
-        return ResponseEntity.ok().headers(headers).body(artworkPages.getContent());
-    }
-
-    @GetMapping("/mine")
-    public ResponseEntity<List<ArtworkDTO>> getAllPrivateArtworks(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
-        log.debug("REST request to get all Artworks of current user");
-
-        Page<ArtworkDTO> artworkPages = artworkService.findAllArtworksOfUser(pageable);
 
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), artworkPages);
         return ResponseEntity.ok().headers(headers).body(artworkPages.getContent());
