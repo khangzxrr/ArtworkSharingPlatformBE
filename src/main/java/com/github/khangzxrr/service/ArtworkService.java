@@ -53,5 +53,5 @@ public interface ArtworkService {
 
     void Unlike(Long id);
 
-    ArtworkCommentDTO Commend(Long id, CreateArtworkCommentDTO createArtworkCommentDTO);
+    ArtworkCommentDTO Comment(Long id, CreateArtworkCommentDTO createArtworkCommentDTO);
 }

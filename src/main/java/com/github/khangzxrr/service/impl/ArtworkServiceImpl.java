@@ -197,7 +197,7 @@ public class ArtworkServiceImpl implements ArtworkService {
     }
 
     @Override
-    public ArtworkCommentDTO Commend(Long id, CreateArtworkCommentDTO createArtworkCommentDTO) {
+    public ArtworkCommentDTO Comment(Long id, CreateArtworkCommentDTO createArtworkCommentDTO) {
         Optional<Artwork> artworkOptional = artworkRepository.findById(id);
 
         if (!artworkOptional.isPresent()) {
