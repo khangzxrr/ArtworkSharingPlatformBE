@@ -3,10 +3,9 @@ package com.github.khangzxrr.web.rest;
 import com.github.khangzxrr.repository.ArtworkRepository;
 import com.github.khangzxrr.service.ArtworkService;
 import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
-import com.github.khangzxrr.web.rest.errors.BadRequestAlertException;
+import com.github.khangzxrr.service.dto.artworkDTOs.UpdateArtworkDTO;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +36,8 @@ public class ArtworkResource {
 
     private final ArtworkService artworkService;
 
-    private final ArtworkRepository artworkRepository;
-
-    public ArtworkResource(ArtworkService artworkService, ArtworkRepository artworkRepository) {
+    public ArtworkResource(ArtworkService artworkService) {
         this.artworkService = artworkService;
-        this.artworkRepository = artworkRepository;
     }
 
     /**
@@ -60,66 +56,15 @@ public class ArtworkResource {
     @PutMapping("/{id}")
     public ResponseEntity<ArtworkDTO> updateArtwork(
         @PathVariable(value = "id", required = false) final Long id,
-        @RequestBody ArtworkDTO artworkDTO
+        @RequestBody UpdateArtworkDTO updateArtworkDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update Artwork : {}, {}", id, artworkDTO);
-        if (artworkDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, artworkDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
+        log.debug("REST request to update Artwork : {}, {}", id, updateArtworkDTO);
 
-        if (!artworkRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        ArtworkDTO result = artworkService.update(artworkDTO);
+        ArtworkDTO result = artworkService.update(id, updateArtworkDTO);
         return ResponseEntity
             .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, artworkDTO.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
             .body(result);
-    }
-
-    /**
-     * {@code PATCH  /artworks/:id} : Partial updates given fields of an existing
-     * artwork, field will ignore if it is null
-     *
-     * @param id         the id of the artworkDTO to save.
-     * @param artworkDTO the artworkDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
-     *         the updated artworkDTO,
-     *         or with status {@code 400 (Bad Request)} if the artworkDTO is not
-     *         valid,
-     *         or with status {@code 404 (Not Found)} if the artworkDTO is not
-     *         found,
-     *         or with status {@code 500 (Internal Server Error)} if the artworkDTO
-     *         couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<ArtworkDTO> partialUpdateArtwork(
-        @PathVariable(value = "id", required = false) final Long id,
-        @RequestBody ArtworkDTO artworkDTO
-    ) throws URISyntaxException {
-        log.debug("REST request to partial update Artwork partially : {}, {}", id, artworkDTO);
-        if (artworkDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, artworkDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!artworkRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<ArtworkDTO> result = artworkService.partialUpdate(artworkDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, artworkDTO.getId().toString())
-        );
     }
 
     /**
