@@ -1,6 +1,5 @@
 package com.github.khangzxrr.web.rest;
 
-import com.github.khangzxrr.repository.ArtworkRepository;
 import com.github.khangzxrr.service.ArtworkService;
 import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.UpdateArtworkDTO;
@@ -91,6 +90,24 @@ public class ArtworkResource {
 
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), artworkPages);
         return ResponseEntity.ok().headers(headers).body(artworkPages.getContent());
+    }
+
+    @PostMapping("{artworkId}/like")
+    public ResponseEntity<Void> likeArtwork(@PathVariable("artworkId") Long artworkId) {
+        log.debug("REST request like artwork");
+
+        artworkService.Like(artworkId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("{artworkId}/unlike")
+    public ResponseEntity<Void> unlikeArtwork(@PathVariable("artworkId") Long artworkId) {
+        log.debug("REST request like artwork");
+
+        artworkService.Unlike(artworkId);
+
+        return ResponseEntity.ok().build();
     }
 
     /**

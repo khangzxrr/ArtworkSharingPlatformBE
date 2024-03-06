@@ -1,5 +1,6 @@
 package com.github.khangzxrr.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ public class ArtworkCommentDTO implements Serializable {
 
     private UserDTO owner;
 
+    @JsonIgnore
     private ArtworkDTO artwork;
 
     public Long getId() {
