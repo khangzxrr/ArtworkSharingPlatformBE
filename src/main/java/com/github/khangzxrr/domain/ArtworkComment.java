@@ -2,8 +2,6 @@ package com.github.khangzxrr.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import java.io.Serializable;
-import java.time.LocalDate;
 
 /**
  * A ArtworkComment.
@@ -11,7 +9,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "artwork_comment")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class ArtworkComment implements Serializable {
+public class ArtworkComment extends AbstractAuditingEntity<Long> {
 
     private static final long serialVersionUID = 1L;
 
@@ -22,9 +20,6 @@ public class ArtworkComment implements Serializable {
 
     @Column(name = "content")
     private String content;
-
-    @Column(name = "create_at")
-    private LocalDate createAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User owner;
@@ -62,19 +57,6 @@ public class ArtworkComment implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public LocalDate getCreateAt() {
-        return this.createAt;
-    }
-
-    public ArtworkComment createAt(LocalDate createAt) {
-        this.setCreateAt(createAt);
-        return this;
-    }
-
-    public void setCreateAt(LocalDate createAt) {
-        this.createAt = createAt;
     }
 
     public User getOwner() {
@@ -128,7 +110,7 @@ public class ArtworkComment implements Serializable {
         return "ArtworkComment{" +
             "id=" + getId() +
             ", content='" + getContent() + "'" +
-            ", createAt='" + getCreateAt() + "'" +
+            ", createdDate='" + getCreatedDate() + "'" +
             "}";
     }
 }
