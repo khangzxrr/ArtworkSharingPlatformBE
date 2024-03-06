@@ -14,7 +14,7 @@ public class ArtworkAssetDTO implements Serializable {
 
     private MediaDTO media;
 
-    private ArtworkDTO artwork;
+    private boolean isThumbnail;
 
     public Long getId() {
         return id;
@@ -30,14 +30,6 @@ public class ArtworkAssetDTO implements Serializable {
 
     public void setMedia(MediaDTO media) {
         this.media = media;
-    }
-
-    public ArtworkDTO getArtwork() {
-        return artwork;
-    }
-
-    public void setArtwork(ArtworkDTO artwork) {
-        this.artwork = artwork;
     }
 
     @Override
@@ -67,7 +59,14 @@ public class ArtworkAssetDTO implements Serializable {
         return "ArtworkAssetDTO{" +
             "id=" + getId() +
             ", media=" + getMedia() +
-            ", artwork=" + getArtwork() +
             "}";
+    }
+
+    public boolean isThumbnail() {
+        return isThumbnail;
+    }
+
+    public void setThumbnail(boolean isThumbnail) {
+        this.isThumbnail = isThumbnail;
     }
 }
