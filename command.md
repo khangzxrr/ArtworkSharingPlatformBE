@@ -10,6 +10,10 @@ jhipster jdl artwork.jh
 
 ./gradlew liquibaseDiffChangelog -PrunList=diffLog
 
+# rollback liquibase CommandValue mean total of rollback changelog
+
+./gradlew liquibaseRollbackCount -PliquibaseCommandValue=3
+
 # Ngrok test webhook
 
 ngrok http --host-header="localhost:9000" --domain=notably-cosmic-snake.ngrok-free.app 9000
