@@ -1,8 +1,10 @@
 package com.github.khangzxrr.service;
 
 import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
-import java.util.List;
+import com.github.khangzxrr.service.dto.artworkDTOs.CreateArtworkDTO;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service Interface for managing {@link com.github.khangzxrr.domain.Artwork}.
@@ -15,6 +17,8 @@ public interface ArtworkService {
      * @return the persisted entity.
      */
     ArtworkDTO save(ArtworkDTO artworkDTO);
+
+    ArtworkDTO save(CreateArtworkDTO createArtworkDTO);
 
     /**
      * Updates a artwork.
@@ -32,12 +36,9 @@ public interface ArtworkService {
      */
     Optional<ArtworkDTO> partialUpdate(ArtworkDTO artworkDTO);
 
-    /**
-     * Get all the artworks.
-     *
-     * @return the list of entities.
-     */
-    List<ArtworkDTO> findAll();
+    Page<ArtworkDTO> findAllArtworksOfUser(Pageable pageable);
+
+    Page<ArtworkDTO> findAllPublicArtworks(Pageable pageable);
 
     /**
      * Get the "id" artwork.
