@@ -79,4 +79,16 @@ public class NotificationServiceImpl implements NotificationService {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void unsubcribeUsersFromTopic(String topic, User... users) {
+        List<String> tokens = mapUsersToTokens(users);
+
+        try {
+            firebaseMessaging.unsubscribeFromTopic(tokens, topic);
+        } catch (FirebaseMessagingException e) {
+            log.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
+    }
 }

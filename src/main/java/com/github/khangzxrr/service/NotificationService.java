@@ -4,6 +4,8 @@ import com.github.khangzxrr.domain.User;
 import java.util.Map;
 
 public interface NotificationService {
+    public void unsubcribeUsersFromTopic(String topic, User... users);
+
     public void subcribeUsersToTopic(String topic, User... users);
 
     public void sendToUser(Map<String, String> data, User user);
