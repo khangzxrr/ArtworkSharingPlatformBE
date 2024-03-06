@@ -187,11 +187,11 @@ public class ArtworkServiceImpl implements ArtworkService {
 
         artworkRepository.save(artwork);
 
-        notificationService.subcribeUsersToTopic(String.format("/topic/artwork/%d/comment", artwork.getId()), user);
+        notificationService.subcribeUsersToTopic(String.format("/topic/artwork/%d", artwork.getId()), user);
 
         notificationService.sendToUsers(
             String.format("Artwork sharing platform - artwork '%s'", artwork.getName()),
-            String.format("%s just likes your artwork!", user.getFirstName()),
+            String.format("%s and %d users like your artwork!", user.getFirstName(), artwork.getLikes().size()),
             artwork.getOwner()
         );
     }
@@ -227,6 +227,12 @@ public class ArtworkServiceImpl implements ArtworkService {
         comment.setOwner(user);
 
         artwork.addComments(comment);
+
+        notificationService.sendToTopic(
+            String.format("/topic/artwork/%d", artwork.getId()),
+            String.format("Artwork sharing platform - Artwork '%s'", artwork.getName()),
+            String.format("'%s' said '%s'", user.getLastName(), comment.getContent())
+        );
 
         artworkRepository.save(artwork);
 
