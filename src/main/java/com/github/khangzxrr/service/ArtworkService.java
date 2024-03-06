@@ -1,6 +1,6 @@
 package com.github.khangzxrr.service;
 
-import com.github.khangzxrr.service.dto.ArtworkDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import java.util.List;
 import java.util.Optional;
 

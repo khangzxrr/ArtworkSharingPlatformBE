@@ -3,7 +3,7 @@ package com.github.khangzxrr.service.impl;
 import com.github.khangzxrr.domain.Artwork;
 import com.github.khangzxrr.repository.ArtworkRepository;
 import com.github.khangzxrr.service.ArtworkService;
-import com.github.khangzxrr.service.dto.ArtworkDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import com.github.khangzxrr.service.mapper.ArtworkMapper;
 import java.util.LinkedList;
 import java.util.List;

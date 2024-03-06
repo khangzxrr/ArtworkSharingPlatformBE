@@ -9,7 +9,7 @@ import com.github.khangzxrr.IntegrationTest;
 import com.github.khangzxrr.domain.Artwork;
 import com.github.khangzxrr.domain.enumeration.ArtworkStatus;
 import com.github.khangzxrr.repository.ArtworkRepository;
-import com.github.khangzxrr.service.dto.ArtworkDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import com.github.khangzxrr.service.mapper.ArtworkMapper;
 import jakarta.persistence.EntityManager;
 import java.util.List;

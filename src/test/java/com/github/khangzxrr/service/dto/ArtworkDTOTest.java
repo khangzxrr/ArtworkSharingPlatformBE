@@ -2,6 +2,7 @@ package com.github.khangzxrr.service.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import com.github.khangzxrr.web.rest.TestUtil;
 import org.junit.jupiter.api.Test;
 

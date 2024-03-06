@@ -4,8 +4,8 @@ import com.github.khangzxrr.domain.Artwork;
 import com.github.khangzxrr.domain.ArtworkAsset;
 import com.github.khangzxrr.domain.Media;
 import com.github.khangzxrr.service.dto.ArtworkAssetDTO;
-import com.github.khangzxrr.service.dto.ArtworkDTO;
 import com.github.khangzxrr.service.dto.MediaDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import org.mapstruct.*;
 
 /**

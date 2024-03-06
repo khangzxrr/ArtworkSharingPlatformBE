@@ -3,9 +3,9 @@ package com.github.khangzxrr.service.mapper;
 import com.github.khangzxrr.domain.Artwork;
 import com.github.khangzxrr.domain.ArtworkLike;
 import com.github.khangzxrr.domain.User;
-import com.github.khangzxrr.service.dto.ArtworkDTO;
 import com.github.khangzxrr.service.dto.ArtworkLikeDTO;
 import com.github.khangzxrr.service.dto.UserDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import org.mapstruct.*;
 
 /**

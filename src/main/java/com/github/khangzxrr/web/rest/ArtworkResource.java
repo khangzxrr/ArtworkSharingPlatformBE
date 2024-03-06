@@ -2,7 +2,7 @@ package com.github.khangzxrr.web.rest;
 
 import com.github.khangzxrr.repository.ArtworkRepository;
 import com.github.khangzxrr.service.ArtworkService;
-import com.github.khangzxrr.service.dto.ArtworkDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import com.github.khangzxrr.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -20,8 +20,8 @@ import tech.jhipster.web.util.ResponseUtil;
 /**
  * REST controller for managing {@link com.github.khangzxrr.domain.Artwork}.
  */
-//@RestController
-//@RequestMapping("/api/artworks")
+@RestController
+@RequestMapping({ "/api/audience/artworks", "/api/creator/artworks" })
 public class ArtworkResource {
 
     private final Logger log = LoggerFactory.getLogger(ArtworkResource.class);
@@ -44,7 +44,9 @@ public class ArtworkResource {
      * {@code POST  /artworks} : Create a new artwork.
      *
      * @param artworkDTO the artworkDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new artworkDTO, or with status {@code 400 (Bad Request)} if the artwork has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
+     *         body the new artworkDTO, or with status {@code 400 (Bad Request)} if
+     *         the artwork has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
@@ -63,11 +65,14 @@ public class ArtworkResource {
     /**
      * {@code PUT  /artworks/:id} : Updates an existing artwork.
      *
-     * @param id the id of the artworkDTO to save.
+     * @param id         the id of the artworkDTO to save.
      * @param artworkDTO the artworkDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated artworkDTO,
-     * or with status {@code 400 (Bad Request)} if the artworkDTO is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the artworkDTO couldn't be updated.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
+     *         the updated artworkDTO,
+     *         or with status {@code 400 (Bad Request)} if the artworkDTO is not
+     *         valid,
+     *         or with status {@code 500 (Internal Server Error)} if the artworkDTO
+     *         couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
@@ -95,14 +100,19 @@ public class ArtworkResource {
     }
 
     /**
-     * {@code PATCH  /artworks/:id} : Partial updates given fields of an existing artwork, field will ignore if it is null
+     * {@code PATCH  /artworks/:id} : Partial updates given fields of an existing
+     * artwork, field will ignore if it is null
      *
-     * @param id the id of the artworkDTO to save.
+     * @param id         the id of the artworkDTO to save.
      * @param artworkDTO the artworkDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated artworkDTO,
-     * or with status {@code 400 (Bad Request)} if the artworkDTO is not valid,
-     * or with status {@code 404 (Not Found)} if the artworkDTO is not found,
-     * or with status {@code 500 (Internal Server Error)} if the artworkDTO couldn't be updated.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
+     *         the updated artworkDTO,
+     *         or with status {@code 400 (Bad Request)} if the artworkDTO is not
+     *         valid,
+     *         or with status {@code 404 (Not Found)} if the artworkDTO is not
+     *         found,
+     *         or with status {@code 500 (Internal Server Error)} if the artworkDTO
+     *         couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
@@ -133,7 +143,8 @@ public class ArtworkResource {
     /**
      * {@code GET  /artworks} : get all the artworks.
      *
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of artworks in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
+     *         of artworks in body.
      */
     @GetMapping("")
     public List<ArtworkDTO> getAllArtworks() {
@@ -145,7 +156,8 @@ public class ArtworkResource {
      * {@code GET  /artworks/:id} : get the "id" artwork.
      *
      * @param id the id of the artworkDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the artworkDTO, or with status {@code 404 (Not Found)}.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
+     *         the artworkDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
     public ResponseEntity<ArtworkDTO> getArtwork(@PathVariable("id") Long id) {

@@ -5,9 +5,9 @@ import com.github.khangzxrr.domain.ArtworkCategory;
 import com.github.khangzxrr.domain.ArtworkSelling;
 import com.github.khangzxrr.domain.User;
 import com.github.khangzxrr.service.dto.ArtworkCategoryDTO;
-import com.github.khangzxrr.service.dto.ArtworkDTO;
 import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
 import com.github.khangzxrr.service.dto.UserDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import org.mapstruct.*;
 
 /**

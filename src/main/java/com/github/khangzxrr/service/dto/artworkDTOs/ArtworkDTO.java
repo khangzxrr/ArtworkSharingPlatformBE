@@ -1,6 +1,9 @@
-package com.github.khangzxrr.service.dto;
+package com.github.khangzxrr.service.dto.artworkDTOs;
 
 import com.github.khangzxrr.domain.enumeration.ArtworkStatus;
+import com.github.khangzxrr.service.dto.ArtworkCategoryDTO;
+import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
+import com.github.khangzxrr.service.dto.UserDTO;
 import java.io.Serializable;
 import java.util.Objects;
 

@@ -1,5 +1,6 @@
 package com.github.khangzxrr.service.dto;
 
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import java.io.Serializable;
 import java.util.Objects;
 

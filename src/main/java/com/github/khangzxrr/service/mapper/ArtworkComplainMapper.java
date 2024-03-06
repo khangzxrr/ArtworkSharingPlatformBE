@@ -4,8 +4,8 @@ import com.github.khangzxrr.domain.Artwork;
 import com.github.khangzxrr.domain.ArtworkComplain;
 import com.github.khangzxrr.domain.User;
 import com.github.khangzxrr.service.dto.ArtworkComplainDTO;
-import com.github.khangzxrr.service.dto.ArtworkDTO;
 import com.github.khangzxrr.service.dto.UserDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import org.mapstruct.*;
 
 /**
