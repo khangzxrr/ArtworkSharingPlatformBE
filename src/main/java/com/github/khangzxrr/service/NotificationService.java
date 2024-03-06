@@ -11,4 +11,6 @@ public interface NotificationService {
     public void sendToUser(Map<String, String> data, User user);
 
     public void sendToUsers(String title, String body, User... users);
+
+    public void sendToTopic(String topic, String title, String body);
 }

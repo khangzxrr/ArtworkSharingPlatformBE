@@ -91,4 +91,18 @@ public class NotificationServiceImpl implements NotificationService {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void sendToTopic(String topic, String title, String body) {
+        Notification notification = Notification.builder().setTitle(title).setBody(body).build();
+
+        Message message = Message.builder().setNotification(notification).setTopic(topic).build();
+
+        try {
+            firebaseMessaging.send(message);
+        } catch (FirebaseMessagingException e) {
+            log.error(e.getMessage(), e);
+            e.printStackTrace();
+        }
+    }
 }
