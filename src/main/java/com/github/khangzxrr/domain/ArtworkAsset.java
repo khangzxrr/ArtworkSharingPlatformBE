@@ -19,6 +19,9 @@ public class ArtworkAsset implements Serializable {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "is_thumbnail")
+    private boolean isThumbnail;
+
     @JsonIgnoreProperties(value = { "artworkAsset", "certificate" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
@@ -97,5 +100,17 @@ public class ArtworkAsset implements Serializable {
         return "ArtworkAsset{" +
             "id=" + getId() +
             "}";
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public boolean isThumbnail() {
+        return isThumbnail;
+    }
+
+    public void setThumbnail(boolean isThumbnail) {
+        this.isThumbnail = isThumbnail;
     }
 }
