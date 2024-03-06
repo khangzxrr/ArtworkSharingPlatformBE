@@ -41,19 +41,19 @@ public class Artwork extends AbstractAuditingEntity<Long> {
     @JoinColumn(unique = true)
     private ArtworkSelling artworkSelling;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "media", "artwork" }, allowSetters = true)
     private Set<ArtworkAsset> artworkAssets = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "owner", "artwork" }, allowSetters = true)
     private Set<ArtworkComment> comments = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "user", "artwork" }, allowSetters = true)
     private Set<ArtworkComplain> complains = new HashSet<>();
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "owner", "artwork" }, allowSetters = true)
     private Set<ArtworkLike> likes = new HashSet<>();
 

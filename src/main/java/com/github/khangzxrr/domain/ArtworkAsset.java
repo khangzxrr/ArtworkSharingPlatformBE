@@ -23,7 +23,7 @@ public class ArtworkAsset implements Serializable {
     private boolean isThumbnail;
 
     @JsonIgnoreProperties(value = { "artworkAsset", "certificate" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(unique = true)
     private Media media;
 
