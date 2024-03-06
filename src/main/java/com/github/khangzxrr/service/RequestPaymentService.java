@@ -6,9 +6,6 @@ public interface RequestPaymentService {
     double calculateFirstPayment(double bidPrice);
     double calculateSecondPayment(double bidPrice);
     double calculateFeeEarn(double bidPrice);
-    double calculateRefund(double bidPrice);
-
-    void refund(long requestId);
 
     RequestProgressPaymentDTO getFirstPayment(long requestId);
     RequestProgressPaymentDTO getSecondPayment(long reqquestId);

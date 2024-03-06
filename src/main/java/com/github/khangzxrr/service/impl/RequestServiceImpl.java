@@ -1,5 +1,6 @@
 package com.github.khangzxrr.service.impl;
 
+import com.github.khangzxrr.config.ApplicationProperties;
 import com.github.khangzxrr.domain.Request;
 import com.github.khangzxrr.domain.RequestBid;
 import com.github.khangzxrr.domain.RequestProgress;
@@ -38,6 +39,8 @@ import com.github.khangzxrr.web.rest.errors.RequestProgressIsNotExistException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +77,8 @@ public class RequestServiceImpl implements RequestService {
 
     private final NotificationService notificationService;
 
+    private final ApplicationProperties.ArtworkConfiguration artworkConfiguration;
+
     public RequestServiceImpl(
         RequestRepository requestRepository,
         RequestMapper requestMapper,
@@ -82,7 +87,8 @@ public class RequestServiceImpl implements RequestService {
         RequestProgressMapper requestProgressMapper,
         WalletService walletService,
         SimpMessageSendingOperations messagingTemplate,
-        NotificationService notificationService
+        NotificationService notificationService,
+        ApplicationProperties applicationProperties
     ) {
         this.requestRepository = requestRepository;
         this.requestMapper = requestMapper;
@@ -91,6 +97,7 @@ public class RequestServiceImpl implements RequestService {
         this.walletService = walletService;
         this.messagingTemplate = messagingTemplate;
         this.notificationService = notificationService;
+        this.artworkConfiguration = applicationProperties.getArtworkConfiguration();
     }
 
     @Override
@@ -348,18 +355,18 @@ public class RequestServiceImpl implements RequestService {
             throw new DayLeftMustPositiveException();
         }
 
-        //duration 10 days
-        //on-going 5 days
+        // duration 10 days
+        // on-going 5 days
 
-        //left 1 days
+        // left 1 days
 
-        //price = 100$
-        //refund = price * (7/12)
+        // price = 100$
+        // refund = price * (7/12)
 
         double firstPaymentAmount = requestFirstPaymentProgress.get().getTransaction().getAmount();
         double refundAmount = (firstPaymentAmount * dayLefts.doubleValue()) / selectedBid.get().getDuration().doubleValue();
 
-        //round to 2 decimals
+        // round to 2 decimals
         refundAmount = Math.round(refundAmount * 100);
         refundAmount = refundAmount / 100;
 
@@ -397,5 +404,95 @@ public class RequestServiceImpl implements RequestService {
         }
 
         return refundDTO;
+    }
+
+    @Override
+    public void clearExpiredRequest() {
+        List<RequestStatus> requestStatus = Arrays.asList(RequestStatus.ON_REPORTING, RequestStatus.ON_PAYING_SECOND);
+
+        List<Request> requests = requestRepository.findByStatusIn(requestStatus);
+
+        long countClearedRequest = 0;
+
+        for (Request request : requests) {
+            long duration = request.getSelectedBid().get().getDuration();
+            RequestProgress firstPaymentProgress = request
+                .getRequestProgresses()
+                .stream()
+                .filter(rp -> rp.getType() == RequestProgressType.FIRST_PAYMENT)
+                .findFirst()
+                .get();
+
+            // -1 becase we only have isAfter function not isEqualOrAfter, so that if
+            // expired days is 3 => -1 = 2
+            Instant deadline = firstPaymentProgress.getCreatedDate().plus(Math.toIntExact(duration - 1), ChronoUnit.DAYS);
+
+            Instant current = Instant.now();
+
+            if (current.isAfter(deadline)) {
+                request.setStatus(RequestStatus.FAILED);
+                requestRepository.save(request);
+
+                notificationService.sendToUsers(
+                    String.format("Artwork sharing platform - request '%s'", request.getTitle()),
+                    String.format("This request is passed deadline (total: %d days), we are going to close it now!", duration),
+                    request.getUser(),
+                    request.getSelectedBidUser().get()
+                );
+
+                countClearedRequest += 1;
+                log.info("close request with id " + request.getId() + " expired");
+            }
+        }
+
+        log.info("cleared " + countClearedRequest + " expired requests");
+    }
+
+    @Override
+    public void clearExpiredRequestFirstPayment() {
+        List<RequestStatus> requestStatus = Arrays.asList(RequestStatus.ON_PAYING_FIRST);
+
+        List<Request> requests = requestRepository.findByStatusIn(requestStatus);
+
+        long countClearedRequest = 0;
+
+        for (Request request : requests) {
+            Optional<RequestProgress> firstPaymentProgress = request
+                .getRequestProgresses()
+                .stream()
+                .filter(rp -> rp.getType() == RequestProgressType.FIRST_PAYMENT)
+                .findFirst();
+
+            // if first payment is present then we dont need to close this request
+            if (firstPaymentProgress.isPresent()) {
+                return;
+            }
+
+            // -1 becase we only have isAfter function not isEqualOrAfter, so that if
+            // expired days is 3 => -1 = 2
+            Instant deadline = request.getCreatedDate().plus(artworkConfiguration.getFirstPaymentExpiredDays() - 1, ChronoUnit.DAYS);
+
+            Instant current = Instant.now();
+
+            if (current.isAfter(deadline)) {
+                request.setStatus(RequestStatus.FAILED);
+                requestRepository.save(request);
+
+                notificationService.sendToUsers(
+                    String.format("Artwork sharing platform - request '%s'", request.getTitle()),
+                    String.format(
+                        "This request is passed deadline (total: %d days), we are going to close it now!",
+                        artworkConfiguration.getFirstPaymentExpiredDays()
+                    ),
+                    request.getUser(),
+                    request.getSelectedBidUser().get()
+                );
+
+                countClearedRequest += 1;
+                log.info("close request with id " + request.getId() + " expired");
+            }
+        }
+
+        log.info("cleared " + countClearedRequest + " expired requests");
     }
 }
