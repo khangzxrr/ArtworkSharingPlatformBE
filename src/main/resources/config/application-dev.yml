@@ -128,7 +128,7 @@ application:
   artwork-configuration:
     first-payment-percent: 80
     second-payment-percent: 20
-    refund-percent: 50
+    first-payment-expired-days: 3
     service-fee-earn-percent: 5
   paypal-configuration:
     client-id: AWqfYGA0upFfdEd2woMEL96g6xr-5sjggId_0O8ehkgThPmWjLmK1f-AbgHWTvZmbrePjbAocH295QIH
