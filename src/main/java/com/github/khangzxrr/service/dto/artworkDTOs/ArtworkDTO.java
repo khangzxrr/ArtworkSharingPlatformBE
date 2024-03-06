@@ -1,6 +1,7 @@
 package com.github.khangzxrr.service.dto.artworkDTOs;
 
 import com.github.khangzxrr.domain.enumeration.ArtworkStatus;
+import com.github.khangzxrr.domain.enumeration.ArtworkVisibility;
 import com.github.khangzxrr.service.dto.ArtworkCategoryDTO;
 import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
 import com.github.khangzxrr.service.dto.UserDTO;
@@ -19,7 +20,9 @@ public class ArtworkDTO implements Serializable {
 
     private String description;
 
-    private String createAt;
+    public ArtworkVisibility visibility;
+
+    private String createdDate;
 
     private ArtworkStatus status;
 
@@ -53,12 +56,12 @@ public class ArtworkDTO implements Serializable {
         this.description = description;
     }
 
-    public String getCreateAt() {
-        return createAt;
+    public String getCreatedDate() {
+        return createdDate;
     }
 
-    public void setCreateAt(String createAt) {
-        this.createAt = createAt;
+    public void setCreatedDate(String createAt) {
+        this.createdDate = createAt;
     }
 
     public ArtworkStatus getStatus() {
@@ -121,11 +124,19 @@ public class ArtworkDTO implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
-            ", createAt='" + getCreateAt() + "'" +
+            ", createAt='" + getCreatedDate() + "'" +
             ", status='" + getStatus() + "'" +
             ", artworkSelling=" + getArtworkSelling() +
             ", owner=" + getOwner() +
             ", category=" + getCategory() +
             "}";
+    }
+
+    public ArtworkVisibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(ArtworkVisibility visibility) {
+        this.visibility = visibility;
     }
 }
