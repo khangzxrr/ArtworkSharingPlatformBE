@@ -457,7 +457,6 @@ public class RequestServiceImpl implements RequestService {
         long countClearedRequest = 0;
 
         for (Request request : requests) {
-            long duration = request.getSelectedBid().get().getDuration();
             Optional<RequestProgress> firstPaymentProgress = request
                 .getRequestProgresses()
                 .stream()
