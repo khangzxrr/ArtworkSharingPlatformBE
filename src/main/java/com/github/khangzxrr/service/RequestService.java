@@ -37,4 +37,6 @@ public interface RequestService {
     List<RequestProgressAttachmentDTO> getFinishedArtworkAttachments(long requestId);
 
     void clearExpiredRequest();
+
+    void clearExpiredRequestFirstPayment();
 }
