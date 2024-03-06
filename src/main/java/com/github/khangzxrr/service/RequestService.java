@@ -35,4 +35,8 @@ public interface RequestService {
     RefundDTO refund(long requestId);
 
     List<RequestProgressAttachmentDTO> getFinishedArtworkAttachments(long requestId);
+
+    void clearExpiredRequest();
+
+    void clearExpiredRequestFirstPayment();
 }

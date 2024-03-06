@@ -24,6 +24,8 @@ import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestProgressTypeIsNotValid;
 import java.time.LocalDate;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class RequestPaymentServiceImpl implements RequestPaymentService {
+
+    private final Logger log = LoggerFactory.getLogger(RequestPaymentServiceImpl.class);
 
     private final RequestRepository requestRepository;
 
@@ -359,69 +363,5 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         double serviceFeeEarnPercent = applicationProperties.getArtworkConfiguration().getServiceFeeEarnPercent();
 
         return Math.ceil((bidPrice * serviceFeeEarnPercent) / 100.0d);
-    }
-
-    @Override
-    public double calculateRefund(double bidPrice) {
-        double refundPercent = applicationProperties.getArtworkConfiguration().getRefundPercent();
-
-        return Math.ceil((bidPrice * refundPercent) / 100.0d);
-    }
-
-    @Override
-    public void refund(long requestId) {
-        Optional<Request> requestOptional = requestRepository.findByIdAndUserIsCurrentUser(requestId);
-        if (!requestOptional.isPresent()) {
-            throw new RequestNotFoundException();
-        }
-
-        Request request = requestOptional.get();
-
-        if (request.getStatus() != RequestStatus.ON_REPORTING) {
-            throw new RequestIsNotInCorrectState();
-        }
-
-        Optional<RequestBid> requestBidOptional = request
-            .getRequestBids()
-            .stream()
-            .filter(rb -> rb.getStatus() == RequestBidStatus.SELECTED_BID)
-            .findFirst();
-
-        if (!requestBidOptional.isPresent()) {
-            // this should never happen because request state = ON_GOING mean that
-            // at least ONE request bid has been selected and change state to SELECTED_BID
-            throw new RequestBidNotFoundException();
-        }
-        RequestBid requestBid = requestBidOptional.get();
-
-        // doesnt need to check user is authenticate or not because walletService
-        // getCurrentUserWallet is already
-        // checked
-        Wallet userWallet = walletService.getCurrentUserWallet();
-        Wallet adminWallet = walletService.getAdminWallet();
-
-        double refundPrice = calculateRefund(requestBid.getPrice());
-
-        // withdraw refund price of first payment temping in admin wallet
-
-        WalletTransaction withdrawRefundFromFirstPaymentTransaction = new WalletTransaction();
-        withdrawRefundFromFirstPaymentTransaction.amount(refundPrice);
-        withdrawRefundFromFirstPaymentTransaction.setType(WalletTransactionType.WITHDRAW_REFUND_REQUEST_FIRST_PAYMENT_TEMP);
-        withdrawRefundFromFirstPaymentTransaction.setStatus(WalletTransactionStatus.SUCCEED);
-        withdrawRefundFromFirstPaymentTransaction.setCreateAt(LocalDate.now());
-        adminWallet.addTransactions(withdrawRefundFromFirstPaymentTransaction);
-
-        walletService.save(adminWallet);
-        // ===================================
-        // refund to request owner
-        WalletTransaction refundToRequestOwnerTransaction = new WalletTransaction();
-
-        refundToRequestOwnerTransaction.setAmount(refundPrice);
-        refundToRequestOwnerTransaction.setStatus(WalletTransactionStatus.SUCCEED);
-        refundToRequestOwnerTransaction.setType(WalletTransactionType.REFUND);
-        refundToRequestOwnerTransaction.createAt(LocalDate.now());
-        userWallet.addTransactions(refundToRequestOwnerTransaction);
-
-        walletService.save(userWallet);
     }
 }
