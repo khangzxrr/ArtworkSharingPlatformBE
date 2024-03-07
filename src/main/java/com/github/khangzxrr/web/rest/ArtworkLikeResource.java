@@ -16,8 +16,6 @@ public class ArtworkLikeResource {
 
     private final Logger log = LoggerFactory.getLogger(ArtworkLikeResource.class);
 
-    private static final String ENTITY_NAME = "artworkLike";
-
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
