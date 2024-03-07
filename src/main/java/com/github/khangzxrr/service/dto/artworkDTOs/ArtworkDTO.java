@@ -2,10 +2,12 @@ package com.github.khangzxrr.service.dto.artworkDTOs;
 
 import com.github.khangzxrr.domain.enumeration.ArtworkStatus;
 import com.github.khangzxrr.domain.enumeration.ArtworkVisibility;
+import com.github.khangzxrr.service.dto.ArtworkAssetDTO;
 import com.github.khangzxrr.service.dto.ArtworkCategoryDTO;
 import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
 import com.github.khangzxrr.service.dto.UserDTO;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -31,6 +33,8 @@ public class ArtworkDTO implements Serializable {
     private UserDTO owner;
 
     private ArtworkCategoryDTO category;
+
+    private List<ArtworkAssetDTO> artworkAssets;
 
     public Long getId() {
         return id;
@@ -138,5 +142,13 @@ public class ArtworkDTO implements Serializable {
 
     public void setVisibility(ArtworkVisibility visibility) {
         this.visibility = visibility;
+    }
+
+    public List<ArtworkAssetDTO> getArtworkAssets() {
+        return artworkAssets;
+    }
+
+    public void setArtworkAssets(List<ArtworkAssetDTO> artworkAssets) {
+        this.artworkAssets = artworkAssets;
     }
 }
