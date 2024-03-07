@@ -92,24 +92,6 @@ public class ArtworkResource {
         return ResponseEntity.ok().headers(headers).body(artworkPages.getContent());
     }
 
-    @PostMapping("{artworkId}/like")
-    public ResponseEntity<Void> likeArtwork(@PathVariable("artworkId") Long artworkId) {
-        log.debug("REST request like artwork");
-
-        artworkService.Like(artworkId);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("{artworkId}/unlike")
-    public ResponseEntity<Void> unlikeArtwork(@PathVariable("artworkId") Long artworkId) {
-        log.debug("REST request like artwork");
-
-        artworkService.Unlike(artworkId);
-
-        return ResponseEntity.ok().build();
-    }
-
     /**
      * {@code GET  /artworks/:id} : get the "id" artwork.
      *
