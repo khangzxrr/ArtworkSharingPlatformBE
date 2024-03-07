@@ -48,7 +48,6 @@ public class ArtworkServiceImpl implements ArtworkService {
     private final ArtworkCategoryService artworkCategoryService;
 
     private final ArtworkMapper artworkMapper;
-    private final ArtworkCommentMapper artworkCommentMapper;
 
     private final UserService userService;
     private final NotificationService notificationService;
@@ -56,14 +55,12 @@ public class ArtworkServiceImpl implements ArtworkService {
     public ArtworkServiceImpl(
         ArtworkRepository artworkRepository,
         ArtworkMapper artworkMapper,
-        ArtworkCommentMapper artworkCommentMapper,
         ArtworkCategoryService artworkCategoryService,
         UserService userService,
         NotificationService notificationService
     ) {
         this.artworkRepository = artworkRepository;
         this.artworkMapper = artworkMapper;
-        this.artworkCommentMapper = artworkCommentMapper;
         this.artworkCategoryService = artworkCategoryService;
         this.userService = userService;
         this.notificationService = notificationService;
@@ -154,122 +151,5 @@ public class ArtworkServiceImpl implements ArtworkService {
     @Override
     public Page<ArtworkDTO> findAllArtworksOfUser(Pageable pageable) {
         return artworkRepository.findByOwnerIsCurrentUser(pageable).map(artworkMapper::toDto);
-    }
-
-    @Override
-    public void Like(Long id) {
-        Optional<Artwork> artworkOptional = artworkRepository.findById(id);
-
-        if (!artworkOptional.isPresent()) {
-            throw new ArtworkNotFoundException();
-        }
-
-        Optional<User> userOptional = userService.getUserWithAuthorities();
-
-        if (!userOptional.isPresent()) {
-            throw new NotLoggedException();
-        }
-
-        User user = userOptional.get();
-
-        Artwork artwork = artworkOptional.get();
-
-        boolean isUserLikedArtwork = artwork.getLikes().stream().anyMatch(l -> l.getOwner() == user);
-
-        if (isUserLikedArtwork) {
-            throw new UserAlreadyLikeArtworkException();
-        }
-
-        ArtworkLike like = new ArtworkLike();
-        like.setOwner(user);
-
-        artwork.addLikes(like);
-
-        artworkRepository.save(artwork);
-
-        notificationService.subcribeUsersToTopic(String.format("/topic/artwork/%d", artwork.getId()), user);
-
-        notificationService.sendToUsers(
-            String.format("Artwork sharing platform - artwork '%s'", artwork.getName()),
-            String.format("%s and %d users like your artwork!", user.getFirstName(), artwork.getLikes().size()),
-            artwork.getOwner()
-        );
-    }
-
-    @Override
-    public ArtworkCommentDTO Comment(Long id, CreateArtworkCommentDTO createArtworkCommentDTO) {
-        Optional<Artwork> artworkOptional = artworkRepository.findById(id);
-
-        if (!artworkOptional.isPresent()) {
-            throw new ArtworkNotFoundException();
-        }
-
-        Optional<User> userOptional = userService.getUserWithAuthorities();
-
-        if (!userOptional.isPresent()) {
-            throw new NotLoggedException();
-        }
-
-        User user = userOptional.get();
-
-        Artwork artwork = artworkOptional.get();
-
-        if (artwork.getVisibility() == ArtworkVisibility.PRIVATE) {
-            throw new ArtworkInPrivateException();
-        }
-
-        if (artwork.getStatus() == ArtworkStatus.DISABLE) {
-            throw new ArtworkIsDisabledException();
-        }
-
-        ArtworkComment comment = new ArtworkComment();
-        comment.content(createArtworkCommentDTO.getContent());
-        comment.setOwner(user);
-
-        artwork.addComments(comment);
-
-        notificationService.sendToTopic(
-            String.format("/topic/artwork/%d", artwork.getId()),
-            String.format("Artwork sharing platform - Artwork '%s'", artwork.getName()),
-            String.format("'%s' said '%s'", user.getLastName(), comment.getContent())
-        );
-
-        artworkRepository.save(artwork);
-
-        return artworkCommentMapper.toDto(comment);
-    }
-
-    @Override
-    public void Unlike(Long id) {
-        Optional<Artwork> artworkOptional = artworkRepository.findById(id);
-
-        if (!artworkOptional.isPresent()) {
-            throw new ArtworkNotFoundException();
-        }
-
-        Optional<User> userOptional = userService.getUserWithAuthorities();
-
-        if (!userOptional.isPresent()) {
-            throw new NotLoggedException();
-        }
-
-        User user = userOptional.get();
-
-        Artwork artwork = artworkOptional.get();
-
-        boolean isUserLikedArtwork = artwork.getLikes().stream().anyMatch(l -> l.getOwner() == user);
-
-        if (isUserLikedArtwork) {
-            throw new UserAlreadyLikeArtworkException();
-        }
-
-        ArtworkLike like = new ArtworkLike();
-        like.setOwner(user);
-
-        artwork.addLikes(like);
-
-        artworkRepository.save(artwork);
-
-        notificationService.unsubcribeUsersFromTopic(String.format("/topic/artwork/%d/comment", artwork.getId()), user);
     }
 }

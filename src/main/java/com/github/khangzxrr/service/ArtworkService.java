@@ -1,6 +1,5 @@
 package com.github.khangzxrr.service;
 
-import com.github.khangzxrr.service.dto.ArtworkCommentDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.CreateArtworkDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.UpdateArtworkDTO;
@@ -48,10 +47,4 @@ public interface ArtworkService {
      * @param id the id of the entity.
      */
     void delete(Long id);
-
-    void Like(Long id);
-
-    void Unlike(Long id);
-
-    ArtworkCommentDTO Comment(Long id, CreateArtworkCommentDTO createArtworkCommentDTO);
 }
