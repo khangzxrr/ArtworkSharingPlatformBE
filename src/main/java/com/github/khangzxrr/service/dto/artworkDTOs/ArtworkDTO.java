@@ -4,6 +4,7 @@ import com.github.khangzxrr.domain.enumeration.ArtworkStatus;
 import com.github.khangzxrr.domain.enumeration.ArtworkVisibility;
 import com.github.khangzxrr.service.dto.ArtworkAssetDTO;
 import com.github.khangzxrr.service.dto.ArtworkCategoryDTO;
+import com.github.khangzxrr.service.dto.ArtworkCommentDTO;
 import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
 import com.github.khangzxrr.service.dto.UserDTO;
 import java.io.Serializable;
@@ -35,6 +36,12 @@ public class ArtworkDTO implements Serializable {
     private ArtworkCategoryDTO category;
 
     private List<ArtworkAssetDTO> artworkAssets;
+
+    private long likesCount;
+
+    private long commentsCount;
+
+    private List<ArtworkCommentDTO> artworkComments;
 
     public Long getId() {
         return id;
@@ -150,5 +157,29 @@ public class ArtworkDTO implements Serializable {
 
     public void setArtworkAssets(List<ArtworkAssetDTO> artworkAssets) {
         this.artworkAssets = artworkAssets;
+    }
+
+    public long getLikesCount() {
+        return likesCount;
+    }
+
+    public void setLikesCount(long likesCount) {
+        this.likesCount = likesCount;
+    }
+
+    public long getCommentsCount() {
+        return commentsCount;
+    }
+
+    public void setCommentsCount(long commentsCount) {
+        this.commentsCount = commentsCount;
+    }
+
+    public List<ArtworkCommentDTO> getArtworkComments() {
+        return artworkComments;
+    }
+
+    public void setArtworkComments(List<ArtworkCommentDTO> artworkComments) {
+        this.artworkComments = artworkComments;
     }
 }
