@@ -2,29 +2,20 @@ package com.github.khangzxrr.service.impl;
 
 import com.github.khangzxrr.domain.Artwork;
 import com.github.khangzxrr.domain.ArtworkCategory;
-import com.github.khangzxrr.domain.ArtworkComment;
-import com.github.khangzxrr.domain.ArtworkLike;
 import com.github.khangzxrr.domain.User;
 import com.github.khangzxrr.domain.enumeration.ArtworkStatus;
 import com.github.khangzxrr.domain.enumeration.ArtworkVisibility;
 import com.github.khangzxrr.repository.ArtworkRepository;
 import com.github.khangzxrr.service.ArtworkCategoryService;
 import com.github.khangzxrr.service.ArtworkService;
-import com.github.khangzxrr.service.CreateArtworkCommentDTO;
-import com.github.khangzxrr.service.NotificationService;
 import com.github.khangzxrr.service.UserService;
-import com.github.khangzxrr.service.dto.ArtworkCommentDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.CreateArtworkDTO;
 import com.github.khangzxrr.service.dto.artworkDTOs.UpdateArtworkDTO;
-import com.github.khangzxrr.service.mapper.ArtworkCommentMapper;
 import com.github.khangzxrr.service.mapper.ArtworkMapper;
 import com.github.khangzxrr.web.rest.errors.ArtworkCategoryNotExistException;
-import com.github.khangzxrr.web.rest.errors.ArtworkInPrivateException;
-import com.github.khangzxrr.web.rest.errors.ArtworkIsDisabledException;
 import com.github.khangzxrr.web.rest.errors.ArtworkNotFoundException;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
-import com.github.khangzxrr.web.rest.errors.UserAlreadyLikeArtworkException;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,20 +41,17 @@ public class ArtworkServiceImpl implements ArtworkService {
     private final ArtworkMapper artworkMapper;
 
     private final UserService userService;
-    private final NotificationService notificationService;
 
     public ArtworkServiceImpl(
         ArtworkRepository artworkRepository,
         ArtworkMapper artworkMapper,
         ArtworkCategoryService artworkCategoryService,
-        UserService userService,
-        NotificationService notificationService
+        UserService userService
     ) {
         this.artworkRepository = artworkRepository;
         this.artworkMapper = artworkMapper;
         this.artworkCategoryService = artworkCategoryService;
         this.userService = userService;
-        this.notificationService = notificationService;
     }
 
     @Override
