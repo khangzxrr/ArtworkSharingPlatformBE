@@ -91,12 +91,12 @@ public class ArtworkCommentServiceImpl implements ArtworkCommentService {
 
         artwork.addComments(comment);
 
-        notificationService.subcribeUsersToTopic(String.format("/topic/artwork/%d", artwork.getId()), user);
+        notificationService.subcribeUsersToTopic(String.format("/topics/artwork_%d", artwork.getId()), user);
 
         notificationService.sendToTopic(
-            String.format("/topic/artwork/%d", artwork.getId()),
-            String.format("Artwork sharing platform - Artwork '%s'", artwork.getName()),
-            String.format("'%s' said '%s'", user.getLastName(), comment.getContent())
+            String.format("/topics/artwork_%d", artwork.getId()),
+            String.format("Artwork sharing platform - Artwork %s", artwork.getName()),
+            String.format("%s said '%s'", user.getLastName(), comment.getContent())
         );
 
         artworkRepository.save(artwork);

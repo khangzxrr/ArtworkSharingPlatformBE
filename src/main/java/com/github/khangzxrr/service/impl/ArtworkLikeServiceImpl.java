@@ -70,7 +70,7 @@ public class ArtworkLikeServiceImpl implements ArtworkLikeService {
 
         artworkRepository.save(artwork);
 
-        notificationService.subcribeUsersToTopic(String.format("/topic/artwork/%d", artwork.getId()), user);
+        notificationService.subcribeUsersToTopic(String.format("/topics/artwork_%d", artwork.getId()), user);
 
         notificationService.sendToUsers(
             String.format("Artwork sharing platform - artwork '%s'", artwork.getName()),
@@ -112,6 +112,6 @@ public class ArtworkLikeServiceImpl implements ArtworkLikeService {
 
         artworkRepository.save(artwork);
 
-        notificationService.unsubcribeUsersFromTopic(String.format("/topic/artwork/%d/comment", artwork.getId()), user);
+        notificationService.unsubcribeUsersFromTopic(String.format("/topics/artwork_%d", artwork.getId()), user);
     }
 }
