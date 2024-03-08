@@ -20,8 +20,6 @@ import com.github.khangzxrr.web.rest.errors.RequestBidNotFoundException;
 import com.github.khangzxrr.web.rest.errors.RequestIsBelongToCurrentUser;
 import com.github.khangzxrr.web.rest.errors.RequestIsNotInCorrectState;
 import com.github.khangzxrr.web.rest.errors.RequestNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +37,6 @@ public class RequestBidServiceImpl implements RequestBidService {
 
     private final RequestBidMapper requestBidMapper;
 
-    private final SimpMessageSendingOperations messagingTemplate;
     private final NotificationService notificationService;
 
     public RequestBidServiceImpl(
@@ -47,14 +44,12 @@ public class RequestBidServiceImpl implements RequestBidService {
         RequestBidRepository requestBidRepository,
         UserService userService,
         RequestBidMapper requestBidMapper,
-        SimpMessageSendingOperations messagingTemplate,
         NotificationService notificationService
     ) {
         this.requestRepository = requestRepository;
         this.requestBidRepository = requestBidRepository;
         this.userService = userService;
         this.requestBidMapper = requestBidMapper;
-        this.messagingTemplate = messagingTemplate;
         this.notificationService = notificationService;
     }
 
@@ -94,16 +89,13 @@ public class RequestBidServiceImpl implements RequestBidService {
 
         requestRepository.save(request);
 
-        try {
-            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", "newRequestBid");
+        notificationService.sendToWsTopic("/topic/requests/" + requestId + "/notification", "newRequestBid");
 
-            Map<String, String> data = new HashMap<>();
-            data.put("body", "new deal placed by " + requestBid.getUser().getLogin() + "!");
-
-            notificationService.sendToUser(data, request.getUser());
-        } catch (Exception ex) {
-            //ignore exception if any
-        }
+        notificationService.sendToUser(
+            "Request " + request.getTitle(),
+            "A new deal placed by " + requestBid.getUser().getLogin(),
+            request.getUser()
+        );
 
         return requestBidMapper.toDto(requestBid);
     }

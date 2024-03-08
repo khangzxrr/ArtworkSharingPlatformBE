@@ -73,8 +73,6 @@ public class RequestServiceImpl implements RequestService {
 
     private final WalletService walletService;
 
-    private final SimpMessageSendingOperations messagingTemplate;
-
     private final NotificationService notificationService;
 
     private final ApplicationProperties.ArtworkConfiguration artworkConfiguration;
@@ -86,7 +84,6 @@ public class RequestServiceImpl implements RequestService {
         RequestBidMapper requestBidMapper,
         RequestProgressMapper requestProgressMapper,
         WalletService walletService,
-        SimpMessageSendingOperations messagingTemplate,
         NotificationService notificationService,
         ApplicationProperties applicationProperties
     ) {
@@ -95,7 +92,6 @@ public class RequestServiceImpl implements RequestService {
         this.userService = userService;
         this.requestProgressMapper = requestProgressMapper;
         this.walletService = walletService;
-        this.messagingTemplate = messagingTemplate;
         this.notificationService = notificationService;
         this.artworkConfiguration = applicationProperties.getArtworkConfiguration();
     }
@@ -217,17 +213,9 @@ public class RequestServiceImpl implements RequestService {
 
         requestRepository.save(request);
 
-        try {
-            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", "choosedRequestBid");
+        notificationService.sendToWsTopic("/topic/requests/" + requestId + "/notification", "choosedRequestBid");
 
-            Map<String, String> data = new HashMap<>();
-
-            data.put("body", "audience choosed YOUR DEAL!");
-
-            notificationService.sendToUser(data, selectedBidOptional.get().getUser());
-        } catch (Exception ex) {
-            log.error(ex.getMessage(), ex);
-        }
+        notificationService.sendToUser("Request " + request.getTitle(), "Audience choosed your deal!", selectedBidOptional.get().getUser());
     }
 
     @Override
@@ -397,11 +385,9 @@ public class RequestServiceImpl implements RequestService {
         refundDTO.setFirstPaymentAmount(firstPaymentAmount);
         refundDTO.setRefundAmount(refundAmount);
 
-        try {
-            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", refundAmount);
-        } catch (Exception ex) {
-            log.error(ex.getMessage(), ex);
-        }
+        notificationService.sendToWsTopic("/topic/requests/" + requestId + "/notification", refundDTO);
+
+        notificationService.sendToUser("Request " + request.getTitle(), "Audience closed request", request.getSelectedBidUser().get());
 
         return refundDTO;
     }
