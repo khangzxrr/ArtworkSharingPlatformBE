@@ -13,10 +13,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,9 +26,11 @@ public class NotificationServiceImpl implements NotificationService {
     private final Logger log = LoggerFactory.getLogger(NotificationServiceImpl.class);
 
     private final FirebaseMessaging firebaseMessaging;
+    private final SimpMessageSendingOperations messagingTemplate;
 
-    public NotificationServiceImpl(FirebaseMessaging firebaseMessaging) {
+    public NotificationServiceImpl(FirebaseMessaging firebaseMessaging, SimpMessageSendingOperations messagingTemplate) {
         this.firebaseMessaging = firebaseMessaging;
+        this.messagingTemplate = messagingTemplate;
     }
 
     public List<String> mapUsersToTokens(@NotNull User[] users) {
@@ -40,10 +42,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendToUser(Map<String, String> data, User user) {
+    public void sendToUser(String title, String body, User user) {
         for (UserNotifyToken userNotifyToken : user.getNotifyTokens()) {
             try {
-                Notification notification = Notification.builder().setTitle("Artwork sharing platform").setBody(data.get("body")).build();
+                Notification notification = Notification.builder().setTitle(title).setBody(body).build();
 
                 Message message = Message.builder().setToken(userNotifyToken.getToken()).setNotification(notification).build();
 
@@ -93,7 +95,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendToTopic(String topic, String title, String body) {
+    public void sendToTopic(@NotBlank String topic, String title, String body) {
         Notification notification = Notification.builder().setTitle(title).setBody(body).build();
 
         Message message = Message.builder().setNotification(notification).setTopic(topic).build();
@@ -103,6 +105,15 @@ public class NotificationServiceImpl implements NotificationService {
         } catch (FirebaseMessagingException e) {
             log.error(e.getMessage(), e);
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void sendToWsTopic(String topic, Object payload) {
+        try {
+            messagingTemplate.convertAndSend(topic, payload);
+        } catch (Exception ex) {
+            log.error(ex.getMessage(), ex);
         }
     }
 }
