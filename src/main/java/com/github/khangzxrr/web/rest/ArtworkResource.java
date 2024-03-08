@@ -42,7 +42,7 @@ public class ArtworkResource {
     /**
      * {@code PUT  /artworks/:id} : Updates an existing artwork.
      *
-     * @param id         the id of the artworkDTO to save.
+     * @param artworkId         the id of the artworkDTO to save.
      * @param artworkDTO the artworkDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
      *         the updated artworkDTO,
@@ -52,14 +52,14 @@ public class ArtworkResource {
      *         couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/{id}")
+    @PutMapping("/{artworkId}")
     public ResponseEntity<ArtworkDTO> updateArtwork(
-        @PathVariable(value = "id", required = false) final Long id,
+        @PathVariable(value = "artworkId") final Long artworkId,
         @RequestBody UpdateArtworkDTO updateArtworkDTO
     ) throws URISyntaxException {
-        log.debug("REST request to update Artwork : {}, {}", id, updateArtworkDTO);
+        log.debug("REST request to update Artwork : {}, {}", artworkId, updateArtworkDTO);
 
-        ArtworkDTO result = artworkService.update(id, updateArtworkDTO);
+        ArtworkDTO result = artworkService.update(artworkId, updateArtworkDTO);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
