@@ -72,7 +72,7 @@ public class ArtworkCommentResource {
      */
     @GetMapping("{artworkId}/comments")
     public ResponseEntity<List<ArtworkCommentDTO>> getAllArtworkComments(
-        @PathVariable("id") Long artworkId,
+        @PathVariable("artworkId") Long artworkId,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
         log.debug("REST request to get all ArtworkComments");
