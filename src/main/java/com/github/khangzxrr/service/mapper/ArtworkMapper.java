@@ -11,7 +11,7 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity {@link Artwork} and its DTO {@link ArtworkDTO}.
  */
-@Mapper(componentModel = "spring", uses = { ArtworkAssetMapper.class, ArtworkCommentMapper.class })
+@Mapper(componentModel = "spring", uses = { ArtworkAssetMapper.class })
 public interface ArtworkMapper extends EntityMapper<ArtworkDTO, Artwork> {
     @Mapping(target = "artworkAssets", source = "assets")
     Artwork toEntity(CreateArtworkDTO dto);
@@ -21,7 +21,6 @@ public interface ArtworkMapper extends EntityMapper<ArtworkDTO, Artwork> {
     @Mapping(target = "category", source = "category")
     @Mapping(target = "commentsCount", source = "comments")
     @Mapping(target = "likesCount", source = "likes")
-    @Mapping(target = "artworkComments", source = "comments")
     ArtworkDTO toDto(Artwork s);
 
     default long mapLikesCount(Set<ArtworkLike> likes) {
