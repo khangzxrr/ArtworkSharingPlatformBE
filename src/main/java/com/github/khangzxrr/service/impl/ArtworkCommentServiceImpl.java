@@ -91,6 +91,8 @@ public class ArtworkCommentServiceImpl implements ArtworkCommentService {
 
         artwork.addComments(comment);
 
+        artworkRepository.save(artwork);
+
         notificationService.subcribeUsersToTopic(String.format("/topics/artwork_%d", artwork.getId()), user);
 
         notificationService.sendToTopic(
@@ -99,9 +101,11 @@ public class ArtworkCommentServiceImpl implements ArtworkCommentService {
             String.format("%s said '%s'", user.getLastName(), comment.getContent())
         );
 
-        artworkRepository.save(artwork);
+        ArtworkCommentDTO artworkCommentDTO = artworkCommentMapper.toDto(comment);
 
-        return artworkCommentMapper.toDto(comment);
+        notificationService.sendToWsTopic("/topic/artworks/" + artwork.getId() + "/notification", artworkCommentDTO);
+
+        return artworkCommentDTO;
     }
 
     @Override
