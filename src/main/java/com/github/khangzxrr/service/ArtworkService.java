@@ -11,14 +11,6 @@ import org.springframework.data.domain.Pageable;
  * Service Interface for managing {@link com.github.khangzxrr.domain.Artwork}.
  */
 public interface ArtworkService {
-    /**
-     * Save a artwork.
-     *
-     * @param artworkDTO the entity to save.
-     * @return the persisted entity.
-     */
-    ArtworkDTO save(ArtworkDTO artworkDTO);
-
     ArtworkDTO save(CreateArtworkDTO createArtworkDTO);
 
     /**
