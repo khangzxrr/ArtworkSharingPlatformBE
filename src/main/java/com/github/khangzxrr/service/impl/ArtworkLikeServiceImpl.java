@@ -7,6 +7,8 @@ import com.github.khangzxrr.repository.ArtworkRepository;
 import com.github.khangzxrr.service.ArtworkLikeService;
 import com.github.khangzxrr.service.NotificationService;
 import com.github.khangzxrr.service.UserService;
+import com.github.khangzxrr.service.dto.ArtworkLikeDTO;
+import com.github.khangzxrr.service.mapper.ArtworkLikeMapper;
 import com.github.khangzxrr.web.rest.errors.ArtworkNotFoundException;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
 import com.github.khangzxrr.web.rest.errors.UserAlreadyLikeArtworkException;
@@ -17,7 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service Implementation for managing {@link com.github.khangzxrr.domain.ArtworkLike}.
+ * Service Implementation for managing
+ * {@link com.github.khangzxrr.domain.ArtworkLike}.
  */
 @Service
 @Transactional
@@ -31,10 +34,18 @@ public class ArtworkLikeServiceImpl implements ArtworkLikeService {
 
     private final NotificationService notificationService;
 
-    public ArtworkLikeServiceImpl(ArtworkRepository artworkRepository, UserService userService, NotificationService notificationService) {
+    private final ArtworkLikeMapper artworkLikeMapper;
+
+    public ArtworkLikeServiceImpl(
+        ArtworkRepository artworkRepository,
+        UserService userService,
+        NotificationService notificationService,
+        ArtworkLikeMapper artworkLikeMapper
+    ) {
         this.artworkRepository = artworkRepository;
         this.userService = userService;
         this.notificationService = notificationService;
+        this.artworkLikeMapper = artworkLikeMapper;
     }
 
     @Override
@@ -74,7 +85,7 @@ public class ArtworkLikeServiceImpl implements ArtworkLikeService {
 
         notificationService.sendToUsers(
             String.format("Artwork sharing platform - artwork '%s'", artwork.getName()),
-            String.format("%s and %d users like your artwork!", user.getFirstName(), artwork.getLikes().size()),
+            String.format("%s like your artwork! total %d likes", user.getFirstName(), artwork.getLikes().size()),
             artwork.getOwner()
         );
     }
@@ -99,19 +110,39 @@ public class ArtworkLikeServiceImpl implements ArtworkLikeService {
 
         Artwork artwork = artworkOptional.get();
 
-        boolean isUserLikedArtwork = artwork.getLikes().stream().anyMatch(l -> l.getOwner() == user);
+        Optional<ArtworkLike> like = artwork.getLikes().stream().filter(l -> l.getOwner() == user).findFirst();
 
-        if (isUserLikedArtwork) {
-            throw new UserAlreadyLikeArtworkException();
+        if (!like.isPresent()) {
+            return;
         }
 
-        ArtworkLike like = new ArtworkLike();
-        like.setOwner(user);
-
-        artwork.addLikes(like);
+        artwork.removeLikes(like.get());
 
         artworkRepository.save(artwork);
 
         notificationService.unsubcribeUsersFromTopic(String.format("/topics/artwork_%d", artwork.getId()), user);
+    }
+
+    @Override
+    public Optional<ArtworkLikeDTO> getLikeByUser(Long artworkId) {
+        log.info("User get like by artwork id " + artworkId);
+
+        Optional<Artwork> artworkOptional = artworkRepository.findById(artworkId);
+
+        if (!artworkOptional.isPresent()) {
+            throw new ArtworkNotFoundException();
+        }
+
+        Optional<User> userOptional = userService.getUserWithAuthorities();
+
+        if (!userOptional.isPresent()) {
+            throw new NotLoggedException();
+        }
+
+        User user = userOptional.get();
+
+        Optional<ArtworkLike> artworkLikeOptional = artworkOptional.get().getLikes().stream().filter(l -> l.getOwner() == user).findFirst();
+
+        return artworkLikeOptional.map(artworkLikeMapper::toDto);
     }
 }
