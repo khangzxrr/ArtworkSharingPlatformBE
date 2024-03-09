@@ -13,6 +13,7 @@ import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.domain.enumeration.WalletTransactionStatus;
 import com.github.khangzxrr.domain.enumeration.WalletTransactionType;
 import com.github.khangzxrr.repository.RequestRepository;
+import com.github.khangzxrr.service.NotificationService;
 import com.github.khangzxrr.service.RequestPaymentService;
 import com.github.khangzxrr.service.WalletService;
 import com.github.khangzxrr.service.dto.requestProgressDto.RequestProgressPaymentDTO;
@@ -26,7 +27,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +42,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
     private final WalletService walletService;
 
-    private final SimpMessageSendingOperations messagingTemplate;
+    private final NotificationService notificationService;
 
     private final ApplicationProperties applicationProperties;
 
@@ -50,13 +50,13 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         RequestRepository requestRepository,
         RequestProgressMapper requestProgressMapper,
         WalletService walletService,
-        SimpMessageSendingOperations messagingTemplate,
+        NotificationService notificationService,
         ApplicationProperties applicationProperties
     ) {
         this.requestRepository = requestRepository;
         this.requestProgressMapper = requestProgressMapper;
         this.walletService = walletService;
-        this.messagingTemplate = messagingTemplate;
+        this.notificationService = notificationService;
 
         this.applicationProperties = applicationProperties;
     }
@@ -224,11 +224,7 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
 
         RequestProgressPaymentDTO requestProgressPaymentDTO = requestProgressMapper.toPaymentDTO(requestProgress);
 
-        try {
-            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", requestProgressPaymentDTO);
-        } catch (Exception ex) {
-            // ignore exception if any
-        }
+        notificationService.sendToWsTopic("/topic/requests/" + requestId + "/notification", requestProgressPaymentDTO);
 
         return requestProgressPaymentDTO;
     }
@@ -335,11 +331,8 @@ public class RequestPaymentServiceImpl implements RequestPaymentService {
         requestRepository.save(request);
 
         RequestProgressPaymentDTO paymentDTO = requestProgressMapper.toPaymentDTO(requestProgress);
-        try {
-            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", paymentDTO);
-        } catch (Exception ex) {
-            // ignore exception if any
-        }
+
+        notificationService.sendToWsTopic("/topic/requests/" + requestId + "/notification", paymentDTO);
 
         return paymentDTO;
     }
