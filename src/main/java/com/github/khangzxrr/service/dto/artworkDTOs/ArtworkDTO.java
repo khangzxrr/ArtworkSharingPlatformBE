@@ -40,6 +40,8 @@ public class ArtworkDTO implements Serializable {
 
     private long commentsCount;
 
+    private boolean userLikedThisArtwork;
+
     public Long getId() {
         return id;
     }
@@ -170,5 +172,13 @@ public class ArtworkDTO implements Serializable {
 
     public void setCommentsCount(long commentsCount) {
         this.commentsCount = commentsCount;
+    }
+
+    public boolean isUserLikedThisArtwork() {
+        return userLikedThisArtwork;
+    }
+
+    public void setUserLikedThisArtwork(boolean userLikedThisArtwork) {
+        this.userLikedThisArtwork = userLikedThisArtwork;
     }
 }
