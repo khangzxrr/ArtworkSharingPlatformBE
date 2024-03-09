@@ -92,7 +92,12 @@ public class RequestBidServiceImpl implements RequestBidService {
 
         notificationService.sendToUser(
             "Request " + request.getTitle(),
-            "A new deal placed by " + requestBid.getUser().getLogin(),
+            String.format(
+                "A new deal placed by %s: %.0f$ - %d days",
+                requestBid.getUser().getLogin(),
+                requestBid.getPrice(),
+                requestBid.getDuration()
+            ),
             request.getUser()
         );
 
