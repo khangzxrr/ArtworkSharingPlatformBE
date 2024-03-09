@@ -3,11 +3,15 @@ package com.github.khangzxrr.service.impl;
 import com.github.khangzxrr.domain.User;
 import com.github.khangzxrr.domain.UserNotifyToken;
 import com.github.khangzxrr.service.NotificationService;
+import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutureCallback;
+import com.google.api.core.ApiFutures;
+import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
+import com.google.firebase.messaging.TopicManagementResponse;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +21,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -44,13 +49,27 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendToUser(String title, String body, User user) {
         for (UserNotifyToken userNotifyToken : user.getNotifyTokens()) {
-            try {
-                Notification notification = Notification.builder().setTitle(title).setBody(body).build();
+            Notification notification = Notification.builder().setTitle(title).setBody(body).build();
 
-                Message message = Message.builder().setToken(userNotifyToken.getToken()).setNotification(notification).build();
+            Message message = Message.builder().setToken(userNotifyToken.getToken()).setNotification(notification).build();
 
-                firebaseMessaging.send(message);
-            } catch (FirebaseMessagingException firebaseMessagingException) {}
+            ApiFuture<String> future = firebaseMessaging.sendAsync(message);
+
+            ApiFutures.addCallback(
+                future,
+                new ApiFutureCallback<String>() {
+                    @Override
+                    public void onFailure(Throwable t) {
+                        log.error(t.getMessage(), t);
+                    }
+
+                    @Override
+                    public void onSuccess(String result) {
+                        log.info(result);
+                    }
+                },
+                Runnable::run
+            );
         }
     }
 
@@ -62,36 +81,69 @@ public class NotificationServiceImpl implements NotificationService {
 
         MulticastMessage message = MulticastMessage.builder().setNotification(notification).addAllTokens(tokens).build();
 
-        try {
-            firebaseMessaging.sendEachForMulticast(message);
-        } catch (FirebaseMessagingException ex) {
-            log.error(ex.getMessage(), ex);
-            ex.printStackTrace();
-        }
+        ApiFuture<BatchResponse> future = firebaseMessaging.sendEachForMulticastAsync(message);
+
+        ApiFutures.addCallback(
+            future,
+            new ApiFutureCallback<BatchResponse>() {
+                @Override
+                public void onFailure(Throwable t) {
+                    log.error(t.getMessage(), t);
+                }
+
+                @Override
+                public void onSuccess(BatchResponse result) {
+                    log.info(result.toString());
+                }
+            },
+            Runnable::run
+        );
     }
 
     @Override
     public void subcribeUsersToTopic(@NotBlank String topic, @NotNull User... users) {
         List<String> tokens = mapUsersToTokens(users);
 
-        try {
-            firebaseMessaging.subscribeToTopic(tokens, topic);
-        } catch (FirebaseMessagingException e) {
-            log.error(e.getMessage(), e);
-            e.printStackTrace();
-        }
+        ApiFuture<TopicManagementResponse> future = firebaseMessaging.subscribeToTopicAsync(tokens, topic);
+
+        ApiFutures.addCallback(
+            future,
+            new ApiFutureCallback<TopicManagementResponse>() {
+                @Override
+                public void onFailure(Throwable t) {
+                    log.error(t.getMessage(), t);
+                }
+
+                @Override
+                public void onSuccess(TopicManagementResponse result) {
+                    log.info(result.toString());
+                }
+            },
+            Runnable::run
+        );
     }
 
     @Override
     public void unsubcribeUsersFromTopic(String topic, User... users) {
         List<String> tokens = mapUsersToTokens(users);
 
-        try {
-            firebaseMessaging.unsubscribeFromTopic(tokens, topic);
-        } catch (FirebaseMessagingException e) {
-            log.error(e.getMessage(), e);
-            e.printStackTrace();
-        }
+        ApiFuture<TopicManagementResponse> future = firebaseMessaging.unsubscribeFromTopicAsync(tokens, topic);
+
+        ApiFutures.addCallback(
+            future,
+            new ApiFutureCallback<TopicManagementResponse>() {
+                @Override
+                public void onFailure(Throwable t) {
+                    log.error(t.getMessage(), t);
+                }
+
+                @Override
+                public void onSuccess(TopicManagementResponse result) {
+                    log.info(result.toString());
+                }
+            },
+            Runnable::run
+        );
     }
 
     @Override
@@ -100,15 +152,26 @@ public class NotificationServiceImpl implements NotificationService {
 
         Message message = Message.builder().setNotification(notification).setTopic(topic).build();
 
-        try {
-            firebaseMessaging.send(message);
-        } catch (FirebaseMessagingException e) {
-            log.error(e.getMessage(), e);
-            e.printStackTrace();
-        }
+        ApiFuture<String> future = firebaseMessaging.sendAsync(message);
+        ApiFutures.addCallback(
+            future,
+            new ApiFutureCallback<String>() {
+                @Override
+                public void onFailure(Throwable t) {
+                    log.error(t.getMessage(), t);
+                }
+
+                @Override
+                public void onSuccess(String result) {
+                    log.info(result);
+                }
+            },
+            Runnable::run
+        );
     }
 
     @Override
+    @Async
     public void sendToWsTopic(String topic, Object payload) {
         try {
             messagingTemplate.convertAndSend(topic, payload);
