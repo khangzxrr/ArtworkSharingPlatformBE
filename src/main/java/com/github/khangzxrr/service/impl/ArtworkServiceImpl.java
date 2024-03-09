@@ -55,14 +55,6 @@ public class ArtworkServiceImpl implements ArtworkService {
     }
 
     @Override
-    public ArtworkDTO save(ArtworkDTO artworkDTO) {
-        log.debug("Request to save Artwork : {}", artworkDTO);
-        Artwork artwork = artworkMapper.toEntity(artworkDTO);
-        artwork = artworkRepository.save(artwork);
-        return artworkMapper.toDto(artwork);
-    }
-
-    @Override
     public ArtworkDTO update(Long id, UpdateArtworkDTO updateArtworkDTO) {
         log.debug("Request to update Artwork : {}", updateArtworkDTO);
 

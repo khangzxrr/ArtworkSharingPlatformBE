@@ -1,6 +1,8 @@
 package com.github.khangzxrr.web.rest;
 
 import com.github.khangzxrr.service.ArtworkLikeService;
+import com.github.khangzxrr.service.dto.ArtworkLikeDTO;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +25,17 @@ public class ArtworkLikeResource {
 
     public ArtworkLikeResource(ArtworkLikeService artworkLikeService) {
         this.artworkLikeService = artworkLikeService;
+    }
+
+    @GetMapping("{artworkId}/like")
+    public ResponseEntity<ArtworkLikeDTO> getLikeArtworkByUser(@PathVariable("artworkId") Long artworkId) {
+        Optional<ArtworkLikeDTO> likeDTO = artworkLikeService.getLikeByUser(artworkId);
+
+        if (!likeDTO.isPresent()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.of(likeDTO);
     }
 
     @PostMapping("{artworkId}/like")
