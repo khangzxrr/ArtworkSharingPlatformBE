@@ -39,7 +39,7 @@ public class Artwork extends AbstractAuditingEntity<Long> {
 
     @JsonIgnoreProperties(value = { "bids", "artwork" }, allowSetters = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork", cascade = CascadeType.ALL)
-    private Set<ArtworkSelling> artworkSellings;
+    private Set<ArtworkSelling> artworkSellings = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "media", "artwork" }, allowSetters = true)
