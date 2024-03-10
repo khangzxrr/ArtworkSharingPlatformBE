@@ -1,37 +1,29 @@
 package com.github.khangzxrr.service.mapper;
 
 import com.github.khangzxrr.domain.Artwork;
-import com.github.khangzxrr.domain.ArtworkCategory;
-import com.github.khangzxrr.domain.ArtworkSelling;
-import com.github.khangzxrr.domain.User;
-import com.github.khangzxrr.service.dto.ArtworkCategoryDTO;
-import com.github.khangzxrr.service.dto.ArtworkDTO;
-import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
-import com.github.khangzxrr.service.dto.UserDTO;
+import com.github.khangzxrr.service.ArtworkLikeService;
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
+import com.github.khangzxrr.service.dto.artworkDTOs.CreateArtworkDTO;
 import org.mapstruct.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Mapper for the entity {@link Artwork} and its DTO {@link ArtworkDTO}.
  */
-@Mapper(componentModel = "spring")
-public interface ArtworkMapper extends EntityMapper<ArtworkDTO, Artwork> {
-    @Mapping(target = "artworkSelling", source = "artworkSelling", qualifiedByName = "artworkSellingId")
-    @Mapping(target = "owner", source = "owner", qualifiedByName = "userId")
-    @Mapping(target = "category", source = "category", qualifiedByName = "artworkCategoryId")
-    ArtworkDTO toDto(Artwork s);
+@Mapper(componentModel = "spring", uses = { ArtworkAssetMapper.class, ArtworkLikeService.class })
+public abstract class ArtworkMapper {
 
-    @Named("artworkSellingId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    ArtworkSellingDTO toDtoArtworkSellingId(ArtworkSelling artworkSelling);
+    @Autowired
+    protected ArtworkLikeService artworkLikeService;
 
-    @Named("userId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    UserDTO toDtoUserId(User user);
+    @Mapping(target = "artworkAssets", source = "assets")
+    public abstract Artwork toEntity(CreateArtworkDTO dto);
 
-    @Named("artworkCategoryId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
-    ArtworkCategoryDTO toDtoArtworkCategoryId(ArtworkCategory artworkCategory);
+    @Mapping(target = "artworkSelling", source = "artworkSelling")
+    @Mapping(target = "owner", source = "owner")
+    @Mapping(target = "category", source = "category")
+    @Mapping(target = "commentsCount", expression = "java(source.getComments().size())")
+    @Mapping(target = "likesCount", expression = "java(source.getLikes().size())")
+    @Mapping(target = "userLikedThisArtwork", expression = "java(artworkLikeService.getLikeByUser(source.getId()).isPresent())")
+    public abstract ArtworkDTO toDto(Artwork source);
 }

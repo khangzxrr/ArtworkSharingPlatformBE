@@ -1,7 +1,13 @@
-package com.github.khangzxrr.service.dto;
+package com.github.khangzxrr.service.dto.artworkDTOs;
 
 import com.github.khangzxrr.domain.enumeration.ArtworkStatus;
+import com.github.khangzxrr.domain.enumeration.ArtworkVisibility;
+import com.github.khangzxrr.service.dto.ArtworkAssetDTO;
+import com.github.khangzxrr.service.dto.ArtworkCategoryDTO;
+import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
+import com.github.khangzxrr.service.dto.UserDTO;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -16,7 +22,9 @@ public class ArtworkDTO implements Serializable {
 
     private String description;
 
-    private String createAt;
+    public ArtworkVisibility visibility;
+
+    private String createdDate;
 
     private ArtworkStatus status;
 
@@ -25,6 +33,14 @@ public class ArtworkDTO implements Serializable {
     private UserDTO owner;
 
     private ArtworkCategoryDTO category;
+
+    private List<ArtworkAssetDTO> artworkAssets;
+
+    private long likesCount;
+
+    private long commentsCount;
+
+    private boolean userLikedThisArtwork;
 
     public Long getId() {
         return id;
@@ -50,12 +66,12 @@ public class ArtworkDTO implements Serializable {
         this.description = description;
     }
 
-    public String getCreateAt() {
-        return createAt;
+    public String getCreatedDate() {
+        return createdDate;
     }
 
-    public void setCreateAt(String createAt) {
-        this.createAt = createAt;
+    public void setCreatedDate(String createAt) {
+        this.createdDate = createAt;
     }
 
     public ArtworkStatus getStatus() {
@@ -118,11 +134,51 @@ public class ArtworkDTO implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
-            ", createAt='" + getCreateAt() + "'" +
+            ", createAt='" + getCreatedDate() + "'" +
             ", status='" + getStatus() + "'" +
             ", artworkSelling=" + getArtworkSelling() +
             ", owner=" + getOwner() +
             ", category=" + getCategory() +
             "}";
+    }
+
+    public ArtworkVisibility getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(ArtworkVisibility visibility) {
+        this.visibility = visibility;
+    }
+
+    public List<ArtworkAssetDTO> getArtworkAssets() {
+        return artworkAssets;
+    }
+
+    public void setArtworkAssets(List<ArtworkAssetDTO> artworkAssets) {
+        this.artworkAssets = artworkAssets;
+    }
+
+    public long getLikesCount() {
+        return likesCount;
+    }
+
+    public void setLikesCount(long likesCount) {
+        this.likesCount = likesCount;
+    }
+
+    public long getCommentsCount() {
+        return commentsCount;
+    }
+
+    public void setCommentsCount(long commentsCount) {
+        this.commentsCount = commentsCount;
+    }
+
+    public boolean isUserLikedThisArtwork() {
+        return userLikedThisArtwork;
+    }
+
+    public void setUserLikedThisArtwork(boolean userLikedThisArtwork) {
+        this.userLikedThisArtwork = userLikedThisArtwork;
     }
 }

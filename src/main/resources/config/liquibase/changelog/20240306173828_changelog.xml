@@ -1,0 +1,56 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="khang (generated)" id="1709721525271-4">
+        <addColumn tableName="artwork_comment">
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709721525271-5">
+        <addColumn tableName="artwork_like">
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709721525271-6">
+        <addColumn tableName="artwork_comment">
+            <column name="created_date" type="datetime(6)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709721525271-7">
+        <addColumn tableName="artwork_like">
+            <column name="created_date" type="datetime(6)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709721525271-8">
+        <addColumn tableName="artwork_comment">
+            <column name="last_modified_by" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709721525271-9">
+        <addColumn tableName="artwork_like">
+            <column name="last_modified_by" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709721525271-10">
+        <addColumn tableName="artwork_comment">
+            <column name="last_modified_date" type="datetime(6)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709721525271-11">
+        <addColumn tableName="artwork_like">
+            <column name="last_modified_date" type="datetime(6)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709721525271-28">
+        <dropColumn columnName="create_at" tableName="artwork"/>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709721525271-29">
+        <dropColumn columnName="create_at" tableName="artwork_comment"/>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709721525271-30">
+        <dropColumn columnName="create_at" tableName="artwork_like"/>
+    </changeSet>
+</databaseChangeLog>

@@ -76,9 +76,9 @@ public class ArtworkCategoryServiceImpl implements ArtworkCategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<ArtworkCategoryDTO> findOne(Long id) {
+    public Optional<ArtworkCategory> findOne(Long id) {
         log.debug("Request to get ArtworkCategory : {}", id);
-        return artworkCategoryRepository.findById(id).map(artworkCategoryMapper::toDto);
+        return artworkCategoryRepository.findById(id);
     }
 
     @Override

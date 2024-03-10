@@ -9,6 +9,7 @@ import com.github.khangzxrr.domain.enumeration.RequestProgressStatus;
 import com.github.khangzxrr.domain.enumeration.RequestProgressType;
 import com.github.khangzxrr.domain.enumeration.RequestStatus;
 import com.github.khangzxrr.repository.RequestRepository;
+import com.github.khangzxrr.service.NotificationService;
 import com.github.khangzxrr.service.RequestPaymentService;
 import com.github.khangzxrr.service.RequestProgressReportService;
 import com.github.khangzxrr.service.UserService;
@@ -24,7 +25,6 @@ import com.github.khangzxrr.web.rest.errors.RequestProgressTypeIsNotAReportExcep
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,19 +44,19 @@ public class RequestProgressReportServiceImpl implements RequestProgressReportSe
 
     private final UserService userService;
 
-    private final SimpMessageSendingOperations messagingTemplate;
+    private final NotificationService notificationService;
 
     public RequestProgressReportServiceImpl(
         RequestProgressMapper requestProgressMapper,
         RequestRepository requestRepository,
         UserService userService,
         RequestPaymentService requestPaymentService,
-        SimpMessageSendingOperations messagingTemplate
+        NotificationService notificationService
     ) {
         this.requestProgressMapper = requestProgressMapper;
         this.requestRepository = requestRepository;
         this.userService = userService;
-        this.messagingTemplate = messagingTemplate;
+        this.notificationService = notificationService;
     }
 
     private Request getRequestByIdAndCreatorBid(long requestId) {
@@ -121,11 +121,7 @@ public class RequestProgressReportServiceImpl implements RequestProgressReportSe
 
         RequestProgressDTO requestProgressDTO = requestProgressMapper.toDto(requestProgress);
 
-        try {
-            messagingTemplate.convertAndSend("/topic/requests/" + requestId + "/notification", requestProgressDTO);
-        } catch (Exception ex) {
-            log.error(ex.getMessage(), ex);
-        }
+        notificationService.sendToWsTopic("/topic/requests/" + requestId + "/notification", requestProgressDTO);
 
         return requestProgressDTO;
     }

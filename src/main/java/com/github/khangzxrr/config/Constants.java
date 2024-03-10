@@ -1,9 +1,5 @@
 package com.github.khangzxrr.config;
 
-import com.github.khangzxrr.domain.enumeration.RequestProgressType;
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Application constants.
  */

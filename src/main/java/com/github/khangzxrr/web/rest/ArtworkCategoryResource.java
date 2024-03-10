@@ -143,19 +143,6 @@ public class ArtworkCategoryResource {
     }
 
     /**
-     * {@code GET  /artwork-categories/:id} : get the "id" artworkCategory.
-     *
-     * @param id the id of the artworkCategoryDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the artworkCategoryDTO, or with status {@code 404 (Not Found)}.
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<ArtworkCategoryDTO> getArtworkCategory(@PathVariable("id") Long id) {
-        log.debug("REST request to get ArtworkCategory : {}", id);
-        Optional<ArtworkCategoryDTO> artworkCategoryDTO = artworkCategoryService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(artworkCategoryDTO);
-    }
-
-    /**
      * {@code DELETE  /artwork-categories/:id} : delete the "id" artworkCategory.
      *
      * @param id the id of the artworkCategoryDTO to delete.

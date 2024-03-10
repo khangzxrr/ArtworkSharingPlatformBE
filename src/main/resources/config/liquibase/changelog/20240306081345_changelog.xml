@@ -1,0 +1,30 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="khang (generated)" id="1709687639683-4">
+        <addColumn tableName="artwork">
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709687639683-5">
+        <addColumn tableName="artwork">
+            <column name="created_date" type="datetime(6)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709687639683-6">
+        <addColumn tableName="artwork">
+            <column name="last_modified_by" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709687639683-7">
+        <addColumn tableName="artwork">
+            <column name="last_modified_date" type="datetime(6)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1709687639683-8">
+        <addColumn tableName="artwork">
+            <column name="visibility"  type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

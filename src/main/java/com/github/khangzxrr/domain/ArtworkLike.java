@@ -2,8 +2,6 @@ package com.github.khangzxrr.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import java.io.Serializable;
-import java.time.LocalDate;
 
 /**
  * A ArtworkLike.
@@ -11,7 +9,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "artwork_like")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class ArtworkLike implements Serializable {
+public class ArtworkLike extends AbstractAuditingEntity<Long> {
 
     private static final long serialVersionUID = 1L;
 
@@ -19,9 +17,6 @@ public class ArtworkLike implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-
-    @Column(name = "create_at")
-    private LocalDate createAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User owner;
@@ -35,6 +30,7 @@ public class ArtworkLike implements Serializable {
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
+    @Override
     public Long getId() {
         return this.id;
     }
@@ -46,19 +42,6 @@ public class ArtworkLike implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public LocalDate getCreateAt() {
-        return this.createAt;
-    }
-
-    public ArtworkLike createAt(LocalDate createAt) {
-        this.setCreateAt(createAt);
-        return this;
-    }
-
-    public void setCreateAt(LocalDate createAt) {
-        this.createAt = createAt;
     }
 
     public User getOwner() {
@@ -111,7 +94,7 @@ public class ArtworkLike implements Serializable {
     public String toString() {
         return "ArtworkLike{" +
             "id=" + getId() +
-            ", createAt='" + getCreateAt() + "'" +
+            ", createdDate='" + getCreatedDate() + "'" +
             "}";
     }
 }

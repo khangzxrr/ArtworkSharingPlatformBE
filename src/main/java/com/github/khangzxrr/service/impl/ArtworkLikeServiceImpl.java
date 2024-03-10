@@ -1,21 +1,26 @@
 package com.github.khangzxrr.service.impl;
 
+import com.github.khangzxrr.domain.Artwork;
 import com.github.khangzxrr.domain.ArtworkLike;
-import com.github.khangzxrr.repository.ArtworkLikeRepository;
+import com.github.khangzxrr.domain.User;
+import com.github.khangzxrr.repository.ArtworkRepository;
 import com.github.khangzxrr.service.ArtworkLikeService;
+import com.github.khangzxrr.service.NotificationService;
+import com.github.khangzxrr.service.UserService;
 import com.github.khangzxrr.service.dto.ArtworkLikeDTO;
 import com.github.khangzxrr.service.mapper.ArtworkLikeMapper;
-import java.util.LinkedList;
-import java.util.List;
+import com.github.khangzxrr.web.rest.errors.ArtworkNotFoundException;
+import com.github.khangzxrr.web.rest.errors.NotLoggedException;
+import com.github.khangzxrr.web.rest.errors.UserAlreadyLikeArtworkException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service Implementation for managing {@link com.github.khangzxrr.domain.ArtworkLike}.
+ * Service Implementation for managing
+ * {@link com.github.khangzxrr.domain.ArtworkLike}.
  */
 @Service
 @Transactional
@@ -23,63 +28,121 @@ public class ArtworkLikeServiceImpl implements ArtworkLikeService {
 
     private final Logger log = LoggerFactory.getLogger(ArtworkLikeServiceImpl.class);
 
-    private final ArtworkLikeRepository artworkLikeRepository;
+    private final ArtworkRepository artworkRepository;
+
+    private final UserService userService;
+
+    private final NotificationService notificationService;
 
     private final ArtworkLikeMapper artworkLikeMapper;
 
-    public ArtworkLikeServiceImpl(ArtworkLikeRepository artworkLikeRepository, ArtworkLikeMapper artworkLikeMapper) {
-        this.artworkLikeRepository = artworkLikeRepository;
+    public ArtworkLikeServiceImpl(
+        ArtworkRepository artworkRepository,
+        UserService userService,
+        NotificationService notificationService,
+        ArtworkLikeMapper artworkLikeMapper
+    ) {
+        this.artworkRepository = artworkRepository;
+        this.userService = userService;
+        this.notificationService = notificationService;
         this.artworkLikeMapper = artworkLikeMapper;
     }
 
     @Override
-    public ArtworkLikeDTO save(ArtworkLikeDTO artworkLikeDTO) {
-        log.debug("Request to save ArtworkLike : {}", artworkLikeDTO);
-        ArtworkLike artworkLike = artworkLikeMapper.toEntity(artworkLikeDTO);
-        artworkLike = artworkLikeRepository.save(artworkLike);
-        return artworkLikeMapper.toDto(artworkLike);
+    public void Like(Long id) {
+        log.info("User likes artwork id " + id);
+
+        Optional<Artwork> artworkOptional = artworkRepository.findById(id);
+
+        if (!artworkOptional.isPresent()) {
+            throw new ArtworkNotFoundException();
+        }
+
+        Optional<User> userOptional = userService.getUserWithAuthorities();
+
+        if (!userOptional.isPresent()) {
+            throw new NotLoggedException();
+        }
+
+        User user = userOptional.get();
+
+        Artwork artwork = artworkOptional.get();
+
+        boolean isUserLikedArtwork = artwork.getLikes().stream().anyMatch(l -> l.getOwner() == user);
+
+        if (isUserLikedArtwork) {
+            throw new UserAlreadyLikeArtworkException();
+        }
+
+        ArtworkLike like = new ArtworkLike();
+        like.setOwner(user);
+
+        artwork.addLikes(like);
+
+        artworkRepository.save(artwork);
+
+        notificationService.subcribeUsersToTopic(String.format("/topics/artwork_%d", artwork.getId()), user);
+
+        notificationService.sendToUsers(
+            String.format("Artwork sharing platform - artwork '%s'", artwork.getName()),
+            String.format("%s like your artwork! total %d likes", user.getFirstName(), artwork.getLikes().size()),
+            artwork.getOwner()
+        );
     }
 
     @Override
-    public ArtworkLikeDTO update(ArtworkLikeDTO artworkLikeDTO) {
-        log.debug("Request to update ArtworkLike : {}", artworkLikeDTO);
-        ArtworkLike artworkLike = artworkLikeMapper.toEntity(artworkLikeDTO);
-        artworkLike = artworkLikeRepository.save(artworkLike);
-        return artworkLikeMapper.toDto(artworkLike);
+    public void Unlike(Long id) {
+        log.info("User unlikes artwork id " + id);
+
+        Optional<Artwork> artworkOptional = artworkRepository.findById(id);
+
+        if (!artworkOptional.isPresent()) {
+            throw new ArtworkNotFoundException();
+        }
+
+        Optional<User> userOptional = userService.getUserWithAuthorities();
+
+        if (!userOptional.isPresent()) {
+            throw new NotLoggedException();
+        }
+
+        User user = userOptional.get();
+
+        Artwork artwork = artworkOptional.get();
+
+        Optional<ArtworkLike> like = artwork.getLikes().stream().filter(l -> l.getOwner() == user).findFirst();
+
+        if (!like.isPresent()) {
+            return;
+        }
+
+        artwork.removeLikes(like.get());
+
+        artworkRepository.save(artwork);
+
+        notificationService.unsubcribeUsersFromTopic(String.format("/topics/artwork_%d", artwork.getId()), user);
     }
 
     @Override
-    public Optional<ArtworkLikeDTO> partialUpdate(ArtworkLikeDTO artworkLikeDTO) {
-        log.debug("Request to partially update ArtworkLike : {}", artworkLikeDTO);
+    public Optional<ArtworkLikeDTO> getLikeByUser(Long artworkId) {
+        log.info("User get like by artwork id " + artworkId);
 
-        return artworkLikeRepository
-            .findById(artworkLikeDTO.getId())
-            .map(existingArtworkLike -> {
-                artworkLikeMapper.partialUpdate(existingArtworkLike, artworkLikeDTO);
+        Optional<Artwork> artworkOptional = artworkRepository.findById(artworkId);
 
-                return existingArtworkLike;
-            })
-            .map(artworkLikeRepository::save)
-            .map(artworkLikeMapper::toDto);
-    }
+        if (!artworkOptional.isPresent()) {
+            throw new ArtworkNotFoundException();
+        }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<ArtworkLikeDTO> findAll() {
-        log.debug("Request to get all ArtworkLikes");
-        return artworkLikeRepository.findAll().stream().map(artworkLikeMapper::toDto).collect(Collectors.toCollection(LinkedList::new));
-    }
+        Optional<User> userOptional = userService.getUserWithAuthorities();
 
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<ArtworkLikeDTO> findOne(Long id) {
-        log.debug("Request to get ArtworkLike : {}", id);
-        return artworkLikeRepository.findById(id).map(artworkLikeMapper::toDto);
-    }
+        if (!userOptional.isPresent()) {
+            throw new NotLoggedException();
+        }
 
-    @Override
-    public void delete(Long id) {
-        log.debug("Request to delete ArtworkLike : {}", id);
-        artworkLikeRepository.deleteById(id);
+        User user = userOptional.get();
+
+        Optional<ArtworkLike> artworkLikeOptional = artworkOptional.get().getLikes().stream().filter(l -> l.getOwner() == user).findFirst();
+
+        return artworkLikeOptional.map(artworkLikeMapper::toDto);
     }
 }

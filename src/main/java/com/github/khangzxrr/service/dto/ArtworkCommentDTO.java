@@ -1,6 +1,9 @@
 package com.github.khangzxrr.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.khangzxrr.service.dto.artworkDTOs.ArtworkDTO;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -14,10 +17,11 @@ public class ArtworkCommentDTO implements Serializable {
 
     private String content;
 
-    private LocalDate createAt;
+    private Instant createdDate;
 
     private UserDTO owner;
 
+    @JsonIgnore
     private ArtworkDTO artwork;
 
     public Long getId() {
@@ -34,14 +38,6 @@ public class ArtworkCommentDTO implements Serializable {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public LocalDate getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(LocalDate createAt) {
-        this.createAt = createAt;
     }
 
     public UserDTO getOwner() {
@@ -87,9 +83,17 @@ public class ArtworkCommentDTO implements Serializable {
         return "ArtworkCommentDTO{" +
             "id=" + getId() +
             ", content='" + getContent() + "'" +
-            ", createAt='" + getCreateAt() + "'" +
+            ", createAt='" + getCreatedDate() + "'" +
             ", owner=" + getOwner() +
             ", artwork=" + getArtwork() +
             "}";
+    }
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
     }
 }

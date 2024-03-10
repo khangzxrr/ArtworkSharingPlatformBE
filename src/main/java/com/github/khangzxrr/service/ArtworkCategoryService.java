@@ -1,5 +1,6 @@
 package com.github.khangzxrr.service;
 
+import com.github.khangzxrr.domain.ArtworkCategory;
 import com.github.khangzxrr.service.dto.ArtworkCategoryDTO;
 import java.util.List;
 import java.util.Optional;
@@ -39,13 +40,7 @@ public interface ArtworkCategoryService {
      */
     List<ArtworkCategoryDTO> findAll();
 
-    /**
-     * Get the "id" artworkCategory.
-     *
-     * @param id the id of the entity.
-     * @return the entity.
-     */
-    Optional<ArtworkCategoryDTO> findOne(Long id);
+    Optional<ArtworkCategory> findOne(Long id);
 
     /**
      * Delete the "id" artworkCategory.
