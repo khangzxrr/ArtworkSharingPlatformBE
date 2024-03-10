@@ -17,5 +17,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ArtworkSellingRepository extends JpaRepository<ArtworkSelling, Long> {
     @Lock(LockModeType.PESSIMISTIC_READ) //this is important, because we must LOCK entity to perform any changes (dont want any other transaction update, reading this record)
-    Set<ArtworkSelling> findAllByStatusIn(List<ArtworkSellingStatus> status);
+    Optional<ArtworkSelling> findByArtworkIdAndStatusIn(Long artworkId, List<ArtworkSellingStatus> status);
 }
