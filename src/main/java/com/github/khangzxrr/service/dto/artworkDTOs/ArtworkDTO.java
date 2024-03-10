@@ -42,6 +42,16 @@ public class ArtworkDTO implements Serializable {
 
     private boolean userLikedThisArtwork;
 
+    private ArtworkSellingDTO onGoingArtworkSelling;
+
+    public ArtworkSellingDTO getOnGoingArtworkSelling() {
+        return onGoingArtworkSelling;
+    }
+
+    public void setOnGoingArtworkSelling(ArtworkSellingDTO onGoingArtworkSelling) {
+        this.onGoingArtworkSelling = onGoingArtworkSelling;
+    }
+
     public Long getId() {
         return id;
     }
