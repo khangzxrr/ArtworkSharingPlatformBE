@@ -19,7 +19,6 @@ public abstract class ArtworkMapper {
     @Mapping(target = "artworkAssets", source = "assets")
     public abstract Artwork toEntity(CreateArtworkDTO dto);
 
-    @Mapping(target = "artworkSelling", source = "artworkSelling")
     @Mapping(target = "owner", source = "owner")
     @Mapping(target = "category", source = "category")
     @Mapping(target = "commentsCount", expression = "java(source.getComments().size())")
