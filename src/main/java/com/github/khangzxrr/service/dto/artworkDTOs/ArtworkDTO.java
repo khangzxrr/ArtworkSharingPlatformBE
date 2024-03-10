@@ -28,7 +28,7 @@ public class ArtworkDTO implements Serializable {
 
     private ArtworkStatus status;
 
-    private List<ArtworkSellingDTO> artworkSelling;
+    private List<ArtworkSellingDTO> artworkSellings;
 
     private UserDTO owner;
 
@@ -128,7 +128,7 @@ public class ArtworkDTO implements Serializable {
             ", description='" + getDescription() + "'" +
             ", createAt='" + getCreatedDate() + "'" +
             ", status='" + getStatus() + "'" +
-            ", artworkSelling=" + getArtworkSelling() +
+            ", artworkSelling=" + getArtworkSellings() +
             ", owner=" + getOwner() +
             ", category=" + getCategory() +
             "}";
@@ -174,11 +174,11 @@ public class ArtworkDTO implements Serializable {
         this.userLikedThisArtwork = userLikedThisArtwork;
     }
 
-    public List<ArtworkSellingDTO> getArtworkSelling() {
-        return artworkSelling;
+    public List<ArtworkSellingDTO> getArtworkSellings() {
+        return artworkSellings;
     }
 
-    public void setArtworkSelling(List<ArtworkSellingDTO> artworkSelling) {
-        this.artworkSelling = artworkSelling;
+    public void setArtworkSellings(List<ArtworkSellingDTO> artworkSellings) {
+        this.artworkSellings = artworkSellings;
     }
 }
