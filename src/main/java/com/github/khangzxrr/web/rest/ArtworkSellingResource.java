@@ -3,11 +3,9 @@ package com.github.khangzxrr.web.rest;
 import com.github.khangzxrr.repository.ArtworkSellingRepository;
 import com.github.khangzxrr.service.ArtworkSellingService;
 import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
-import com.github.khangzxrr.web.rest.errors.BadRequestAlertException;
-import java.net.URI;
+import jakarta.validation.Valid;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +16,11 @@ import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
 
 /**
- * REST controller for managing {@link com.github.khangzxrr.domain.ArtworkSelling}.
+ * REST controller for managing
+ * {@link com.github.khangzxrr.domain.ArtworkSelling}.
  */
-//@RestController
-//@RequestMapping("/api/artwork-sellings")
+@RestController
+@RequestMapping({ "/api/audience/artworks", "/api/creator/artworks" })
 public class ArtworkSellingResource {
 
     private final Logger log = LoggerFactory.getLogger(ArtworkSellingResource.class);
@@ -33,111 +32,41 @@ public class ArtworkSellingResource {
 
     private final ArtworkSellingService artworkSellingService;
 
-    private final ArtworkSellingRepository artworkSellingRepository;
-
     public ArtworkSellingResource(ArtworkSellingService artworkSellingService, ArtworkSellingRepository artworkSellingRepository) {
         this.artworkSellingService = artworkSellingService;
-        this.artworkSellingRepository = artworkSellingRepository;
     }
 
     /**
-     * {@code POST  /artwork-sellings} : Create a new artworkSelling.
+     * {@code POST  /sellings} : Create a new artworkSelling.
      *
      * @param artworkSellingDTO the artworkSellingDTO to create.
-     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new artworkSellingDTO, or with status {@code 400 (Bad Request)} if the artworkSelling has already an ID.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with
+     *         body the new artworkSellingDTO, or with status
+     *         {@code 400 (Bad Request)} if the artworkSelling has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("")
-    public ResponseEntity<ArtworkSellingDTO> createArtworkSelling(@RequestBody ArtworkSellingDTO artworkSellingDTO)
-        throws URISyntaxException {
+    @PostMapping("{artworkId}/sellings")
+    public ResponseEntity<ArtworkSellingDTO> createArtworkSelling(
+        @PathVariable(name = "artworkId") Long artworkId,
+        @Valid @RequestBody ArtworkSellingDTO artworkSellingDTO
+    ) {
         log.debug("REST request to save ArtworkSelling : {}", artworkSellingDTO);
-        if (artworkSellingDTO.getId() != null) {
-            throw new BadRequestAlertException("A new artworkSelling cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        ArtworkSellingDTO result = artworkSellingService.save(artworkSellingDTO);
-        return ResponseEntity
-            .created(new URI("/api/artwork-sellings/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
-            .body(result);
-    }
 
-    /**
-     * {@code PUT  /artwork-sellings/:id} : Updates an existing artworkSelling.
-     *
-     * @param id the id of the artworkSellingDTO to save.
-     * @param artworkSellingDTO the artworkSellingDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated artworkSellingDTO,
-     * or with status {@code 400 (Bad Request)} if the artworkSellingDTO is not valid,
-     * or with status {@code 500 (Internal Server Error)} if the artworkSellingDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PutMapping("/{id}")
-    public ResponseEntity<ArtworkSellingDTO> updateArtworkSelling(
-        @PathVariable(value = "id", required = false) final Long id,
-        @RequestBody ArtworkSellingDTO artworkSellingDTO
-    ) throws URISyntaxException {
-        log.debug("REST request to update ArtworkSelling : {}, {}", id, artworkSellingDTO);
-        if (artworkSellingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, artworkSellingDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!artworkSellingRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        ArtworkSellingDTO result = artworkSellingService.update(artworkSellingDTO);
+        ArtworkSellingDTO result = artworkSellingService.save(artworkId, artworkSellingDTO);
         return ResponseEntity
             .ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, artworkSellingDTO.getId().toString()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
             .body(result);
-    }
-
-    /**
-     * {@code PATCH  /artwork-sellings/:id} : Partial updates given fields of an existing artworkSelling, field will ignore if it is null
-     *
-     * @param id the id of the artworkSellingDTO to save.
-     * @param artworkSellingDTO the artworkSellingDTO to update.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated artworkSellingDTO,
-     * or with status {@code 400 (Bad Request)} if the artworkSellingDTO is not valid,
-     * or with status {@code 404 (Not Found)} if the artworkSellingDTO is not found,
-     * or with status {@code 500 (Internal Server Error)} if the artworkSellingDTO couldn't be updated.
-     * @throws URISyntaxException if the Location URI syntax is incorrect.
-     */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<ArtworkSellingDTO> partialUpdateArtworkSelling(
-        @PathVariable(value = "id", required = false) final Long id,
-        @RequestBody ArtworkSellingDTO artworkSellingDTO
-    ) throws URISyntaxException {
-        log.debug("REST request to partial update ArtworkSelling partially : {}, {}", id, artworkSellingDTO);
-        if (artworkSellingDTO.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-        if (!Objects.equals(id, artworkSellingDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!artworkSellingRepository.existsById(id)) {
-            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Optional<ArtworkSellingDTO> result = artworkSellingService.partialUpdate(artworkSellingDTO);
-
-        return ResponseUtil.wrapOrNotFound(
-            result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, artworkSellingDTO.getId().toString())
-        );
     }
 
     /**
      * {@code GET  /artwork-sellings} : get all the artworkSellings.
      *
      * @param filter the filter of the request.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of artworkSellings in body.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list
+     *         of artworkSellings in body.
      */
-    @GetMapping("")
+    @GetMapping("/sellings")
     public List<ArtworkSellingDTO> getAllArtworkSellings(@RequestParam(name = "filter", required = false) String filter) {
         if ("artwork-is-null".equals(filter)) {
             log.debug("REST request to get all ArtworkSellings where artwork is null");
@@ -151,10 +80,11 @@ public class ArtworkSellingResource {
      * {@code GET  /artwork-sellings/:id} : get the "id" artworkSelling.
      *
      * @param id the id of the artworkSellingDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the artworkSellingDTO, or with status {@code 404 (Not Found)}.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body
+     *         the artworkSellingDTO, or with status {@code 404 (Not Found)}.
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<ArtworkSellingDTO> getArtworkSelling(@PathVariable("id") Long id) {
+    @GetMapping("/{artworkId}/sellings/{id}")
+    public ResponseEntity<ArtworkSellingDTO> getArtworkSelling(@PathVariable("artworkId") Long artworkId, @PathVariable("id") Long id) {
         log.debug("REST request to get ArtworkSelling : {}", id);
         Optional<ArtworkSellingDTO> artworkSellingDTO = artworkSellingService.findOne(id);
         return ResponseUtil.wrapOrNotFound(artworkSellingDTO);
@@ -166,8 +96,8 @@ public class ArtworkSellingResource {
      * @param id the id of the artworkSellingDTO to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteArtworkSelling(@PathVariable("id") Long id) {
+    @DeleteMapping("/{artworkId}/sellings/{id}")
+    public ResponseEntity<Void> deleteArtworkSelling(@PathVariable("artworkId") Long artworkId, @PathVariable("id") Long id) {
         log.debug("REST request to delete ArtworkSelling : {}", id);
         artworkSellingService.delete(id);
         return ResponseEntity
@@ -175,4 +105,45 @@ public class ArtworkSellingResource {
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
     }
+    // /**
+    // * {@code PUT /artwork-sellings/:id} : Updates an existing artworkSelling.
+    // *
+    // * @param id the id of the artworkSellingDTO to save.
+    // * @param artworkSellingDTO the artworkSellingDTO to update.
+    // * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with
+    // body
+    // * the updated artworkSellingDTO,
+    // * or with status {@code 400 (Bad Request)} if the artworkSellingDTO is
+    // * not valid,
+    // * or with status {@code 500 (Internal Server Error)} if the
+    // * artworkSellingDTO couldn't be updated.
+    // * @throws URISyntaxException if the Location URI syntax is incorrect.
+    // */
+    // @PutMapping("/{id}")
+    // public ResponseEntity<ArtworkSellingDTO> updateArtworkSelling(
+    // @PathVariable(value = "id", required = false) final Long id,
+    // @RequestBody ArtworkSellingDTO artworkSellingDTO) throws URISyntaxException {
+    // log.debug("REST request to update ArtworkSelling : {}, {}", id,
+    // artworkSellingDTO);
+    // if (artworkSellingDTO.getId() == null) {
+    // throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+    // }
+    // if (!Objects.equals(id, artworkSellingDTO.getId())) {
+    // throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+    // }
+
+    // if (!artworkSellingRepository.existsById(id)) {
+    // throw new BadRequestAlertException("Entity not found", ENTITY_NAME,
+    // "idnotfound");
+    // }
+
+    // ArtworkSellingDTO result = artworkSellingService.update(artworkSellingDTO);
+    // return ResponseEntity
+    // .ok()
+    // .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false,
+    // ENTITY_NAME,
+    // artworkSellingDTO.getId().toString()))
+    // .body(result);
+    // }
+
 }
