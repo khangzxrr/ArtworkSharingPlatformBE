@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.slf4j.Logger;
@@ -141,11 +140,9 @@ public class ArtworkSellingServiceImpl implements ArtworkSellingService {
             throw new ArtworkCommentNotBelongToUserException();
         }
 
-        Set<ArtworkSelling> onGoingArtworkSellings = artworkSellingRepository.findAllByStatusIn(
-            Arrays.asList(ArtworkSellingStatus.ON_SELLING, ArtworkSellingStatus.ON_BIDING)
-        );
+        Optional<ArtworkSelling> onGoingArtworkSelling = getOnGoingSellingByArtworkId(artworkId);
 
-        if (onGoingArtworkSellings.size() > 0) {
+        if (!onGoingArtworkSelling.isPresent()) {
             throw new ExistOnGoingArtworkSellingException();
         }
 
@@ -162,5 +159,15 @@ public class ArtworkSellingServiceImpl implements ArtworkSellingService {
         artworkSelling = artworkSellingRepository.save(artworkSelling);
 
         return artworkSellingMapper.toDto(artworkSelling);
+    }
+
+    @Override
+    public Optional<ArtworkSelling> getOnGoingSellingByArtworkId(Long artworkId) {
+        Optional<ArtworkSelling> onGoingArtworkSelling = artworkSellingRepository.findByArtworkIdAndStatusIn(
+            artworkId,
+            Arrays.asList(ArtworkSellingStatus.ON_SELLING, ArtworkSellingStatus.ON_BIDING)
+        );
+
+        return onGoingArtworkSelling;
     }
 }
