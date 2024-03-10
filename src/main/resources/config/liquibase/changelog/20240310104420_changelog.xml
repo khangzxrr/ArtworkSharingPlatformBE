@@ -1,0 +1,29 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="khang (generated)" id="1710042274834-11">
+        <dropForeignKeyConstraint baseTableName="artwork" constraintName="fk_artwork__artwork_selling_id"/>
+    </changeSet>
+   
+    <changeSet author="khang (generated)" id="1710042274834-5">
+        <addColumn tableName="artwork_selling">
+            <column name="artwork_id" type="bigint"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1710042274834-6">
+        <addColumn tableName="artwork_selling">
+            <column name="expected_selling_price" type="float(53)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="khang (generated)" id="1710042274834-10">
+        <addForeignKeyConstraint baseColumnNames="artwork_id" baseTableName="artwork_selling" constraintName="FKtjubj0cuff7hr7ig0iaqtvaa7" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="artwork" validate="true"/>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1710042274834-17">
+        <dropUniqueConstraint constraintName="ux_artwork__artwork_selling_id" tableName="artwork"/>
+    </changeSet>
+    
+    <changeSet author="khang (generated)" id="1710042274834-29">
+        <dropColumn columnName="artwork_selling_id" tableName="artwork"/>
+    </changeSet>
+
+</databaseChangeLog>

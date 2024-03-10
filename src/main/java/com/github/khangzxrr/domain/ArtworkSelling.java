@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.khangzxrr.domain.enumeration.ArtworkSellingStatus;
 import com.github.khangzxrr.domain.enumeration.ArtworkSellingType;
 import jakarta.persistence.*;
-import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,8 +12,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "artwork_selling")
-@SuppressWarnings("common-java:DuplicatedBlocks")
-public class ArtworkSelling implements Serializable {
+public class ArtworkSelling extends AbstractAuditingEntity<Long> {
 
     private static final long serialVersionUID = 1L;
 
@@ -23,9 +20,6 @@ public class ArtworkSelling implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-
-    @Column(name = "create_at")
-    private LocalDate createAt;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
@@ -35,8 +29,11 @@ public class ArtworkSelling implements Serializable {
     @Column(name = "status")
     private ArtworkSellingStatus status;
 
+    @Column(name = "selling_duration")
+    private Long sellingDuration;
+
     @Column(name = "expected_selling_price")
-    private Long expectedSellingPrice;
+    private Double expectedSellingPrice;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "artworkSelling")
     @JsonIgnoreProperties(value = { "transaction", "artworkSelling" }, allowSetters = true)
@@ -46,7 +43,7 @@ public class ArtworkSelling implements Serializable {
         value = { "artworkSelling", "artworkAssets", "comments", "complains", "likes", "owner", "category" },
         allowSetters = true
     )
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "artworkSelling")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Artwork artwork;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -62,19 +59,6 @@ public class ArtworkSelling implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public LocalDate getCreateAt() {
-        return this.createAt;
-    }
-
-    public ArtworkSelling createAt(LocalDate createAt) {
-        this.setCreateAt(createAt);
-        return this;
-    }
-
-    public void setCreateAt(LocalDate createAt) {
-        this.createAt = createAt;
     }
 
     public ArtworkSellingType getType() {
@@ -101,19 +85,6 @@ public class ArtworkSelling implements Serializable {
 
     public void setStatus(ArtworkSellingStatus status) {
         this.status = status;
-    }
-
-    public Long getExpectedSellingPrice() {
-        return this.expectedSellingPrice;
-    }
-
-    public ArtworkSelling expectedSellingPrice(Long expectedSellingPrice) {
-        this.setExpectedSellingPrice(expectedSellingPrice);
-        return this;
-    }
-
-    public void setExpectedSellingPrice(Long expectedSellingPrice) {
-        this.expectedSellingPrice = expectedSellingPrice;
     }
 
     public Set<SellingBid> getBids() {
@@ -152,12 +123,6 @@ public class ArtworkSelling implements Serializable {
     }
 
     public void setArtwork(Artwork artwork) {
-        if (this.artwork != null) {
-            this.artwork.setArtworkSelling(null);
-        }
-        if (artwork != null) {
-            artwork.setArtworkSelling(this);
-        }
         this.artwork = artwork;
     }
 
@@ -190,10 +155,30 @@ public class ArtworkSelling implements Serializable {
     public String toString() {
         return "ArtworkSelling{" +
             "id=" + getId() +
-            ", createAt='" + getCreateAt() + "'" +
+            ", createAt='" + getCreatedDate() + "'" +
             ", type='" + getType() + "'" +
             ", status='" + getStatus() + "'" +
-            ", expectedSellingPrice=" + getExpectedSellingPrice() +
+            ", sellingDuration='" + getSellingDuration() + "'" +
             "}";
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public Long getSellingDuration() {
+        return sellingDuration;
+    }
+
+    public void setSellingDuration(Long sellingDuration) {
+        this.sellingDuration = sellingDuration;
+    }
+
+    public Double getExpectedSellingPrice() {
+        return expectedSellingPrice;
+    }
+
+    public void setExpectedSellingPrice(Double expectedSellingPrice) {
+        this.expectedSellingPrice = expectedSellingPrice;
     }
 }
