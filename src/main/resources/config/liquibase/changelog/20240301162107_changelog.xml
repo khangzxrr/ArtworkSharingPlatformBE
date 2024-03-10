@@ -93,9 +93,6 @@
     <changeSet author="khang (generated)" id="1709284878306-20">
         <addForeignKeyConstraint baseColumnNames="from_user_id" baseTableName="request_chat" constraintName="FKjiw4bpr6o8awv04po5lnw7mab" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="jhi_user" validate="true"/>
     </changeSet>
-    <changeSet author="khang (generated)" id="1709284878306-21">
-        <dropTable tableName="jhi_date_time_wrapper"/>
-    </changeSet>
     <changeSet author="khang (generated)" id="1709284878306-1">
         <modifyDataType columnName="amount" newDataType="float(53)" tableName="wallet"/>
     </changeSet>
