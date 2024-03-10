@@ -14,7 +14,7 @@ public interface ArtworkSellingService {
      * @param artworkSellingDTO the entity to save.
      * @return the persisted entity.
      */
-    ArtworkSellingDTO save(ArtworkSellingDTO artworkSellingDTO);
+    ArtworkSellingDTO save(Long artworkId, ArtworkSellingDTO artworkSellingDTO);
 
     /**
      * Updates a artworkSelling.
