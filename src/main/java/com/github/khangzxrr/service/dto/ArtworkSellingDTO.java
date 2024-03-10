@@ -2,6 +2,7 @@ package com.github.khangzxrr.service.dto;
 
 import com.github.khangzxrr.domain.enumeration.ArtworkSellingStatus;
 import com.github.khangzxrr.domain.enumeration.ArtworkSellingType;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.Instant;
@@ -23,9 +24,11 @@ public class ArtworkSellingDTO implements Serializable {
     private ArtworkSellingStatus status;
 
     @NotNull
+    @Min(1)
     private Long sellingDuration;
 
     @NotNull
+    @Min(1)
     private Double expectedSellingPrice;
 
     public Long getId() {
