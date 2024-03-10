@@ -25,8 +25,6 @@ public class RequestBidResourceOfAudience {
 
     private final Logger log = LoggerFactory.getLogger(RequestBidResourceOfCreator.class);
 
-    private static final String ENTITY_NAME = "requestBid";
-
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
