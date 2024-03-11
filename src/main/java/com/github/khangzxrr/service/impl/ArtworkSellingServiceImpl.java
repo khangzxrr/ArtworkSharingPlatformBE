@@ -142,7 +142,7 @@ public class ArtworkSellingServiceImpl implements ArtworkSellingService {
 
         Optional<ArtworkSelling> onGoingArtworkSelling = getOnGoingSellingByArtworkId(artworkId);
 
-        if (!onGoingArtworkSelling.isPresent()) {
+        if (onGoingArtworkSelling.isPresent()) {
             throw new ExistOnGoingArtworkSellingException();
         }
 
