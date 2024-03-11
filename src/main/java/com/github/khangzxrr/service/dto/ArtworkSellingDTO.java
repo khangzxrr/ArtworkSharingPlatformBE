@@ -28,7 +28,7 @@ public class ArtworkSellingDTO implements Serializable {
     private Long sellingDuration;
 
     @NotNull
-    @Min(1)
+    @Min(0)
     private Double expectedSellingPrice;
 
     public Long getId() {
