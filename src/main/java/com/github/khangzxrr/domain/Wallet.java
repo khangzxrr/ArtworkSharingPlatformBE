@@ -100,51 +100,23 @@ public class Wallet implements Serializable {
         Double currentAmount = getAmount();
 
         switch (walletTransaction.getType()) {
-            case BUY:
+            case BUY,
+                DIRECT_BUY_ARTWORK,
+                AUCTION_BUY_ARTWORK,
+                WITHDRAWAL,
+                WITHDRAW_REFUND_REQUEST_FIRST_PAYMENT_TEMP,
+                WITHDRAW_REQUEST_FIRST_PAYMENT_TEMP:
                 if (currentAmount < walletTransaction.getAmount()) {
                     throw new WalletAmountIsNotEnoughException();
                 }
 
                 currentAmount -= walletTransaction.getAmount();
                 break;
-            case DEPOSIT:
+            case DEPOSIT, REFUND, REQUEST_EARN, SERVICE_FEE_EARN, REQUEST_FIRST_PAYMENT_TEMP, ARTWORK_SELL_EARN:
                 currentAmount += walletTransaction.getAmount();
-                break;
-            case REFUND:
-                currentAmount += walletTransaction.getAmount();
-                break;
-            case WITHDRAWAL:
-                if (currentAmount < walletTransaction.getAmount()) {
-                    throw new WalletAmountIsNotEnoughException();
-                }
-
-                currentAmount -= walletTransaction.getAmount();
-                break;
-            case REQUEST_EARN:
-                currentAmount += walletTransaction.getAmount();
-                break;
-            case SERVICE_FEE_EARN:
-                currentAmount += walletTransaction.getAmount();
-                break;
-            case REQUEST_FIRST_PAYMENT_TEMP:
-                currentAmount += walletTransaction.getAmount();
-                break;
-            case WITHDRAW_REFUND_REQUEST_FIRST_PAYMENT_TEMP:
-                if (currentAmount < walletTransaction.getAmount()) {
-                    throw new WalletAmountIsNotEnoughException();
-                }
-
-                currentAmount -= walletTransaction.getAmount();
-                break;
-            case WITHDRAW_REQUEST_FIRST_PAYMENT_TEMP:
-                if (currentAmount < walletTransaction.getAmount()) {
-                    throw new WalletAmountIsNotEnoughException();
-                }
-
-                currentAmount -= walletTransaction.getAmount();
                 break;
             default:
-                break;
+                throw new IllegalStateException("Unexpected value: " + walletTransaction.getType());
         }
 
         setAmount(currentAmount);

@@ -28,7 +28,7 @@ public class ArtworkDTO implements Serializable {
 
     private ArtworkStatus status;
 
-    private ArtworkSellingDTO artworkSelling;
+    private List<ArtworkSellingDTO> artworkSellings;
 
     private UserDTO owner;
 
@@ -41,6 +41,16 @@ public class ArtworkDTO implements Serializable {
     private long commentsCount;
 
     private boolean userLikedThisArtwork;
+
+    private ArtworkSellingDTO onGoingArtworkSelling;
+
+    public ArtworkSellingDTO getOnGoingArtworkSelling() {
+        return onGoingArtworkSelling;
+    }
+
+    public void setOnGoingArtworkSelling(ArtworkSellingDTO onGoingArtworkSelling) {
+        this.onGoingArtworkSelling = onGoingArtworkSelling;
+    }
 
     public Long getId() {
         return id;
@@ -80,14 +90,6 @@ public class ArtworkDTO implements Serializable {
 
     public void setStatus(ArtworkStatus status) {
         this.status = status;
-    }
-
-    public ArtworkSellingDTO getArtworkSelling() {
-        return artworkSelling;
-    }
-
-    public void setArtworkSelling(ArtworkSellingDTO artworkSelling) {
-        this.artworkSelling = artworkSelling;
     }
 
     public UserDTO getOwner() {
@@ -136,7 +138,7 @@ public class ArtworkDTO implements Serializable {
             ", description='" + getDescription() + "'" +
             ", createAt='" + getCreatedDate() + "'" +
             ", status='" + getStatus() + "'" +
-            ", artworkSelling=" + getArtworkSelling() +
+            ", artworkSelling=" + getArtworkSellings() +
             ", owner=" + getOwner() +
             ", category=" + getCategory() +
             "}";
@@ -180,5 +182,13 @@ public class ArtworkDTO implements Serializable {
 
     public void setUserLikedThisArtwork(boolean userLikedThisArtwork) {
         this.userLikedThisArtwork = userLikedThisArtwork;
+    }
+
+    public List<ArtworkSellingDTO> getArtworkSellings() {
+        return artworkSellings;
+    }
+
+    public void setArtworkSellings(List<ArtworkSellingDTO> artworkSellings) {
+        this.artworkSellings = artworkSellings;
     }
 }

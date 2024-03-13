@@ -8,7 +8,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,8 +19,6 @@ import org.springframework.web.bind.annotation.*;
 public class RequestChatResource {
 
     private final Logger log = LoggerFactory.getLogger(RequestChatResource.class);
-
-    private static final String ENTITY_NAME = "requestChat";
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;

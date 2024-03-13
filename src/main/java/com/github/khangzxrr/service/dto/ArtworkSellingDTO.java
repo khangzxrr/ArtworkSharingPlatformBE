@@ -2,8 +2,10 @@ package com.github.khangzxrr.service.dto;
 
 import com.github.khangzxrr.domain.enumeration.ArtworkSellingStatus;
 import com.github.khangzxrr.domain.enumeration.ArtworkSellingType;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -14,13 +16,20 @@ public class ArtworkSellingDTO implements Serializable {
 
     private Long id;
 
-    private LocalDate createAt;
+    private Instant createdDate;
 
+    @NotNull
     private ArtworkSellingType type;
 
     private ArtworkSellingStatus status;
 
-    private Long expectedSellingPrice;
+    @NotNull
+    @Min(0)
+    private Long sellingDuration;
+
+    @NotNull
+    @Min(0)
+    private Double expectedSellingPrice;
 
     public Long getId() {
         return id;
@@ -28,14 +37,6 @@ public class ArtworkSellingDTO implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public LocalDate getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(LocalDate createAt) {
-        this.createAt = createAt;
     }
 
     public ArtworkSellingType getType() {
@@ -54,11 +55,11 @@ public class ArtworkSellingDTO implements Serializable {
         this.status = status;
     }
 
-    public Long getExpectedSellingPrice() {
+    public Double getExpectedSellingPrice() {
         return expectedSellingPrice;
     }
 
-    public void setExpectedSellingPrice(Long expectedSellingPrice) {
+    public void setExpectedSellingPrice(Double expectedSellingPrice) {
         this.expectedSellingPrice = expectedSellingPrice;
     }
 
@@ -88,10 +89,26 @@ public class ArtworkSellingDTO implements Serializable {
     public String toString() {
         return "ArtworkSellingDTO{" +
             "id=" + getId() +
-            ", createAt='" + getCreateAt() + "'" +
+            ", createAt='" + getCreatedDate() + "'" +
             ", type='" + getType() + "'" +
             ", status='" + getStatus() + "'" +
             ", expectedSellingPrice=" + getExpectedSellingPrice() +
             "}";
+    }
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Long getSellingDuration() {
+        return sellingDuration;
+    }
+
+    public void setSellingDuration(Long sellingDuration) {
+        this.sellingDuration = sellingDuration;
     }
 }

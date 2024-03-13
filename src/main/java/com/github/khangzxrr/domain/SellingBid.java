@@ -3,9 +3,6 @@ package com.github.khangzxrr.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.khangzxrr.domain.enumeration.SellingBidStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import java.io.Serializable;
-import java.time.LocalDate;
 
 /**
  * A SellingBid.
@@ -13,7 +10,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "selling_bid")
 @SuppressWarnings("common-java:DuplicatedBlocks")
-public class SellingBid implements Serializable {
+public class SellingBid extends AbstractAuditingEntity<Long> {
 
     private static final long serialVersionUID = 1L;
 
@@ -23,20 +20,14 @@ public class SellingBid implements Serializable {
     private Long id;
 
     @Column(name = "bid_price")
-    private Long bidPrice;
-
-    @Column(name = "create_at")
-    private LocalDate createAt;
+    private Double bidPrice;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private SellingBidStatus status;
 
-    @JsonIgnoreProperties(value = { "wallet", "requestProgress", "sellingBid" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @NotNull
-    @JoinColumn(unique = true)
-    private WalletTransaction transaction;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User bidder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "bids", "artwork" }, allowSetters = true)
@@ -57,30 +48,17 @@ public class SellingBid implements Serializable {
         this.id = id;
     }
 
-    public Long getBidPrice() {
+    public Double getBidPrice() {
         return this.bidPrice;
     }
 
-    public SellingBid bidPrice(Long bidPrice) {
+    public SellingBid bidPrice(Double bidPrice) {
         this.setBidPrice(bidPrice);
         return this;
     }
 
-    public void setBidPrice(Long bidPrice) {
+    public void setBidPrice(Double bidPrice) {
         this.bidPrice = bidPrice;
-    }
-
-    public LocalDate getCreateAt() {
-        return this.createAt;
-    }
-
-    public SellingBid createAt(LocalDate createAt) {
-        this.setCreateAt(createAt);
-        return this;
-    }
-
-    public void setCreateAt(LocalDate createAt) {
-        this.createAt = createAt;
     }
 
     public SellingBidStatus getStatus() {
@@ -94,19 +72,6 @@ public class SellingBid implements Serializable {
 
     public void setStatus(SellingBidStatus status) {
         this.status = status;
-    }
-
-    public WalletTransaction getTransaction() {
-        return this.transaction;
-    }
-
-    public void setTransaction(WalletTransaction walletTransaction) {
-        this.transaction = walletTransaction;
-    }
-
-    public SellingBid transaction(WalletTransaction walletTransaction) {
-        this.setTransaction(walletTransaction);
-        return this;
     }
 
     public ArtworkSelling getArtworkSelling() {
@@ -147,8 +112,20 @@ public class SellingBid implements Serializable {
         return "SellingBid{" +
             "id=" + getId() +
             ", bidPrice=" + getBidPrice() +
-            ", createAt='" + getCreateAt() + "'" +
+            ", createAt='" + getCreatedDate() + "'" +
             ", status='" + getStatus() + "'" +
             "}";
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public User getBidder() {
+        return bidder;
+    }
+
+    public void setBidder(User bidder) {
+        this.bidder = bidder;
     }
 }

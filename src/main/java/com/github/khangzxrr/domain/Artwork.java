@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.khangzxrr.domain.enumeration.ArtworkStatus;
 import com.github.khangzxrr.domain.enumeration.ArtworkVisibility;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,9 +38,8 @@ public class Artwork extends AbstractAuditingEntity<Long> {
     private ArtworkStatus status;
 
     @JsonIgnoreProperties(value = { "bids", "artwork" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(unique = true)
-    private ArtworkSelling artworkSelling;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork", cascade = CascadeType.ALL)
+    private Set<ArtworkSelling> artworkSellings = new HashSet<>();
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "artwork", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "media", "artwork" }, allowSetters = true)
@@ -117,19 +117,6 @@ public class Artwork extends AbstractAuditingEntity<Long> {
 
     public void setStatus(ArtworkStatus status) {
         this.status = status;
-    }
-
-    public ArtworkSelling getArtworkSelling() {
-        return this.artworkSelling;
-    }
-
-    public void setArtworkSelling(ArtworkSelling artworkSelling) {
-        this.artworkSelling = artworkSelling;
-    }
-
-    public Artwork artworkSelling(ArtworkSelling artworkSelling) {
-        this.setArtworkSelling(artworkSelling);
-        return this;
     }
 
     public Set<ArtworkAsset> getArtworkAssets() {
@@ -282,7 +269,8 @@ public class Artwork extends AbstractAuditingEntity<Long> {
         return this;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and
+    // setters here
 
     @Override
     public boolean equals(Object o) {
@@ -297,7 +285,8 @@ public class Artwork extends AbstractAuditingEntity<Long> {
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        // see
+        // https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
@@ -305,12 +294,12 @@ public class Artwork extends AbstractAuditingEntity<Long> {
     @Override
     public String toString() {
         return "Artwork{" +
-            "id=" + getId() +
-            ", name='" + getName() + "'" +
-            ", description='" + getDescription() + "'" +
-            ", createAt='" + getCreatedDate() + "'" +
-            ", status='" + getStatus() + "'" +
-            "}";
+                "id=" + getId() +
+                ", name='" + getName() + "'" +
+                ", description='" + getDescription() + "'" +
+                ", createAt='" + getCreatedDate() + "'" +
+                ", status='" + getStatus() + "'" +
+                "}";
     }
 
     public static long getSerialversionuid() {
@@ -323,5 +312,22 @@ public class Artwork extends AbstractAuditingEntity<Long> {
 
     public void setVisibility(ArtworkVisibility visibility) {
         this.visibility = visibility;
+    }
+
+    public Set<ArtworkSelling> getArtworkSellings() {
+        return artworkSellings;
+    }
+
+    public Artwork removeArtworkSelling(@NotNull ArtworkSelling artworkSelling) {
+        this.artworkSellings.remove(artworkSelling);
+        artworkSelling.setArtwork(null);
+        return this;
+    }
+
+    public Artwork addArtworkSelling(@NotNull ArtworkSelling artworkSelling) {
+        artworkSellings.add(artworkSelling);
+        artworkSelling.setArtwork(this);
+
+        return this;
     }
 }

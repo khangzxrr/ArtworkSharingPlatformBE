@@ -1,0 +1,37 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="khang (generated)" id="1710040580808-4">
+        <addColumn tableName="artwork_selling">
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1710040580808-5">
+        <addColumn tableName="artwork_selling">
+            <column name="created_date" type="datetime(6)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1710040580808-6">
+        <addColumn tableName="artwork_selling">
+            <column name="last_modified_by" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1710040580808-7">
+        <addColumn tableName="artwork_selling">
+            <column name="last_modified_date" type="datetime(6)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1710040580808-8">
+        <addColumn tableName="artwork_selling">
+            <column name="selling_duration" type="bigint"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="khang (generated)" id="1710040580808-25">
+        <dropColumn columnName="create_at" tableName="artwork_selling"/>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1710040580808-26">
+        <dropColumn columnName="expected_selling_price" tableName="artwork_selling"/>
+    </changeSet>
+</databaseChangeLog>
