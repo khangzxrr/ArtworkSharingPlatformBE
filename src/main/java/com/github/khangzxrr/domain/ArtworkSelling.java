@@ -35,7 +35,7 @@ public class ArtworkSelling extends AbstractAuditingEntity<Long> {
     @Column(name = "expected_selling_price")
     private Double expectedSellingPrice;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artworkSelling")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "artworkSelling", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "transaction", "artworkSelling" }, allowSetters = true)
     private Set<SellingBid> bids = new HashSet<>();
 

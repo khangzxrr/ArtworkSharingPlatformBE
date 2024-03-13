@@ -1,0 +1,11 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="khang (generated)" id="1710323974908-5">
+        <addColumn tableName="selling_bid">
+            <column name="bidder_id" type="bigint"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1710323974908-6">
+        <addForeignKeyConstraint baseColumnNames="bidder_id" baseTableName="selling_bid" constraintName="FKt24ahlcdrp018b9bs8p0lpi8o" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="jhi_user" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

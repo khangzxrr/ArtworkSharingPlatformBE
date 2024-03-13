@@ -44,10 +44,6 @@ public class WalletTransaction implements Serializable {
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "transaction")
     private RequestProgress requestProgress;
 
-    @JsonIgnoreProperties(value = { "transaction", "artworkSelling" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "transaction")
-    private SellingBid sellingBid;
-
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public Long getId() {
@@ -144,25 +140,6 @@ public class WalletTransaction implements Serializable {
 
     public WalletTransaction requestProgress(RequestProgress requestProgress) {
         this.setRequestProgress(requestProgress);
-        return this;
-    }
-
-    public SellingBid getSellingBid() {
-        return this.sellingBid;
-    }
-
-    public void setSellingBid(SellingBid sellingBid) {
-        if (this.sellingBid != null) {
-            this.sellingBid.setTransaction(null);
-        }
-        if (sellingBid != null) {
-            sellingBid.setTransaction(this);
-        }
-        this.sellingBid = sellingBid;
-    }
-
-    public WalletTransaction sellingBid(SellingBid sellingBid) {
-        this.setSellingBid(sellingBid);
         return this;
     }
 

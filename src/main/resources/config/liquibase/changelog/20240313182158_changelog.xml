@@ -1,0 +1,12 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="khang (generated)" id="1710328930427-6">
+        <dropForeignKeyConstraint baseTableName="selling_bid" constraintName="fk_selling_bid__transaction_id"/>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1710328930427-12">
+        <dropUniqueConstraint constraintName="ux_selling_bid__transaction_id" tableName="selling_bid"/>
+    </changeSet>
+    <changeSet author="khang (generated)" id="1710328930427-24">
+        <dropColumn columnName="transaction_id" tableName="selling_bid"/>
+    </changeSet>
+</databaseChangeLog>

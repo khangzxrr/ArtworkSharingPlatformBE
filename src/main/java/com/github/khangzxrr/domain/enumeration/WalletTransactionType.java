@@ -9,6 +9,7 @@ public enum WalletTransactionType {
 
     BUY,
     DIRECT_BUY_ARTWORK,
+    AUCTION_BUY_ARTWORK,
 
     REFUND,
     REQUEST_EARN,

@@ -2,13 +2,21 @@ package com.github.khangzxrr.service;
 
 import com.github.khangzxrr.domain.ArtworkSelling;
 import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
+import com.github.khangzxrr.service.dto.SellingBidDTO;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Service Interface for managing {@link com.github.khangzxrr.domain.ArtworkSelling}.
+ * Service Interface for managing
+ * {@link com.github.khangzxrr.domain.ArtworkSelling}.
  */
 public interface ArtworkSellingService {
+    void cleanUpExpiredAuction();
+
+    List<SellingBidDTO> getAllBids(Long id, Long artworkId);
+
+    SellingBidDTO placeBid(Long id, Long artworkId, SellingBidDTO sellingBidDTO);
+
     ArtworkSellingDTO buyDirect(Long id, Long artworkId);
 
     Optional<ArtworkSelling> getOnGoingSellingByArtworkId(Long artworkId);

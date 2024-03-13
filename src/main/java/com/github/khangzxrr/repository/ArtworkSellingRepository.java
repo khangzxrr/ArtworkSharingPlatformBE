@@ -21,4 +21,7 @@ public interface ArtworkSellingRepository extends JpaRepository<ArtworkSelling, 
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<ArtworkSelling> findByIdAndArtworkId(Long Id, Long artworkId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<ArtworkSelling> findAllByStatusInAndTypeIn(List<ArtworkSellingStatus> status, List<ArtworkSellingType> type);
 }

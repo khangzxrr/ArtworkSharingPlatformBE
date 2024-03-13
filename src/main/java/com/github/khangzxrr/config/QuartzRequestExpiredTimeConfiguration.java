@@ -1,5 +1,6 @@
 package com.github.khangzxrr.config;
 
+import com.github.khangzxrr.service.job.CleanupExpiredArtworkSellingAuction;
 import com.github.khangzxrr.service.job.RequestExpiredFirstPaymentJob;
 import com.github.khangzxrr.service.job.RequestExpiredJob;
 import org.quartz.CronScheduleBuilder;
@@ -23,8 +24,12 @@ public class QuartzRequestExpiredTimeConfiguration {
 
         AutowiringSpringBeanJobFactory jobFactory = new AutowiringSpringBeanJobFactory();
         schedulerFactoryBean.setJobFactory(jobFactory);
-        schedulerFactoryBean.setTriggers(requestExpiredTrigger(), requestFirstPaymentExpiredTrigger());
-        schedulerFactoryBean.setJobDetails(requestExpiredJobDetail(), requestFirstPaymentExpiredJobDetail());
+        schedulerFactoryBean.setTriggers(requestExpiredTrigger(), requestFirstPaymentExpiredTrigger(), cleanUpExpiredAuctionTrigger());
+        schedulerFactoryBean.setJobDetails(
+            requestExpiredJobDetail(),
+            requestFirstPaymentExpiredJobDetail(),
+            cleanUpExpiredAuctionJobDetail()
+        );
 
         return schedulerFactoryBean;
     }
@@ -35,6 +40,16 @@ public class QuartzRequestExpiredTimeConfiguration {
     }
 
     @Bean
+    public JobDetail cleanUpExpiredAuctionJobDetail() {
+        JobDetailImpl jobDetail = new JobDetailImpl();
+        jobDetail.setKey(new JobKey(CleanupExpiredArtworkSellingAuction.name));
+        jobDetail.setJobClass(CleanupExpiredArtworkSellingAuction.class);
+        jobDetail.setDurability(true);
+
+        return jobDetail;
+    }
+
+    @Bean
     public JobDetail requestFirstPaymentExpiredJobDetail() {
         JobDetailImpl jobDetail = new JobDetailImpl();
         jobDetail.setKey(new JobKey(RequestExpiredFirstPaymentJob.name));
@@ -42,6 +57,17 @@ public class QuartzRequestExpiredTimeConfiguration {
         jobDetail.setDurability(true);
 
         return jobDetail;
+    }
+
+    @Bean
+    public Trigger cleanUpExpiredAuctionTrigger() {
+        return TriggerBuilder
+            .newTrigger()
+            .forJob(cleanUpExpiredAuctionJobDetail())
+            .withIdentity(CleanupExpiredArtworkSellingAuction.name, CleanupExpiredArtworkSellingAuction.group)
+            .startNow()
+            .withSchedule(SimpleScheduleBuilder.repeatSecondlyForever(10))
+            .build();
     }
 
     @Bean

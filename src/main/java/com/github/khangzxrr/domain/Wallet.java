@@ -100,7 +100,12 @@ public class Wallet implements Serializable {
         Double currentAmount = getAmount();
 
         switch (walletTransaction.getType()) {
-            case BUY, DIRECT_BUY_ARTWORK, WITHDRAWAL, WITHDRAW_REFUND_REQUEST_FIRST_PAYMENT_TEMP, WITHDRAW_REQUEST_FIRST_PAYMENT_TEMP:
+            case BUY,
+                DIRECT_BUY_ARTWORK,
+                AUCTION_BUY_ARTWORK,
+                WITHDRAWAL,
+                WITHDRAW_REFUND_REQUEST_FIRST_PAYMENT_TEMP,
+                WITHDRAW_REQUEST_FIRST_PAYMENT_TEMP:
                 if (currentAmount < walletTransaction.getAmount()) {
                     throw new WalletAmountIsNotEnoughException();
                 }

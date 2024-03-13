@@ -1,8 +1,11 @@
 package com.github.khangzxrr.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.khangzxrr.domain.enumeration.SellingBidStatus;
+import com.google.firebase.database.annotations.NotNull;
+import jakarta.validation.constraints.Min;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -13,14 +16,25 @@ public class SellingBidDTO implements Serializable {
 
     private Long id;
 
-    private Long bidPrice;
+    @NotNull
+    @Min(value = 0)
+    private Double bidPrice;
 
-    private LocalDate createAt;
+    private Instant createdDate;
 
     private SellingBidStatus status;
 
-    private WalletTransactionDTO transaction;
+    private UserDTO bidder;
 
+    public UserDTO getBidder() {
+        return bidder;
+    }
+
+    public void setBidder(UserDTO bidder) {
+        this.bidder = bidder;
+    }
+
+    @JsonIgnore
     private ArtworkSellingDTO artworkSelling;
 
     public Long getId() {
@@ -31,20 +45,12 @@ public class SellingBidDTO implements Serializable {
         this.id = id;
     }
 
-    public Long getBidPrice() {
+    public Double getBidPrice() {
         return bidPrice;
     }
 
-    public void setBidPrice(Long bidPrice) {
+    public void setBidPrice(Double bidPrice) {
         this.bidPrice = bidPrice;
-    }
-
-    public LocalDate getCreateAt() {
-        return createAt;
-    }
-
-    public void setCreateAt(LocalDate createAt) {
-        this.createAt = createAt;
     }
 
     public SellingBidStatus getStatus() {
@@ -53,14 +59,6 @@ public class SellingBidDTO implements Serializable {
 
     public void setStatus(SellingBidStatus status) {
         this.status = status;
-    }
-
-    public WalletTransactionDTO getTransaction() {
-        return transaction;
-    }
-
-    public void setTransaction(WalletTransactionDTO transaction) {
-        this.transaction = transaction;
     }
 
     public ArtworkSellingDTO getArtworkSelling() {
@@ -98,10 +96,17 @@ public class SellingBidDTO implements Serializable {
         return "SellingBidDTO{" +
             "id=" + getId() +
             ", bidPrice=" + getBidPrice() +
-            ", createAt='" + getCreateAt() + "'" +
+            ", createAt='" + getCreatedDate() + "'" +
             ", status='" + getStatus() + "'" +
-            ", transaction=" + getTransaction() +
             ", artworkSelling=" + getArtworkSelling() +
             "}";
+    }
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
     }
 }
