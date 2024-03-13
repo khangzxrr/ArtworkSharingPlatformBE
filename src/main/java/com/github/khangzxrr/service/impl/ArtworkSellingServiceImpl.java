@@ -24,6 +24,7 @@ import com.github.khangzxrr.web.rest.errors.ArtworkSellingIsFinishedException;
 import com.github.khangzxrr.web.rest.errors.ArtworkSellingIsNotFoundException;
 import com.github.khangzxrr.web.rest.errors.ExistOnGoingArtworkSellingException;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
+import com.github.khangzxrr.web.rest.errors.SellingDurationMustGreaterThanZeroException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -168,6 +169,10 @@ public class ArtworkSellingServiceImpl implements ArtworkSellingService {
         if (artworkSelling.getType() == ArtworkSellingType.DIRECT) {
             artworkSelling.setStatus(ArtworkSellingStatus.ON_SELLING);
         } else {
+            if (artworkSelling.getSellingDuration() < 1) {
+                throw new SellingDurationMustGreaterThanZeroException();
+            }
+
             artworkSelling.setStatus(ArtworkSellingStatus.ON_BIDING);
         }
 
