@@ -24,7 +24,7 @@ public class ArtworkSellingDTO implements Serializable {
     private ArtworkSellingStatus status;
 
     @NotNull
-    @Min(1)
+    @Min(0)
     private Long sellingDuration;
 
     @NotNull
