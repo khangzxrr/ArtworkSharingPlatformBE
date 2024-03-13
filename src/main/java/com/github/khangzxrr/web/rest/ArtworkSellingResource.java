@@ -59,6 +59,21 @@ public class ArtworkSellingResource {
             .body(result);
     }
 
+    @PostMapping("{artworkId}/sellings/{id}/direct-buy")
+    public ResponseEntity<ArtworkSellingDTO> directBuyArtwork(
+        @PathVariable(name = "artworkId") Long artworkId,
+        @PathVariable(name = "id") Long id
+    ) {
+        log.debug(" direct buy request : {}, {}", artworkId, id);
+
+        ArtworkSellingDTO result = artworkSellingService.buyDirect(id, artworkId);
+
+        return ResponseEntity
+            .ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
+
     /**
      * {@code GET  /artwork-sellings} : get all the artworkSellings.
      *

@@ -9,6 +9,8 @@ import java.util.Optional;
  * Service Interface for managing {@link com.github.khangzxrr.domain.ArtworkSelling}.
  */
 public interface ArtworkSellingService {
+    ArtworkSellingDTO buyDirect(Long id, Long artworkId);
+
     Optional<ArtworkSelling> getOnGoingSellingByArtworkId(Long artworkId);
 
     /**

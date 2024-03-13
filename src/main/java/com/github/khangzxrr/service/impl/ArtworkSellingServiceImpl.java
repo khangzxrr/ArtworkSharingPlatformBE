@@ -1,18 +1,27 @@
 package com.github.khangzxrr.service.impl;
 
+import com.github.khangzxrr.config.ApplicationProperties;
 import com.github.khangzxrr.domain.Artwork;
 import com.github.khangzxrr.domain.ArtworkSelling;
 import com.github.khangzxrr.domain.User;
+import com.github.khangzxrr.domain.Wallet;
+import com.github.khangzxrr.domain.WalletTransaction;
 import com.github.khangzxrr.domain.enumeration.ArtworkSellingStatus;
 import com.github.khangzxrr.domain.enumeration.ArtworkSellingType;
+import com.github.khangzxrr.domain.enumeration.WalletTransactionStatus;
+import com.github.khangzxrr.domain.enumeration.WalletTransactionType;
 import com.github.khangzxrr.repository.ArtworkRepository;
 import com.github.khangzxrr.repository.ArtworkSellingRepository;
 import com.github.khangzxrr.service.ArtworkSellingService;
 import com.github.khangzxrr.service.UserService;
+import com.github.khangzxrr.service.WalletService;
 import com.github.khangzxrr.service.dto.ArtworkSellingDTO;
 import com.github.khangzxrr.service.mapper.ArtworkSellingMapper;
-import com.github.khangzxrr.web.rest.errors.ArtworkCommentNotBelongToUserException;
+import com.github.khangzxrr.web.rest.errors.ArtworkBelongToUserException;
+import com.github.khangzxrr.web.rest.errors.ArtworkNotBelongToUserException;
 import com.github.khangzxrr.web.rest.errors.ArtworkNotFoundException;
+import com.github.khangzxrr.web.rest.errors.ArtworkSellingIsFinishedException;
+import com.github.khangzxrr.web.rest.errors.ArtworkSellingIsNotFoundException;
 import com.github.khangzxrr.web.rest.errors.ExistOnGoingArtworkSellingException;
 import com.github.khangzxrr.web.rest.errors.NotLoggedException;
 import java.util.Arrays;
@@ -44,16 +53,24 @@ public class ArtworkSellingServiceImpl implements ArtworkSellingService {
 
     private final UserService userService;
 
+    private final WalletService walletService;
+
+    private final ApplicationProperties applicationProperties;
+
     public ArtworkSellingServiceImpl(
         ArtworkSellingRepository artworkSellingRepository,
         ArtworkRepository artworkRepository,
         UserService userService,
-        ArtworkSellingMapper artworkSellingMapper
+        ArtworkSellingMapper artworkSellingMapper,
+        WalletService walletService,
+        ApplicationProperties applicationProperties
     ) {
+        this.applicationProperties = applicationProperties;
         this.artworkSellingRepository = artworkSellingRepository;
         this.artworkSellingMapper = artworkSellingMapper;
         this.artworkRepository = artworkRepository;
         this.userService = userService;
+        this.walletService = walletService;
     }
 
     @Override
@@ -137,7 +154,7 @@ public class ArtworkSellingServiceImpl implements ArtworkSellingService {
         Artwork artwork = artworkOptional.get();
 
         if (artwork.getOwner() != userOptional.get()) {
-            throw new ArtworkCommentNotBelongToUserException();
+            throw new ArtworkNotBelongToUserException();
         }
 
         Optional<ArtworkSelling> onGoingArtworkSelling = getOnGoingSellingByArtworkId(artworkId);
@@ -169,5 +186,69 @@ public class ArtworkSellingServiceImpl implements ArtworkSellingService {
         );
 
         return onGoingArtworkSelling;
+    }
+
+    @Override
+    public ArtworkSellingDTO buyDirect(Long id, Long artworkId) {
+        Optional<ArtworkSelling> artworkSellingOptional = artworkSellingRepository.findByIdAndArtworkId(id, artworkId);
+
+        if (!artworkSellingOptional.isPresent()) {
+            throw new ArtworkSellingIsNotFoundException();
+        }
+
+        ArtworkSelling artworkSelling = artworkSellingOptional.get();
+
+        Optional<User> buyerOptional = userService.getUserWithAuthorities();
+
+        if (artworkSelling.getStatus() == ArtworkSellingStatus.FINISHED || artworkSelling.getStatus() == ArtworkSellingStatus.FAILED) {
+            throw new ArtworkSellingIsFinishedException();
+        }
+
+        if (!buyerOptional.isPresent()) {
+            throw new NotLoggedException();
+        }
+
+        if (artworkSelling.getArtwork().getOwner() == buyerOptional.get()) {
+            throw new ArtworkBelongToUserException();
+        }
+
+        Wallet adminWallet = walletService.getAdminWallet();
+        Wallet sellerWallet = walletService.getWalletByUserLogin(artworkSelling.getArtwork().getOwner().getLogin());
+        Wallet buyerWallet = walletService.getWalletByUserLogin(buyerOptional.get().getLogin());
+
+        Double serviceFee =
+            (artworkSelling.getExpectedSellingPrice() * applicationProperties.getArtworkConfiguration().getServiceFeeEarnPercent()) /
+            100.0d;
+
+        Double sellingPriceLessServiceFee = artworkSelling.getExpectedSellingPrice() - serviceFee;
+
+        WalletTransaction buyerWalletTransaction = new WalletTransaction();
+        buyerWalletTransaction.setAmount(artworkSelling.getExpectedSellingPrice());
+        buyerWalletTransaction.setType(WalletTransactionType.DIRECT_BUY_ARTWORK);
+        buyerWalletTransaction.setStatus(WalletTransactionStatus.SUCCEED);
+
+        buyerWallet.addTransactions(buyerWalletTransaction);
+
+        WalletTransaction sellerWalletTransaction = new WalletTransaction();
+        sellerWalletTransaction.setAmount(sellingPriceLessServiceFee);
+        sellerWalletTransaction.setType(WalletTransactionType.ARTWORK_SELL_EARN);
+        sellerWalletTransaction.setStatus(WalletTransactionStatus.SUCCEED);
+
+        sellerWallet.addTransactions(sellerWalletTransaction);
+
+        WalletTransaction adminWalletTransaction = new WalletTransaction();
+        adminWalletTransaction.setAmount(serviceFee);
+        adminWalletTransaction.setType(WalletTransactionType.SERVICE_FEE_EARN);
+        adminWalletTransaction.setStatus(WalletTransactionStatus.SUCCEED);
+
+        adminWallet.addTransactions(adminWalletTransaction);
+
+        artworkSelling.setStatus(ArtworkSellingStatus.FINISHED);
+
+        artworkSelling.getArtwork().setOwner(buyerOptional.get());
+
+        artworkSelling = artworkSellingRepository.save(artworkSelling);
+
+        return artworkSellingMapper.toDto(artworkSelling);
     }
 }
