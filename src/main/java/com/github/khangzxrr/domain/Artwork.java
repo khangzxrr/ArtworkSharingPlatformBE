@@ -29,6 +29,9 @@ public class Artwork extends AbstractAuditingEntity<Long> {
     @Column(name = "address", nullable = true)
     private String address;
 
+    @Column(name = "is_physical_artwork")
+    private boolean isPhysicalArtwork;
+
     @Column(name = "description")
     private String description;
 
@@ -344,5 +347,13 @@ public class Artwork extends AbstractAuditingEntity<Long> {
 
     public void setArtworkSellings(Set<ArtworkSelling> artworkSellings) {
         this.artworkSellings = artworkSellings;
+    }
+
+    public boolean isPhysicalArtwork() {
+        return isPhysicalArtwork;
+    }
+
+    public void setPhysicalArtwork(boolean isPhysicalArtwork) {
+        this.isPhysicalArtwork = isPhysicalArtwork;
     }
 }
