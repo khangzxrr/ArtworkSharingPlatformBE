@@ -26,6 +26,9 @@ public class Artwork extends AbstractAuditingEntity<Long> {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "address", nullable = true)
+    private String address;
+
     @Column(name = "description")
     private String description;
 
@@ -329,5 +332,17 @@ public class Artwork extends AbstractAuditingEntity<Long> {
         artworkSelling.setArtwork(this);
 
         return this;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setArtworkSellings(Set<ArtworkSelling> artworkSellings) {
+        this.artworkSellings = artworkSellings;
     }
 }
