@@ -384,6 +384,19 @@ public class ArtworkSellingServiceImpl implements ArtworkSellingService {
 
             SellingBid highestBid = artworkSelling.getBids().stream().max((b1, b2) -> b1.getBidPrice().compareTo(b2.getBidPrice())).get();
 
+            if (highestBid.getBidPrice() < artworkSelling.getExpectedSellingPrice()) {
+                artworkSelling.setStatus(ArtworkSellingStatus.FAILED);
+
+                notificationService.sendToUsers(
+                    "Auction of artwork " + artworkSelling.getArtwork().getName(),
+                    "Auction of artwork " + artworkSelling.getArtwork().getName() + " is failed, because highest bid is not enough",
+                    highestBid.getBidder(),
+                    artworkSelling.getArtwork().getOwner()
+                );
+
+                return;
+            }
+
             Wallet sellerWallet = walletService.getWalletByUserLogin(artworkSelling.getArtwork().getOwner().getLogin());
             Wallet buyerWallet = walletService.getWalletByUserLogin(highestBid.getBidder().getLogin());
             Wallet adminWallet = walletService.getAdminWallet();
