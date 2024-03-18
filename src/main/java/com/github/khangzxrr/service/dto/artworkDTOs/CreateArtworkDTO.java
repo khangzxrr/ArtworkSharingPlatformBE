@@ -23,6 +23,28 @@ public class CreateArtworkDTO {
     @NotNull
     private ArtworkVisibility visibility;
 
+    @NotNull
+    private boolean isPhysicalArtwork;
+
+    @NotNull
+    private String address;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public boolean isPhysicalArtwork() {
+        return isPhysicalArtwork;
+    }
+
+    public void setPhysicalArtwork(boolean physicalArtwork) {
+        isPhysicalArtwork = physicalArtwork;
+    }
+
     public String getName() {
         return name;
     }

@@ -42,6 +42,10 @@ public class ArtworkDTO implements Serializable {
 
     private boolean userLikedThisArtwork;
 
+    private boolean isPhysicalArtwork;
+
+    private String address;
+
     private ArtworkSellingDTO onGoingArtworkSelling;
 
     public ArtworkSellingDTO getOnGoingArtworkSelling() {
@@ -190,5 +194,21 @@ public class ArtworkDTO implements Serializable {
 
     public void setArtworkSellings(List<ArtworkSellingDTO> artworkSellings) {
         this.artworkSellings = artworkSellings;
+    }
+
+    public boolean isPhysicalArtwork() {
+        return isPhysicalArtwork;
+    }
+
+    public void setPhysicalArtwork(boolean isPhysicalArtwork) {
+        this.isPhysicalArtwork = isPhysicalArtwork;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 }
