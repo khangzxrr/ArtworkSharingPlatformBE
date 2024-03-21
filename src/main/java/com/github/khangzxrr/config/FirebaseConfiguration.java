@@ -24,7 +24,14 @@ public class FirebaseConfiguration {
 
         FirebaseOptions options = FirebaseOptions.builder().setCredentials(GoogleCredentials.fromStream(refreshToken)).build();
 
-        FirebaseApp app = FirebaseApp.initializeApp(options, "app");
+        FirebaseApp app;
+
+        if (FirebaseApp.getApps().isEmpty()) {
+            app = FirebaseApp.initializeApp(options, "app");
+        } else {
+            app = FirebaseApp.getInstance("app");
+        }
+
         return FirebaseMessaging.getInstance(app);
     }
 }
