@@ -1,257 +1,115 @@
-# artworkSharingPlatformJhipter
+# Artwork Sharing Platform — Backend
 
-This application was generated using JHipster 8.1.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.1.0](https://www.jhipster.tech/documentation-archive/v8.1.0).
+> Spring Boot backend for an artwork marketplace where creators sell finished works and take on custom commissions, backed by an in-app wallet with PayPal deposits, real-time chat, and push notifications.
 
-## Project Structure
+![Java](https://img.shields.io/badge/Java-Spring%20Boot-6DB33F?logo=springboot&logoColor=white)
+![JHipster](https://img.shields.io/badge/JHipster-8.1.0-3E8ACC?logo=jhipster&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-02303A?logo=gradle&logoColor=white)
 
-Node is required for generation and recommended for development. `package.json` is always generated for a better development experience with prettier, commit hooks, scripts and so on.
+## Overview
 
-In the project root, JHipster generates configuration files for tools like git, prettier, eslint, husky, and others that are well known and you can find references in the web.
+This is the REST API and domain layer for the Artwork Sharing Platform, a marketplace connecting art creators with audiences. Members can publish artworks, buy them either at a fixed price or through timed auctions, and post custom-work requests that creators bid on and then deliver through a milestone-based progress workflow. Money movements run through a per-user wallet with PayPal-funded deposits, and creators and audiences coordinate over real-time chat with Firebase-based push notifications.
 
-`/src/*` structure follows default Java structure.
+The application was scaffolded with [JHipster 8.1.0](https://www.jhipster.tech) as a JWT-secured monolith and then extended with the marketplace domain, PayPal integration, WebSocket messaging, and scheduled jobs. It is the server half of a two-part project; the React client lives in [ArtworkSharingPlatformFE](https://github.com/khangzxrr/ArtworkSharingPlatformFE).
 
-- `.yo-rc.json` - Yeoman configuration file
-  JHipster configuration is stored in this file at `generator-jhipster` key. You may find `generator-jhipster-*` for specific blueprints configuration.
-- `.yo-resolve` (optional) - Yeoman conflict resolver
-  Allows to use a specific action when conflicts are found skipping prompts for files that matches a pattern. Each line should match `[pattern] [action]` with pattern been a [Minimatch](https://github.com/isaacs/minimatch#minimatch) pattern and action been one of skip (default if ommited) or force. Lines starting with `#` are considered comments and are ignored.
-- `.jhipster/*.json` - JHipster entity configuration files
+## Features
 
-- `npmw` - wrapper to use locally installed npm.
-  JHipster installs Node and npm locally using the build tool by default. This wrapper makes sure npm is installed locally and uses it avoiding some differences different versions can cause. By using `./npmw` instead of the traditional `npm` you can configure a Node-less environment to develop or test your application.
-- `/src/main/docker` - Docker configurations for the application and services that the application depends on
+- **Role-based access** (audience, creator, admin) with JWT authentication and Spring Security; most endpoints are namespaced per role (`/api/audience/...`, `/api/creator/...`).
+- **Artwork catalog** — artworks with assets/media, categories, likes, comments, and complaints.
+- **Selling** — direct fixed-price sales and auction-style selling with bids (`ArtworkSelling`, `SellingBid`).
+- **Commission requests** — audiences post requests, creators place bids with price/duration, and the selected work is tracked through a staged progress timeline (`Request`, `RequestBid`, `RequestProgress`) with two-phase payment and attachments.
+- **In-app wallet** — per-user balance with typed, auditable transactions (deposit, withdrawal, buy, service-fee earnings, escrow-style temporary holds, refunds) and pessimistic locking around balance changes.
+- **PayPal integration** — server-side order creation and webhook verification for wallet deposits.
+- **Real-time chat & notifications** — Spring WebSocket (STOMP) messaging plus Firebase Admin SDK for push notifications.
+- **Scheduled jobs** to progress or expire time-bound auctions and requests.
+- **OpenAPI/Swagger** documentation and MapStruct-based DTO mapping throughout the service layer.
 
-## Development
+## Tech stack
 
-### Doing API-First development using openapi-generator-cli
+- **Framework:** Spring Boot (JHipster 8.1.0 monolith), Java
+- **Security:** Spring Security + JWT
+- **Persistence:** Spring Data JPA / Hibernate, MySQL, Liquibase migrations
+- **Real-time:** Spring WebSocket + STOMP
+- **Integrations:** PayPal, Firebase Admin SDK (push notifications)
+- **API docs & mapping:** springdoc-openapi, MapStruct
+- **Build & tooling:** Gradle, Docker (Jib), SonarQube, Checkstyle
+- **Testing:** JUnit, Cucumber (BDD), Cypress (E2E), Jest (client tests)
 
-[OpenAPI-Generator]() is configured for this application. You can generate API code from the `src/main/resources/swagger/api.yml` definition file by running:
+## Domain model
+
+The domain is defined in [`artwork.jh`](artwork.jh) (JHipster JDL). Key entities:
+
+```
+Artwork ─┬─ ArtworkAsset ── Media          Wallet ── WalletTransaction
+         ├─ ArtworkComment                 Request ─┬─ RequestBid
+         ├─ ArtworkLike                              ├─ RequestProgress ── RequestProgressAttachment
+         ├─ ArtworkComplain                          └─ RequestAttachment
+         ├─ ArtworkCategory
+         └─ ArtworkSelling ── SellingBid    Certificate ── Media
+```
+
+Backend source follows the standard JHipster layout under `src/main/java/com/github/khangzxrr/`:
+
+```
+domain/        JPA entities & enums          service/       business logic, impl, DTOs, mappers, jobs
+repository/     Spring Data repositories      web/rest/      REST controllers (per role)
+security/       JWT & Spring Security config  web/websocket/ STOMP messaging
+config/         app configuration             aop/logging/   request logging
+```
+
+## Getting started
+
+### Prerequisites
+
+- JDK 17+ and the bundled Gradle wrapper (`./gradlew`)
+- Node.js (for the client build tooling JHipster generates)
+- MySQL, or Docker to run it via the provided compose files
+- Credentials for PayPal and a Firebase service account (see configuration below)
+
+### Configuration
+
+Do **not** hard-code secrets. Provide them via environment variables / externalized config. The main settings to supply for a production run:
+
+- `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD` — MySQL connection
+- `JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64_SECRET` — JWT signing secret (generate with `openssl rand -base64 64`)
+- PayPal `base-url`, `client-id`, and `secret-key` under `application.paypal-configuration`
+- PayPal webhook `verify-url` reachable from PayPal
+- A Firebase Admin SDK service-account key file, referenced by `FirebaseConfiguration`
+
+> Note: JHipster generates a placeholder `application-*.yml` with sample values. Replace every credential with your own and keep real secrets out of version control (env vars or a secrets manager).
+
+### Run in development
 
 ```bash
-./gradlew openApiGenerate
+./gradlew          # start Spring Boot (dev profile, MySQL)
+npm install        # first time only, for client tooling
+npm start          # webpack dev server with live reload
 ```
 
-Then implements the generated delegate classes with `@Service` classes.
+Start a dev MySQL with Docker if needed:
 
-To edit the `api.yml` definition file, you can use a tool such as [Swagger-Editor](). Start a local instance of the swagger-editor using docker by running: `docker compose -f src/main/docker/swagger-editor.yml up -d`. The editor will then be reachable at [http://localhost:7742](http://localhost:7742).
-
-Refer to [Doing API-First development][] for more details.
-Before you can build this project, you must install and configure the following dependencies on your machine:
-
-1. [Node.js][]: We use Node to run a development web server and build the project.
-   Depending on your system, you can install Node either from source or as a pre-packaged bundle.
-
-After installing Node, you should be able to run the following command to install development tools.
-You will only need to run this command when dependencies change in [package.json](package.json).
-
-```
-npm install
-```
-
-We use npm scripts and [Webpack][] as our build system.
-
-Run the following commands in two separate terminals to create a blissful development experience where your browser
-auto-refreshes when files change on your hard drive.
-
-```
-./gradlew -x webapp
-npm start
-```
-
-Npm is also used to manage CSS and JavaScript dependencies used in this application. You can upgrade dependencies by
-specifying a newer version in [package.json](package.json). You can also run `npm update` and `npm install` to manage dependencies.
-Add the `help` flag on any command to see how you can use it. For example, `npm help update`.
-
-The `npm run` command will list all of the scripts available to run for this project.
-
-### PWA Support
-
-JHipster ships with PWA (Progressive Web App) support, and it's turned off by default. One of the main components of a PWA is a service worker.
-
-The service worker initialization code is commented out by default. To enable it, uncomment the following code in `src/main/webapp/index.html`:
-
-```html
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js').then(function () {
-      console.log('Service Worker Registered');
-    });
-  }
-</script>
-```
-
-Note: [Workbox](https://developers.google.com/web/tools/workbox/) powers JHipster's service worker. It dynamically generates the `service-worker.js` file.
-
-### Managing dependencies
-
-For example, to add [Leaflet][] library as a runtime dependency of your application, you would run following command:
-
-```
-npm install --save --save-exact leaflet
-```
-
-To benefit from TypeScript type definitions from [DefinitelyTyped][] repository in development, you would run following command:
-
-```
-npm install --save-dev --save-exact @types/leaflet
-```
-
-Then you would import the JS and CSS files specified in library's installation instructions so that [Webpack][] knows about them:
-Note: There are still a few other things remaining to do for Leaflet that we won't detail here.
-
-For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
-
-## Building for production
-
-### Packaging as jar
-
-To build the final jar and optimize the artworkSharingPlatformJhipter application for production, run:
-
-```
-./gradlew -Pprod clean bootJar
-```
-
-This will concatenate and minify the client CSS and JavaScript files. It will also modify `index.html` so it references these new files.
-To ensure everything worked, run:
-
-```
-java -jar build/libs/*.jar
-```
-
-Then navigate to [http://localhost:8080](http://localhost:8080) in your browser.
-
-Refer to [Using JHipster in production][] for more details.
-
-### Packaging as war
-
-To package your application as a war in order to deploy it to an application server, run:
-
-```
-./gradlew -Pprod -Pwar clean bootWar
-```
-
-### JHipster Control Center
-
-JHipster Control Center can help you manage and control your application(s). You can start a local control center server (accessible on http://localhost:7419) with:
-
-```
-docker compose -f src/main/docker/jhipster-control-center.yml up
-```
-
-## Testing
-
-### Spring Boot tests
-
-To launch your application's tests, run:
-
-```
-./gradlew test integrationTest jacocoTestReport
-```
-
-### Client tests
-
-Unit tests are run by [Jest][]. They're located in [src/test/javascript/](src/test/javascript/) and can be run with:
-
-```
-npm test
-```
-
-UI end-to-end tests are powered by [Cypress][]. They're located in [src/test/javascript/cypress](src/test/javascript/cypress)
-and can be run by starting Spring Boot in one terminal (`./gradlew bootRun`) and running the tests (`npm run e2e`) in a second one.
-
-#### Lighthouse audits
-
-You can execute automated [lighthouse audits][https://developers.google.com/web/tools/lighthouse/] with [cypress audits][https://github.com/mfrachet/cypress-audit] by running `npm run e2e:cypress:audits`.
-You should only run the audits when your application is packaged with the production profile.
-The lighthouse report is created in `build/cypress/lhreport.html`
-
-## Others
-
-### Code quality using Sonar
-
-Sonar is used to analyse code quality. You can start a local Sonar server (accessible on http://localhost:9001) with:
-
-```
-docker compose -f src/main/docker/sonar.yml up -d
-```
-
-Note: we have turned off forced authentication redirect for UI in [src/main/docker/sonar.yml](src/main/docker/sonar.yml) for out of the box experience while trying out SonarQube, for real use cases turn it back on.
-
-You can run a Sonar analysis with using the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) or by using the gradle plugin.
-
-Then, run a Sonar analysis:
-
-```
-./gradlew -Pprod clean check jacocoTestReport sonarqube -Dsonar.login=admin -Dsonar.password=admin
-```
-
-Additionally, Instead of passing `sonar.password` and `sonar.login` as CLI arguments, these parameters can be configured from [sonar-project.properties](sonar-project.properties) as shown below:
-
-```
-sonar.login=admin
-sonar.password=admin
-```
-
-For more information, refer to the [Code quality page][].
-
-### Using Docker to simplify development (optional)
-
-You can use Docker to improve your JHipster development experience. A number of docker-compose configuration are available in the [src/main/docker](src/main/docker) folder to launch required third party services.
-
-For example, to start a mysql database in a docker container, run:
-
-```
+```bash
 docker compose -f src/main/docker/mysql.yml up -d
 ```
 
-To stop it and remove the container, run:
+### Build for production
 
-```
-docker compose -f src/main/docker/mysql.yml down
-```
-
-You can also fully dockerize your application and all the services that it depends on.
-To achieve this, first build a docker image of your app by running:
-
-```
-npm run java:docker
+```bash
+./gradlew -Pprod clean bootJar
+java -jar build/libs/*.jar
 ```
 
-Or build a arm64 docker image when using an arm64 processor os like MacOS with M1 processor family running:
+Then open http://localhost:8080. A Docker image can be built with Jib (see [`build_docker_image.sh`](build_docker_image.sh) and [`command.md`](command.md)).
 
-```
-npm run java:docker:arm64
-```
+## Testing
 
-Then run:
-
-```
-docker compose -f src/main/docker/app.yml up -d
+```bash
+./gradlew test integrationTest jacocoTestReport   # backend (JUnit + Cucumber)
+npm test                                          # client unit tests (Jest)
+npm run e2e                                        # end-to-end (Cypress)
 ```
 
-When running Docker Desktop on MacOS Big Sur or later, consider enabling experimental `Use the new Virtualization framework` for better processing performance ([disk access performance is worse](https://github.com/docker/roadmap/issues/7)).
+## Credits
 
-For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the docker-compose sub-generator (`jhipster docker-compose`), which is able to generate docker configurations for one or several JHipster applications.
-
-## Continuous Integration (optional)
-
-To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
-
-[JHipster Homepage and latest documentation]: https://www.jhipster.tech
-[JHipster 8.1.0 archive]: https://www.jhipster.tech/documentation-archive/v8.1.0
-[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v8.1.0/development/
-[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v8.1.0/docker-compose
-[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v8.1.0/production/
-[Running tests page]: https://www.jhipster.tech/documentation-archive/v8.1.0/running-tests/
-[Code quality page]: https://www.jhipster.tech/documentation-archive/v8.1.0/code-quality/
-[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v8.1.0/setting-up-ci/
-[Node.js]: https://nodejs.org/
-[NPM]: https://www.npmjs.com/
-[OpenAPI-Generator]: https://openapi-generator.tech
-[Swagger-Editor]: https://editor.swagger.io
-[Doing API-First development]: https://www.jhipster.tech/documentation-archive/v8.1.0/doing-api-first-development/
-[Webpack]: https://webpack.github.io/
-[BrowserSync]: https://www.browsersync.io/
-[Jest]: https://facebook.github.io/jest/
-[Cypress]: https://www.cypress.io/
-[Leaflet]: https://leafletjs.com/
-[DefinitelyTyped]: https://definitelytyped.org/
+Built as a group project. Backend led by **Vo Ngoc Khang** ([@khangzxrr](https://github.com/khangzxrr)); the React frontend was a shared effort documented in [ArtworkSharingPlatformFE](https://github.com/khangzxrr/ArtworkSharingPlatformFE). Generated with JHipster 8.1.0 — full JHipster development, testing, and deployment documentation is at https://www.jhipster.tech/documentation-archive/v8.1.0.
